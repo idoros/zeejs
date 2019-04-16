@@ -24,7 +24,7 @@ While everything that I could find online about the "new" dialog element talks a
 
 We can then move it into place with Javascript. Libraries like [POPPER.JS](https://popper.js.org/) can help us with that. And with new APIs like the [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver) and [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) this will even get more performant over time.
 
-Unfortunately it is not well supported in other browsers 😢
+Unfortunately it is not well supported in other browsers. And while polyfilling most of the behavior is [possible](https://github.com/GoogleChrome/dialog-polyfill), faking the overflow issue is not 😢
 
 It is currently under a flag in **Firefox**, but currently it doesn't escape the overflow *(ToDo: open a proper bug)*, [no real movement](https://bugs.webkit.org/show_bug.cgi?id=84635) in **Webkit**, [under consideration](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/dialogelementformodals/?q=dialog) in **Edge** (at list this will be over soon) and will almost definitely never be supported in **Internet Explorer**. 
 
