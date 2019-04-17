@@ -14,21 +14,17 @@ CSS gives us the [`position`](https://developer.mozilla.org/en-US/docs/Web/CSS/p
 
 While this can help us to position our parts in a way that seems to work for simple use cases, it is highly fragile and have some unexpected behaviors.
 
-The most problematic is the overflow trap.
+The main problem is the overflow trap, in which under certain conditions, the overflow of a parent element hides our extension no matter the position. See it happening [here](https://codepen.io/idoros/pen/XQZbar), and also you can notice that that absolute position box content is also squashed because it doesn't have a specified width.
 
-## What we have
+### Static all the way
 
-### The `<dialog>` element
+The only way I know to solve this issue today is to make sure every parent of our extension in set with `position: static`. That way our extension is relative to that upper parent, and also not affected by the overflow of in-between parents. You can check a solution like that in [css-tricks](https://css-tricks.com/popping-hidden-overflow/)
 
-While everything that I could find online about the "new" dialog element talks about how to use it and style it, the big thing in my opinion is the fact that this element has a special layout behavior - it "pops out" into its own top layer and escapes the parent layer overflow! see it in action in Chrome/Opera [here](.add-a-link-to-example). 
+Unfortunately this is hard to achieve and easy to break, because any change that will cause a `static` parent element to create a new [stacking context](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context) will break the trick.
 
-We can then move it into place with Javascript. Libraries like [POPPER.JS](https://popper.js.org/) can help us with that. And with new APIs like the [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver) and [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) this will even get more performant over time.
+And while this *might* be ok for documents, I wouldn't rely on this technic for generic components.
 
-Unfortunately it is not well supported in other browsers. And while polyfilling most of the behavior is [possible](https://github.com/GoogleChrome/dialog-polyfill), faking the overflow issue is not 😢
-
-It is currently under a flag in **Firefox**, but currently it doesn't escape the overflow *(ToDo: open a proper bug)*, [no real movement](https://bugs.webkit.org/show_bug.cgi?id=84635) in **Webkit**, [under consideration](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/dialogelementformodals/?q=dialog) in **Edge** (at list this will be over soon) and will almost definitely never be supported in **Internet Explorer**. 
-
-### Custom layers
+## What we have is custom layers
 
 We can create custom layers through Javascript! May it be React [portal](https://reactjs.org/docs/portals.html), an equivalent idea in [Vue](https://linusborg.github.io/portal-vue/#/), [Angular](https://material.angular.io/cdk/portal/overview) or a custom implementation. 
 
