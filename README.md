@@ -42,4 +42,20 @@ The bottom line is that these compromises are making our components less generic
 
 ## What I would like to see
 
-Layering in HTML (what happens inside Shadow-Dom?)
+The current situation is that even in 2019 we have no real solution for this problem, although we see this pattern EVERYWHERE. I believe that the result of this is a more hacky and less accessible web (without even talking about the amount of wasted dev time and performance issues).
+
+One option is to go the way that the portal pattern is going and offer a way to "connect" an HTML element to another part of the DOM. However I could think of more then a few issues that would probably make the spec/implementation details way to complex.
+
+A simpler approach would be to provide a primitive `display:pop`? value that would "raise" the content of whatever it holds into this top layer above everything and ignore any layout or overflow that it is located in. 
+
+This leaves some question of what happened when multiple elements like that exist at the same time, or nested withing each other. We can achieve a nice default behavior and if we could listen with Javascript and provide a custom solution for managing queues and stacks of such layers.
+
+There is another solution, that to be honest, I thought would be the solution and currently I'm very disappointed from. The `<dialog>` element. I'm not sure if its a bug or not, because the [spec](https://www.w3.org/TR/html52/interactive-elements.html#the-dialog-element) does talk about a "top-layer" that the dialog is opening in, however even in chrome/Opera where the dialog element is implemented, a parent overflow will cut the content of the dialog (see [here](https://codepen.io/idoros/pen/xeYxQW)).
+
+I would imagine that the big thing that such a feature **should have** added is the ability to "pops out" into its own top layer and escapes the parent layer overflow!
+
+We could then move it into place with Javascript. Libraries like [POPPER.JS](https://popper.js.org/) can help us with that. And with new APIs like the [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver) and [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) this will even get more performant over time.
+
+Unfortunately it is also not well supported in other browsers yet. And while polyfilling most of the behavior is [possible](https://github.com/GoogleChrome/dialog-polyfill), we are still stuck with the overflow trap.
+
+It is currently under a flag in **Firefox**, [no real movement](https://bugs.webkit.org/show_bug.cgi?id=84635) in **Webkit**, [under consideration](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/dialogelementformodals/?q=dialog) in **Edge** (at list this will be over soon) and will almost definitely never be supported in **Internet Explorer**.
