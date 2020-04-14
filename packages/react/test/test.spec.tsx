@@ -8,6 +8,6 @@ describe(`react test`, () => {
         const wrapper = document.createElement(`div`);
         document.body.appendChild(wrapper);
         ReactDom.render(<div>{zeereact.toString()}</div>, wrapper);
-        expect(wrapper.firstElementChild!.innerHTML).to.equal(`fail!`);
+        expect(wrapper.firstElementChild!.innerHTML).to.equal(`true`);
     });
 });
