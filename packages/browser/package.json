@@ -1,0 +1,31 @@
+{
+    "name": "@zeejs/browser",
+    "version": "0.0.1",
+    "description": "HTML layering",
+    "author": "Ido Rosenthal",
+    "main": "./cjs/index.js",
+    "module": "esm/index.js",
+    "types": "esm/index.d.ts",
+    "scripts": {
+        "clean": "rimraf ./cjs ./esm",
+        "build": "ts-build ./src --cjs --esm",
+        "test": "mocha-pup \"./test/**/*.spec.ts\"",
+        "prepack": "yarn build"
+    },
+    "dependencies": {
+        "@zeejs/core": "^0.0.1"
+    },
+    "files": [
+        "cjs",
+        "esm",
+        "src"
+    ],
+    "engines": {
+        "node": ">=10"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "license": "MIT",
+    "repository": "https://github.com/idoros/zeejs/tree/master/packages/browser"
+}
