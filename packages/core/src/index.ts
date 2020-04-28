@@ -1,9 +1,11 @@
 export type Layer<T = {}, S = any> = T & {
+    parentLayer: Layer<T, S> | null;
     createLayer: (options?: { onChange?: () => void; settings?: S }) => Layer<T>;
     removeLayer: (layer: Layer<T>) => void;
     generateDisplayList: () => Layer<T>[];
 };
 export type LayerOptions<T, S> = {
+    parentLayer?: Layer<T, S>;
     init?: (layer: Layer<T, S>, settings: S) => void;
     onChange?: () => void;
     extendLayer?: T;
@@ -14,6 +16,7 @@ export type LayerOptions<T, S> = {
 export function createLayer(): Layer;
 export function createLayer<T, S>(options: LayerOptions<T, S>): Layer<T, S>;
 export function createLayer<T, S>({
+    parentLayer,
     onChange = noop,
     init,
     extendLayer,
@@ -28,8 +31,10 @@ export function createLayer<T, S>({
     const extendedData: T = extendLayer ? extendLayer : ({} as T);
     const layer: Layer<T, S> = {
         ...extendedData,
+        parentLayer: parentLayer || null,
         createLayer: (nestedOptions = {}) => {
             const childLayer = createLayer({
+                parentLayer: layer,
                 onChange: () => {
                     if (nestedOptions.onChange) {
                         nestedOptions.onChange();

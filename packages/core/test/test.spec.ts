@@ -58,6 +58,17 @@ describe(`core`, () => {
             expect(rootChanges, `notify on deep layer removed under root`).to.have.callCount(1);
             expect(parentChanges, `notify on deep layer removed under parent`).to.have.callCount(1);
         });
+
+        it(`should reference parent layer`, () => {
+            const root = createLayer();
+
+            const level2 = root.createLayer();
+            const level3 = level2.createLayer();
+
+            expect(root.parentLayer, `root`).to.equal(null);
+            expect(level2.parentLayer, `level2`).to.equal(root);
+            expect(level3.parentLayer, `level3`).to.equal(level2);
+        });
     });
 
     describe(`extend layer`, () => {
