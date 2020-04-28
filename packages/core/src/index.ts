@@ -1,30 +1,45 @@
-export type Layer<T = {}> = T & {
-    createLayer: (onChange?: () => void) => Layer<T>;
+export type Layer<T = {}, S = any> = T & {
+    createLayer: (options?: { onChange?: () => void; settings?: S }) => Layer<T>;
     removeLayer: (layer: Layer<T>) => void;
     generateDisplayList: () => Layer<T>[];
 };
-
-export type LayerOptions<T> = {
+export type LayerOptions<T, S> = {
+    init?: (layer: Layer<T, S>, settings: S) => void;
     onChange?: () => void;
-    extendLayer?: () => T;
+    extendLayer?: T;
+    defaultSettings?: S;
+    settings?: S;
 };
 
 export function createLayer(): Layer;
-export function createLayer<T>(options: LayerOptions<T>): Layer<T>;
-export function createLayer<T>({ onChange = noop, extendLayer }: LayerOptions<T> = {}):
-    | Layer
-    | Layer<T> {
-    const children: Layer<T>[] = [];
-    const extendedData: T = extendLayer ? extendLayer() : ({} as T);
-    const layer: Layer<T> = {
+export function createLayer<T, S>(options: LayerOptions<T, S>): Layer<T, S>;
+export function createLayer<T, S>({
+    onChange = noop,
+    init,
+    extendLayer,
+    defaultSettings,
+    settings,
+}: LayerOptions<T, S> = {}): Layer | Layer<T> {
+    const children: Layer<T, S>[] = [];
+    settings = {
+        ...(defaultSettings || {}),
+        ...(settings || {}),
+    } as S;
+    const extendedData: T = extendLayer ? extendLayer : ({} as T);
+    const layer: Layer<T, S> = {
         ...extendedData,
-        createLayer: (nestedOnChange = noop) => {
+        createLayer: (nestedOptions = {}) => {
             const childLayer = createLayer({
                 onChange: () => {
-                    nestedOnChange();
+                    if (nestedOptions.onChange) {
+                        nestedOptions.onChange();
+                    }
                     onChange();
                 },
                 extendLayer,
+                init,
+                defaultSettings,
+                settings: nestedOptions.settings,
             });
             children.push(childLayer);
             onChange();
@@ -45,6 +60,9 @@ export function createLayer<T>({ onChange = noop, extendLayer }: LayerOptions<T>
             return list;
         },
     };
+    if (init) {
+        init(layer, settings);
+    }
     return layer;
 }
 

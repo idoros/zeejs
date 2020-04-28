@@ -9,8 +9,10 @@ import React, {
     useCallback,
 } from 'react';
 
-
-type ReactLayer = Layer<{ element: Element }>;
+interface LayerExtended {
+    element: Element;
+}
+type ReactLayer = Layer<LayerExtended>;
 export const zeejsContext = createContext<ReactLayer>((null as any) as ReactLayer);
 
 export interface RootProps {
@@ -37,14 +39,12 @@ export const Root = ({ className, style, children }: RootProps) => {
     const layer = useMemo(
         () =>
             createLayer({
+                extendLayer: {
+                    element: document.createElement(`div`),
+                } as LayerExtended,
                 onChange() {
                     updateLayers();
-                },
-                extendLayer() {
-                    return {
-                        element: document.createElement(`div`) as Element,
-                    };
-                },
+                }
             }),
         []
     );

@@ -26,7 +26,7 @@ describe(`core`, () => {
             const parentChanges = stub();
             const root = createLayer({ onChange: rootChanges });
 
-            const parentLayer = root.createLayer(parentChanges);
+            const parentLayer = root.createLayer({ onChange: parentChanges });
             const childLayer = parentLayer.createLayer();
 
             expect(root.generateDisplayList(), `parent in root`).to.eql([
@@ -46,7 +46,7 @@ describe(`core`, () => {
             const rootChanges = stub();
             const parentChanges = stub();
             const root = createLayer({ onChange: rootChanges });
-            const parentLayer = root.createLayer(parentChanges);
+            const parentLayer = root.createLayer({ onChange: parentChanges });
             const childLayer = parentLayer.createLayer();
             rootChanges.reset();
             parentChanges.reset();
@@ -63,16 +63,41 @@ describe(`core`, () => {
     describe(`extend layer`, () => {
         it(`should add to layer schema`, () => {
             const root = createLayer({
-                extendLayer: () => {
-                    return {
-                        extendData: `value`,
-                    };
+                extendLayer: {
+                    extendData: `value`,
                 },
             });
             const layer = root.createLayer();
 
             expect(root.extendData, 'root extended').to.equal(`value`);
             expect(layer.extendData, 'layer extended').to.equal(`value`);
+        });
+
+        it(`should define layer settings and handle them in init`, () => {
+            const root = createLayer({
+                extendLayer: {
+                    settings: { optionA: ``, optionB: 0 },
+                },
+                defaultSettings: {
+                    optionA: `default a`,
+                    optionB: 5,
+                },
+                init(layer, settings) {
+                    layer.settings = settings;
+                },
+            });
+
+            const layer = root.createLayer({
+                settings: {
+                    optionA: `custom A`,
+                    optionB: 999,
+                },
+            });
+
+            expect(layer.settings).to.eql({
+                optionA: `custom A`,
+                optionB: 999,
+            });
         });
     });
 });
