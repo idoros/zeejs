@@ -128,4 +128,33 @@ describe(`react`, () => {
 
         expect(query(`#deep`), `not rendered`).to.not.be.domElement();
     });
+
+    it(`should place layer relative to window (default)`, () => {
+        const { innerWidth, innerHeight } = window;
+        const { expectQuery } = testDriver.render(() => (
+            <Root>
+                <div
+                    id="root-node"
+                    style={{
+                        height: innerHeight * 2,
+                        width: innerWidth * 2,
+                    }}
+                >
+                    <Layer>
+                        <div id="layer-node" style={{ width: `100%`, height: `100%` }} />
+                    </Layer>
+                </div>
+            </Root>
+        ));
+
+        window.scrollTo(innerWidth, innerHeight);
+
+        const layerNode = expectQuery(`#layer-node`);
+        expect(layerNode.getBoundingClientRect()).to.include({
+            width: document.documentElement.clientWidth,
+            height: document.documentElement.clientHeight,
+            top: 0,
+            left: 0,
+        });
+    });
 });

@@ -1,17 +1,26 @@
 import { zeejsContext } from './root';
-import React, { useMemo, useContext, CSSProperties, ReactNode, useEffect } from 'react';
+import React, { useMemo, useContext, ReactNode, useEffect, CSSProperties } from 'react';
 import ReactDOM from 'react-dom';
 
 export interface LayerProps {
     className?: string;
     style?: CSSProperties;
     children: ReactNode;
+    relativeTo?: `window`;
 }
 
 // ToDo: handle styling on portal root
-export const Layer = ({ children }: LayerProps) => {
+export const Layer = ({ children, relativeTo }: LayerProps) => {
     const parentLayer = useContext(zeejsContext);
-    const layer = useMemo(() => parentLayer.createLayer(), []);
+    const layer = useMemo(
+        () =>
+            parentLayer.createLayer({
+                settings: {
+                    relativeTo,
+                },
+            }),
+        []
+    );
 
     useEffect(() => {
         return () => {

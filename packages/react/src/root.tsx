@@ -12,7 +12,10 @@ import React, {
 interface LayerExtended {
     element: Element;
 }
-type ReactLayer = Layer<LayerExtended>;
+interface LayerSettings {
+    relativeTo?: `window` | Element;
+}
+type ReactLayer = Layer<LayerExtended, LayerSettings>;
 export const zeejsContext = createContext<ReactLayer>((null as any) as ReactLayer);
 
 export interface RootProps {
@@ -30,6 +33,7 @@ export const Root = ({ className, style, children }: RootProps) => {
             return;
         }
         const layers = layer.generateDisplayList();
+        // ToDo: reorder/remove/add with minimal changes
         root.textContent = ``;
         for (const { element } of layers) {
             root.appendChild(element);
@@ -42,9 +46,20 @@ export const Root = ({ className, style, children }: RootProps) => {
                 extendLayer: {
                     element: document.createElement(`div`),
                 } as LayerExtended,
+                defaultSettings: {
+                    relative: `window`,
+                } as LayerSettings,
                 onChange() {
                     updateLayers();
-                }
+                },
+                init(layer, _settings) {
+                    if (layer.parentLayer) {
+                        layer.element.setAttribute(
+                            `style`,
+                            `position: fixed;top: 0;left: 0;right: 0;bottom: 0;`
+                        );
+                    }
+                },
             }),
         []
     );
