@@ -1,3 +1,4 @@
+import { bindOverlay } from '@zeejs/browser';
 import { createLayer, Layer } from '@zeejs/core';
 import React, {
     useRef,
@@ -10,10 +11,10 @@ import React, {
 } from 'react';
 
 interface LayerExtended {
-    element: Element;
+    element: HTMLElement;
 }
 interface LayerSettings {
-    relativeTo?: `window` | Element;
+    relativeTo?: `window` | HTMLElement;
 }
 type ReactLayer = Layer<LayerExtended, LayerSettings>;
 export const zeejsContext = createContext<ReactLayer>((null as any) as ReactLayer);
@@ -47,17 +48,22 @@ export const Root = ({ className, style, children }: RootProps) => {
                     element: document.createElement(`div`),
                 } as LayerExtended,
                 defaultSettings: {
-                    relative: `window`,
+                    relativeTo: `window`,
                 } as LayerSettings,
                 onChange() {
                     updateLayers();
                 },
-                init(layer, _settings) {
+                init(layer, settings) {
                     if (layer.parentLayer) {
-                        layer.element.setAttribute(
-                            `style`,
-                            `position: fixed;top: 0;left: 0;right: 0;bottom: 0;`
-                        );
+                        if (settings.relativeTo === 'window') {
+                            layer.element.setAttribute(
+                                `style`,
+                                `position: fixed;top: 0;left: 0;right: 0;bottom: 0;`
+                            );
+                        } else if (settings.relativeTo instanceof HTMLElement) {
+                            // ToDo: handle bind stop when overlay is removed
+                            bindOverlay(settings.relativeTo, layer.element);
+                        }
                     }
                 },
             }),
@@ -65,7 +71,7 @@ export const Root = ({ className, style, children }: RootProps) => {
     );
 
     useEffect(() => {
-        layer.element = rootRef.current!.firstElementChild!;
+        layer.element = rootRef.current!.firstElementChild! as HTMLElement;
         updateLayers();
     }, []);
 

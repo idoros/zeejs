@@ -6,7 +6,7 @@ export interface LayerProps {
     className?: string;
     style?: CSSProperties;
     children: ReactNode;
-    relativeTo?: `window`;
+    relativeTo?: `window` | HTMLElement;
 }
 
 // ToDo: handle styling on portal root
@@ -16,7 +16,7 @@ export const Layer = ({ children, relativeTo }: LayerProps) => {
         () =>
             parentLayer.createLayer({
                 settings: {
-                    relativeTo,
+                    relativeTo: relativeTo || `window`, // ToDo: fix fallback for undefined
                 },
             }),
         []

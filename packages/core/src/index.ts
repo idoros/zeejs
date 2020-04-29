@@ -26,7 +26,7 @@ export function createLayer<T, S>({
     const children: Layer<T, S>[] = [];
     settings = {
         ...(defaultSettings || {}),
-        ...(settings || {}),
+        ...(settings || {}), // ToDo: fix fallback for undefined
     } as S;
     const extendedData: T = extendLayer ? extendLayer : ({} as T);
     const layer: Layer<T, S> = {
