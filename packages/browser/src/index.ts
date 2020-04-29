@@ -1,3 +1,1 @@
-import { createLayer } from '@zeejs/core';
-
-export const zeedom = createLayer;
+export { bindOverlay } from './bind-overlay';
