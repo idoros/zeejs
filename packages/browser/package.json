@@ -13,6 +13,7 @@
         "prepack": "yarn build"
     },
     "dependencies": {
+        "@popperjs/core": "^2.3.3",
         "@zeejs/core": "^0.0.1"
     },
     "files": [
