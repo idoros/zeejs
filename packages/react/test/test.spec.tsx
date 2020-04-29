@@ -157,4 +157,60 @@ describe(`react`, () => {
             left: 0,
         });
     });
+
+    it(`should place layer relative to element`, () => {
+        const { innerWidth, innerHeight } = window;
+        const { expectHTMLQuery, container } = testDriver.render(() => (
+            <Root>
+                <div
+                    id="root-node"
+                    style={{
+                        height: innerHeight * 2,
+                        width: innerWidth * 2,
+                    }}
+                >
+                    <div
+                        id="relative-node"
+                        style={{
+                            width: `200px`,
+                            height: `100px`,
+                            margin: `30px`,
+                        }}
+                    />
+                </div>
+            </Root>
+        ));
+        const relativeNode = expectHTMLQuery(`#relative-node`);
+
+        testDriver.render(
+            () => (
+                <Root>
+                    <div
+                        id="root-node"
+                        style={{
+                            height: innerHeight * 2,
+                            width: innerWidth * 2,
+                        }}
+                    >
+                        <div
+                            id="relative-node"
+                            style={{
+                                width: `200px`,
+                                height: `100px`,
+                                margin: `30px`,
+                            }}
+                        />
+                        <Layer relativeTo={relativeNode}>
+                            <div id="layer-node" style={{ width: `100%`, height: `100%` }} />
+                        </Layer>
+                    </div>
+                </Root>
+            ),
+            { container }
+        );
+        window.scrollTo(innerWidth, innerHeight);
+
+        const layerNode = expectHTMLQuery(`#layer-node`);
+        expect(layerNode.getBoundingClientRect()).to.eql(relativeNode.getBoundingClientRect());
+    });
 });

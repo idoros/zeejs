@@ -19,6 +19,7 @@ interface RenderOptions<DATA> {
 interface RenderOutput<DATA> {
     container: HTMLElement;
     expectQuery: (query: string) => Element;
+    expectHTMLQuery: (query: string) => HTMLElement;
     query: (query: string) => Element | null;
     getData: () => DATA;
     setData: (newData: DATA) => void;
@@ -53,6 +54,7 @@ export class ReactTestDriver<T = unknown> {
         return {
             container,
             expectQuery: this.expectQuery.bind(null, container),
+            expectHTMLQuery: this.expectHTMLQuery.bind(null, container),
             query: (querySelector: string) => container.querySelector(querySelector),
             getData,
             setData,
@@ -79,6 +81,18 @@ export class ReactTestDriver<T = unknown> {
             throw new Error(`query for "${querySelector}" failed with no result`);
         }
         return result;
+    }
+    public expectHTMLQuery(element: HTMLElement, querySelector: string): HTMLElement {
+        const result = element.querySelector(querySelector);
+        if (!result) {
+            throw new Error(`query for "${querySelector}" failed with no result`);
+        }
+        if (result instanceof HTMLElement) {
+            return result;
+        }
+        throw new Error(
+            `query for "${querySelector}" failed with result that is not an HTMLElement`
+        );
     }
     public query(element: HTMLElement, querySelector: string) {
         const result = element.querySelector(querySelector);
