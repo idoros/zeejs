@@ -45,7 +45,7 @@ export const Root = ({ className, style, children }: RootProps) => {
         () =>
             createLayer({
                 extendLayer: {
-                    element: document.createElement(`div`),
+                    element: null as unknown as HTMLElement,
                 } as LayerExtended,
                 defaultSettings: {
                     relativeTo: `window`,
@@ -54,6 +54,7 @@ export const Root = ({ className, style, children }: RootProps) => {
                     updateLayers();
                 },
                 init(layer, settings) {
+                    layer.element = document.createElement(`div`); // ToDo: test that each layer has a unique element
                     if (layer.parentLayer) {
                         if (settings.relativeTo === 'window') {
                             layer.element.setAttribute(
