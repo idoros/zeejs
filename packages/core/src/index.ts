@@ -1,12 +1,16 @@
+const destroyLayer = Symbol(`destroy-layer`);
+
 export type Layer<T = {}, S = any> = T & {
     parentLayer: Layer<T, S> | null;
     createLayer: (options?: { onChange?: () => void; settings?: S }) => Layer<T>;
     removeLayer: (layer: Layer<T>) => void;
     generateDisplayList: () => Layer<T>[];
+    [destroyLayer]: () => void;
 };
 export type LayerOptions<T, S> = {
     parentLayer?: Layer<T, S>;
     init?: (layer: Layer<T, S>, settings: S) => void;
+    destroy?: (layer: Layer<T, S>) => void;
     onChange?: () => void;
     extendLayer?: T;
     defaultSettings?: S;
@@ -19,6 +23,7 @@ export function createLayer<T, S>({
     parentLayer,
     onChange = noop,
     init,
+    destroy,
     extendLayer,
     defaultSettings,
     settings,
@@ -43,6 +48,7 @@ export function createLayer<T, S>({
                 },
                 extendLayer,
                 init,
+                destroy,
                 defaultSettings,
                 settings: nestedOptions.settings,
             });
@@ -54,7 +60,16 @@ export function createLayer<T, S>({
             const layerIndex = children.indexOf(layer);
             if (layerIndex !== -1) {
                 children.splice(layerIndex, 1);
+                layer[destroyLayer]();
                 onChange();
+            }
+        },
+        [destroyLayer]: () => {
+            if (destroy) {
+                for (const childLayer of children) {
+                    childLayer[destroyLayer]();
+                }
+                destroy(layer);
             }
         },
         generateDisplayList: () => {

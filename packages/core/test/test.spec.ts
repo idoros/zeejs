@@ -1,4 +1,4 @@
-import { createLayer } from '../src';
+import { createLayer, Layer } from '../src';
 import chai, { expect } from 'chai';
 import { stub } from 'sinon';
 import sinonChai from 'sinon-chai';
@@ -68,6 +68,46 @@ describe(`core`, () => {
             expect(root.parentLayer, `root`).to.equal(null);
             expect(level2.parentLayer, `level2`).to.equal(root);
             expect(level3.parentLayer, `level3`).to.equal(level2);
+        });
+    });
+
+    describe(`layer creation`, () => {
+        it(`should call init when layer is created`, () => {
+            const init = stub<[Layer]>();
+            const root = createLayer({ init });
+
+            expect(init, `init root`).to.have.been.calledOnceWith(root);
+            init.reset();
+
+            const shallow = root.createLayer();
+            expect(init, `init shallow`).to.have.been.calledOnceWith(shallow);
+            init.reset();
+
+            const deep = shallow.createLayer();
+            expect(init, `init deep`).to.have.been.calledOnceWith(deep);
+        });
+
+        it(`should call destroy when layer is removed`, () => {
+            const destroy = stub<[Layer]>();
+            const root = createLayer({ destroy });
+            const shallow = root.createLayer();
+            const deep = shallow.createLayer();
+
+            shallow.removeLayer(deep);
+
+            expect(destroy, `destroy deep`).to.have.been.calledOnceWith(deep);
+        });
+
+        it(`should call destroy for nested layers when parent layer is removed`, () => {
+            const destroy = stub<[Layer]>();
+            const root = createLayer({ destroy });
+            const shallow = root.createLayer();
+            const deep = shallow.createLayer();
+
+            root.removeLayer(shallow);
+
+            expect(destroy.getCall(0).args[0], `remove deep`).to.equal(deep);
+            expect(destroy.getCall(1).args[0], `remove shallow`).to.equal(shallow);
         });
     });
 
