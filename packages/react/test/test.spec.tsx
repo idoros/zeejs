@@ -200,7 +200,7 @@ describe(`react`, () => {
                                 margin: `30px`,
                             }}
                         />
-                        <Layer relativeTo={relativeNode}>
+                        <Layer overlap={relativeNode}>
                             <div id="layer-node" style={{ width: `100%`, height: `100%` }} />
                         </Layer>
                     </div>

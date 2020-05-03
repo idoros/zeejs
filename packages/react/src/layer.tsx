@@ -6,17 +6,17 @@ export interface LayerProps {
     className?: string;
     style?: CSSProperties;
     children: ReactNode;
-    relativeTo?: `window` | HTMLElement;
+    overlap?: `window` | HTMLElement;
 }
 
 // ToDo: handle styling on portal root
-export const Layer = ({ children, relativeTo }: LayerProps) => {
+export const Layer = ({ children, overlap }: LayerProps) => {
     const parentLayer = useContext(zeejsContext);
     const layer = useMemo(
         () =>
             parentLayer.createLayer({
                 settings: {
-                    relativeTo: relativeTo || `window`, // ToDo: fix fallback for undefined
+                    overlap: overlap || `window`, // ToDo: fix fallback for undefined
                 },
             }),
         []

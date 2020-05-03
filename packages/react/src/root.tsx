@@ -10,13 +10,13 @@ import React, {
     useCallback,
 } from 'react';
 
-const overlayBind = Symbol(`overlay-bind`);
+const overlapBind = Symbol(`overlap-bind`);
 interface LayerExtended {
     element: HTMLElement;
-    [overlayBind]: ReturnType<typeof bindOverlay>;
+    [overlapBind]: ReturnType<typeof bindOverlay>;
 }
 interface LayerSettings {
-    relativeTo?: `window` | HTMLElement;
+    overlap?: `window` | HTMLElement;
 }
 type ReactLayer = Layer<LayerExtended, LayerSettings>;
 export const zeejsContext = createContext<ReactLayer>((null as any) as ReactLayer);
@@ -49,7 +49,7 @@ export const Root = ({ className, style, children }: RootProps) => {
                 element: (null as unknown) as HTMLElement,
             } as LayerExtended,
             defaultSettings: {
-                relativeTo: `window`,
+                overlap: `window`,
             } as LayerSettings,
             onChange() {
                 updateLayers();
@@ -57,19 +57,19 @@ export const Root = ({ className, style, children }: RootProps) => {
             init(layer, settings) {
                 layer.element = document.createElement(`div`); // ToDo: test that each layer has a unique element
                 if (layer.parentLayer) {
-                    if (settings.relativeTo === 'window') {
+                    if (settings.overlap === 'window') {
                         layer.element.setAttribute(
                             `style`,
                             `position: fixed;top: 0;left: 0;right: 0;bottom: 0;`
                         );
-                    } else if (settings.relativeTo instanceof HTMLElement) {
-                        layer[overlayBind] = bindOverlay(settings.relativeTo, layer.element);
+                    } else if (settings.overlap instanceof HTMLElement) {
+                        layer[overlapBind] = bindOverlay(settings.overlap, layer.element);
                     }
                 }
             },
             destroy(layer) {
-                if (layer[overlayBind]) {
-                    layer[overlayBind].stop(); // not tested because its a side effect:/
+                if (layer[overlapBind]) {
+                    layer[overlapBind].stop(); // not tested because its a side effect:/
                 }
             },
         });
