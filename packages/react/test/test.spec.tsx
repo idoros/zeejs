@@ -3,6 +3,9 @@ import { domElementMatchers } from './chai-dom-element';
 import { ReactTestDriver } from './react-test-driver';
 import React from 'react';
 import chai, { expect } from 'chai';
+import { stub } from 'sinon';
+import sinonChai from 'sinon-chai';
+chai.use(sinonChai);
 chai.use(domElementMatchers);
 
 describe(`react`, () => {
@@ -212,5 +215,91 @@ describe(`react`, () => {
 
         const layerNode = expectHTMLQuery(`#layer-node`);
         expect(layerNode.getBoundingClientRect()).to.eql(relativeNode.getBoundingClientRect());
+    });
+
+    describe(`backdrop`, () => {
+        it(`should click through backdrop by default (backdrop="none")`, () => {
+            const contentClick = stub();
+            const { click } = testDriver.render(() => (
+                <Root>
+                    <div
+                        id="back-item"
+                        onClick={contentClick}
+                        style={{ width: `400px`, height: `400px` }}
+                    />
+                    <Layer>
+                        <span />
+                    </Layer>
+                </Root>
+            ));
+
+            click(`#back-item`);
+
+            expect(contentClick).to.have.callCount(1);
+        });
+
+        it(`should prevent clicks through "block" backdrop`, () => {
+            const contentClick = stub();
+            const { click } = testDriver.render(() => (
+                <Root>
+                    <div
+                        id="back-item"
+                        onClick={contentClick}
+                        style={{ width: `400px`, height: `400px` }}
+                    />
+                    <Layer backdrop="block">
+                        <span />
+                    </Layer>
+                </Root>
+            ));
+
+            click(`#back-item`);
+
+            expect(contentClick).to.have.callCount(0);
+        });
+
+        it(`should prevent clicks on other layers through "block" backdrop`, () => {
+            const contentClick = stub();
+            const { click } = testDriver.render(() => (
+                <Root>
+                    <Layer backdrop="block">
+                        <div
+                            id="layer-item"
+                            onClick={contentClick}
+                            style={{ width: `400px`, height: `400px` }}
+                        />
+                    </Layer>
+                    <Layer backdrop="block">
+                        <span />
+                    </Layer>
+                </Root>
+            ));
+
+            click(`#layer-item`);
+
+            expect(contentClick).to.have.callCount(0);
+        });
+
+        it(`should click through to other layers with "none" backdrop (default)`, () => {
+            const contentClick = stub();
+            const { click } = testDriver.render(() => (
+                <Root>
+                    <Layer backdrop="block">
+                        <div
+                            id="layer-item"
+                            onClick={contentClick}
+                            style={{ width: `400px`, height: `400px` }}
+                        />
+                    </Layer>
+                    <Layer backdrop="none">
+                        <span />
+                    </Layer>
+                </Root>
+            ));
+
+            click(`#layer-item`);
+
+            expect(contentClick).to.have.callCount(1);
+        });
     });
 });

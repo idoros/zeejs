@@ -21,6 +21,7 @@ interface RenderOutput<DATA> {
     expectQuery: (query: string) => Element;
     expectHTMLQuery: (query: string) => HTMLElement;
     query: (query: string) => Element | null;
+    click: (selector: string) => void;
     getData: () => DATA;
     setData: (newData: DATA) => void;
 }
@@ -56,6 +57,7 @@ export class ReactTestDriver<T = unknown> {
             expectQuery: this.expectQuery.bind(null, container),
             expectHTMLQuery: this.expectHTMLQuery.bind(null, container),
             query: (querySelector: string) => container.querySelector(querySelector),
+            click: this.click.bind(this, container),
             getData,
             setData,
         };
@@ -98,6 +100,28 @@ export class ReactTestDriver<T = unknown> {
         const result = element.querySelector(querySelector);
 
         return result;
+    }
+    public click(element: HTMLElement, querySelector: string) {
+        const elementToClick = this.expectQuery(element, querySelector);
+        elementToClick.scrollIntoView(true);
+        const bounds = elementToClick.getBoundingClientRect();
+        // ToDo: search for mouse "visible" point
+        const x = bounds.left + bounds.width / 2;
+        const y = bounds.top + bounds.height / 2;
+        const ev = new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+            screenX: x,
+            screenY: y,
+        });
+        const el = document.elementFromPoint(x, y);
+        if (!el) {
+            throw new Error(
+                `element with selector ${querySelector} cannot be clicked (not visible to mouse)`
+            );
+        }
+        el.dispatchEvent(ev);
     }
 }
 

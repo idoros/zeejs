@@ -7,16 +7,18 @@ export interface LayerProps {
     style?: CSSProperties;
     children: ReactNode;
     overlap?: `window` | HTMLElement;
+    backdrop?: `none` | `block`; // | `hide`
 }
 
 // ToDo: handle styling on portal root
-export const Layer = ({ children, overlap }: LayerProps) => {
+export const Layer = ({ children, overlap = `window`, backdrop = `none` }: LayerProps) => {
     const parentLayer = useContext(zeejsContext);
     const layer = useMemo(
         () =>
             parentLayer.createLayer({
                 settings: {
-                    overlap: overlap || `window`, // ToDo: fix fallback for undefined
+                    overlap,
+                    backdrop,
                 },
             }),
         []
