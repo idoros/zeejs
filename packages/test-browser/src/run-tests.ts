@@ -77,8 +77,9 @@ export async function runTests({
         console.log(`HTTP server is listening on port ${port}`);
 
         const browser = await playwright.chromium.launch({
-            headless: false,
+            headless: true,
             devtools: false,
+            args: [`--no-sandbox`]
         });
         closables.push(browser);
 
