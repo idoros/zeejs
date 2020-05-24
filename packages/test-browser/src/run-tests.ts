@@ -8,15 +8,19 @@ import webpack from 'webpack';
 
 const mochaSetupPath = require.resolve('../static/mocha-setup.js');
 
+export interface RunTestsOptions {
+    webpackConfig: webpack.Configuration;
+    testFiles: string[];
+    keepOpen: boolean;
+    pageHook?: (page: playwright.Page) => Promise<void> | void;
+}
+
 export async function runTests({
     webpackConfig,
     testFiles,
     keepOpen,
-}: {
-    webpackConfig: webpack.Configuration;
-    testFiles: string[];
-    keepOpen: boolean;
-}): Promise<void> {
+    pageHook,
+}: RunTestsOptions): Promise<void> {
     const closables: Array<{ close(): unknown | Promise<unknown> }> = [];
     const colors = true;
     const preferredPort = 3000;
@@ -79,7 +83,7 @@ export async function runTests({
         const browser = await playwright.chromium.launch({
             headless: true,
             devtools: false,
-            args: [`--no-sandbox`]
+            args: [`--no-sandbox`],
         });
         closables.push(browser);
 
@@ -88,7 +92,11 @@ export async function runTests({
         });
         const page = await context.newPage();
 
+        if (pageHook) {
+            await pageHook(page);
+        }
         hookPageConsole(page);
+
         page.on('dialog', (dialog) => {
             dialog.dismiss();
         });

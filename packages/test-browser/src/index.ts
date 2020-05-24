@@ -2,18 +2,23 @@ import glob from 'glob';
 import findUp from 'find-up';
 import webpack from 'webpack';
 import path from 'path';
-import { runTests } from './run-tests';
+import { runTests, RunTestsOptions } from './run-tests';
+
+export { hookImageSnapshot } from './image-snapshot/node';
+export { hookInteractionApi } from './interaction-api/node';
 
 export const browserTest = ({
     files,
     dev,
     webpackConfig: webpackConfigPath = findUp.sync('webpack.config.js'),
+    pageHook,
     process,
 }: {
     files: string;
     dev: boolean;
-    process: NodeJS.Process;
     webpackConfig?: string;
+    pageHook?: RunTestsOptions['pageHook'];
+    process: NodeJS.Process;
 }) => {
     const testFiles: string[] = [];
     for (const foundFile of glob.sync(files, { absolute: true })) {
@@ -38,6 +43,7 @@ export const browserTest = ({
         webpackConfig,
         testFiles,
         keepOpen: false,
+        pageHook,
     }).catch(printErrorAndExit);
 
     function printErrorAndExit(message: unknown) {

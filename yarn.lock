@@ -97,15 +97,6 @@
     unique-filename "^1.1.1"
     which "^1.3.1"
 
-"@file-services/memory@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@file-services/memory/-/memory-2.2.0.tgz#a8d47bec1a230e5288a9573cd2e22e3adc876708"
-  integrity sha512-UV1//6taKy3uDEihbrB2zrZ4QE4BYaJvKlO8LcBFy6v9NiIPI6yJkU4BUPrc9ecBNFjQ6eH+yT36Mw0Q1tYnNg==
-  dependencies:
-    "@file-services/path" "^2.2.0"
-    "@file-services/types" "^2.2.0"
-    "@file-services/utils" "^2.2.0"
-
 "@file-services/node@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@file-services/node/-/node-2.2.0.tgz#63b0e9c45a3cd4e5b7c0bbab6fe24ae1f447bcf9"
@@ -113,21 +104,6 @@
   dependencies:
     "@file-services/types" "^2.2.0"
     "@file-services/utils" "^2.2.0"
-
-"@file-services/overlay@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@file-services/overlay/-/overlay-2.2.0.tgz#34aaae4e959c46b842dd8dc345761208fa3a876f"
-  integrity sha512-CBjGroi0pIGvodNrzp6hbu3VqT85Jwl/g5VIAf7k9wZOGtjfCdoO7gELDC/pIAeM7CdX8YhsP2jVxIKv1/0f+w==
-  dependencies:
-    "@file-services/types" "^2.2.0"
-    "@file-services/utils" "^2.2.0"
-
-"@file-services/path@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@file-services/path/-/path-2.2.0.tgz#96e9563c53ea6e0f5742c97223c7934df7957d3b"
-  integrity sha512-9IcuKbAw8EfOS0hlrP+llfUERoRxKw1c7oFlMHlTq6hAgSZKAaGLGHwFbQaX8gedcLDjcBkzZKYatALSEPAatQ==
-  dependencies:
-    "@file-services/types" "^2.2.0"
 
 "@file-services/types@^2.2.0":
   version "2.2.0"
@@ -138,13 +114,6 @@
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@file-services/utils/-/utils-2.2.0.tgz#85017baaeee4b14986591e027a6001ce41400332"
   integrity sha512-n+usslpQSz5UgmEg2QWs4Z8/Ii2tsm9D3MMKgx+uilXeSvLuLQBHofSersHilB0DtKkwmrTt5ZjmlR2kPLcMwQ==
-  dependencies:
-    "@file-services/types" "^2.2.0"
-
-"@file-services/webpack@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@file-services/webpack/-/webpack-2.2.0.tgz#83fbc45edce9f2f8e04c2b0c9d042c1b8e4c97d2"
-  integrity sha512-GoE16MeA7aHScGonD1cGiZTWB8+/M9UGnWPX2rSFTNLYvPc0OorT5Ax77pcxtfUOoBqMx9KhGAl+kzfJ/NOo+A==
   dependencies:
     "@file-services/types" "^2.2.0"
 
@@ -1152,6 +1121,13 @@
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
   integrity sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
+
+"@types/pixelmatch@^5.2.1":
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/@types/pixelmatch/-/pixelmatch-5.2.1.tgz#c82843e0c08417b45a233ddd267852c3c1b7afaa"
+  integrity sha512-4KPEw8fz139KyHfBiNHI9+nmA93gcH/Dj2Q+10JF34XO0Sb20IIGsdj+9Ol+dgJUWN5RIa7NRsbEXFFd5MiG0Q==
+  dependencies:
+    "@types/node" "*"
 
 "@types/pngjs@^3.4.2":
   version "3.4.2"
