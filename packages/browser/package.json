@@ -9,7 +9,7 @@
     "scripts": {
         "clean": "rimraf ./cjs ./esm",
         "build": "ts-build ./src --cjs --esm",
-        "test": "mocha-pup \"./test/**/*.spec.ts\"",
+        "test": "node -r @ts-tools/node/r ./test/setup.ts",
         "prepack": "yarn build"
     },
     "dependencies": {
