@@ -32,4 +32,5 @@ export interface InteractionApi {
     dblclick: Page['dblclick'];
     press: Page['press'];
     hover: Page['hover'];
+    clickIfPossible: (selector: string) => Promise<boolean>;
 }
