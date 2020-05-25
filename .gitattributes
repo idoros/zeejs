@@ -15,6 +15,9 @@
 *.php text
 *.css text
 *.js text
+*.jsx text
+*.ts text
+*.tsx text
 *.json text
 *.htm text
 *.html text
