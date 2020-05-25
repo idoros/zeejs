@@ -16,8 +16,17 @@ export function hookInteractionApi(page: Page): void {
             current = next;
         }
         if (typeof current === `function`) {
-            return await current.apply(context, args);
+            let value: any;
+            try {
+                value = await current.apply(context, args);
+            } catch (e) {
+                if (e instanceof Error) {
+                    return { type: `error`, msg: e.message, stack: e.stack };
+                }
+                return { type: `error`, msg: JSON.stringify(e), stack: `` };
+            }
+            return { type: `success`, value };
         }
-        return current;
+        return { type: `success`, value: current };
     });
 }

@@ -1,7 +1,7 @@
 import { Root, Layer } from '../src';
 import { domElementMatchers } from './chai-dom-element';
 import { ReactTestDriver } from './react-test-driver';
-import { expectImageSnapshot } from '@zeejs/test-browser/browser';
+import { expectImageSnapshot, getInteractionApi } from '@zeejs/test-browser/browser';
 import React from 'react';
 import chai, { expect } from 'chai';
 import { stub } from 'sinon';
@@ -11,6 +11,7 @@ chai.use(domElementMatchers);
 
 describe(`react`, () => {
     let testDriver: ReactTestDriver;
+    const { click, clickIfPossible } = getInteractionApi();
 
     before('setup test driver', () => (testDriver = new ReactTestDriver()));
     afterEach('clear test driver', () => testDriver.clean());
@@ -219,13 +220,13 @@ describe(`react`, () => {
     });
 
     describe(`backdrop`, () => {
-        it(`should click through backdrop by default (backdrop="none")`, () => {
+        it(`should click through backdrop by default (backdrop="none")`, async () => {
             const contentClick = stub();
-            const { click } = testDriver.render(() => (
+            testDriver.render(() => (
                 <Root>
                     <div
                         id="back-item"
-                        onClick={contentClick}
+                        onClick={() => contentClick()}
                         style={{ width: `400px`, height: `400px` }}
                     />
                     <Layer>
@@ -234,18 +235,18 @@ describe(`react`, () => {
                 </Root>
             ));
 
-            click(`#back-item`);
+            await click(`#back-item`);
 
             expect(contentClick).to.have.callCount(1);
         });
 
-        it(`should prevent clicks through "block" backdrop`, () => {
+        it(`should prevent clicks through "block" backdrop`, async () => {
             const contentClick = stub();
-            const { click } = testDriver.render(() => (
+            testDriver.render(() => (
                 <Root>
                     <div
                         id="back-item"
-                        onClick={contentClick}
+                        onClick={() => contentClick()}
                         style={{ width: `400px`, height: `400px` }}
                     />
                     <Layer backdrop="block">
@@ -254,19 +255,18 @@ describe(`react`, () => {
                 </Root>
             ));
 
-            click(`#back-item`);
-
+            expect(await clickIfPossible(`#back-item`), `not clickable`).to.equal(false);
             expect(contentClick).to.have.callCount(0);
         });
 
-        it(`should prevent clicks on other layers through "block" backdrop`, () => {
+        it(`should prevent clicks on other layers through "block" backdrop`, async () => {
             const contentClick = stub();
-            const { click } = testDriver.render(() => (
+            testDriver.render(() => (
                 <Root>
                     <Layer backdrop="block">
                         <div
                             id="layer-item"
-                            onClick={contentClick}
+                            onClick={() => contentClick()}
                             style={{ width: `400px`, height: `400px` }}
                         />
                     </Layer>
@@ -276,19 +276,18 @@ describe(`react`, () => {
                 </Root>
             ));
 
-            click(`#layer-item`);
-
+            expect(await clickIfPossible(`#layer-item`), `not clickable`).to.equal(false);
             expect(contentClick).to.have.callCount(0);
         });
 
-        it(`should click through to other layers with "none" backdrop (default)`, () => {
+        it(`should click through to other layers with "none" backdrop (default)`, async () => {
             const contentClick = stub();
-            const { click } = testDriver.render(() => (
+            testDriver.render(() => (
                 <Root>
                     <Layer backdrop="block">
                         <div
                             id="layer-item"
-                            onClick={contentClick}
+                            onClick={() => contentClick()}
                             style={{ width: `400px`, height: `400px` }}
                         />
                     </Layer>
@@ -298,18 +297,18 @@ describe(`react`, () => {
                 </Root>
             ));
 
-            click(`#layer-item`);
+            await click(`#layer-item`);
 
             expect(contentClick).to.have.callCount(1);
         });
 
         it(`should hide content behind layer (backdrop="hide")`, async () => {
             const contentClick = stub();
-            const { click } = testDriver.render(() => (
+            testDriver.render(() => (
                 <Root>
                     <div
                         id="back-item"
-                        onClick={contentClick}
+                        onClick={() => contentClick()}
                         style={{
                             width: `400px`,
                             height: `400px`,
@@ -328,7 +327,7 @@ describe(`react`, () => {
                 </Root>
             ));
 
-            click(`#back-item`);
+            expect(await clickIfPossible(`#back-item`), `not clickable`).to.equal(false);
 
             expect(contentClick, `background content not clickable`).to.have.callCount(0);
             await expectImageSnapshot({
@@ -336,7 +335,7 @@ describe(`react`, () => {
             });
         });
 
-        it(`should hide content between layer (backdrop="hide")`, async () => {
+        it(`should hide content between layers (backdrop="hide")`, async () => {
             testDriver.render(() => (
                 <Root>
                     <div
