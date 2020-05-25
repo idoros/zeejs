@@ -1,6 +1,7 @@
 import { Root, Layer } from '../src';
 import { domElementMatchers } from './chai-dom-element';
 import { ReactTestDriver } from './react-test-driver';
+import { expectImageSnapshot } from '@zeejs/test-browser/browser';
 import React from 'react';
 import chai, { expect } from 'chai';
 import { stub } from 'sinon';
@@ -300,6 +301,77 @@ describe(`react`, () => {
             click(`#layer-item`);
 
             expect(contentClick).to.have.callCount(1);
+        });
+
+        it(`should hide content behind layer (backdrop="hide")`, async () => {
+            const contentClick = stub();
+            const { click } = testDriver.render(() => (
+                <Root>
+                    <div
+                        id="back-item"
+                        onClick={contentClick}
+                        style={{
+                            width: `400px`,
+                            height: `400px`,
+                            background: `green`,
+                        }}
+                    />
+                    <Layer backdrop="hide">
+                        <div
+                            style={{
+                                width: `200px`,
+                                height: `200px`,
+                                background: `green`,
+                            }}
+                        />
+                    </Layer>
+                </Root>
+            ));
+
+            click(`#back-item`);
+
+            expect(contentClick, `background content not clickable`).to.have.callCount(0);
+            await expectImageSnapshot({
+                filePath: `backdrop/should hide content behind layer (backdrop=hide)`,
+            });
+        });
+
+        it(`should hide content between layer (backdrop="hide")`, async () => {
+            testDriver.render(() => (
+                <Root>
+                    <div
+                        style={{
+                            width: `400px`,
+                            height: `400px`,
+                            background: `green`,
+                        }}
+                    />
+                    <Layer backdrop="hide">
+                        <div
+                            style={{
+                                width: `200px`,
+                                height: `200px`,
+                                position: `absolute`,
+                                right: 0,
+                                background: `green`,
+                            }}
+                        />
+                    </Layer>
+                    <Layer backdrop="hide">
+                        <div
+                            style={{
+                                width: `100px`,
+                                height: `100px`,
+                                background: `green`,
+                            }}
+                        />
+                    </Layer>
+                </Root>
+            ));
+
+            await expectImageSnapshot({
+                filePath: `backdrop/should hide content between layer (backdrop=hide)`,
+            });
         });
     });
 });

@@ -14,7 +14,7 @@ const overlapBind = Symbol(`overlap-bind`);
 
 interface LayerSettings {
     overlap: `window` | HTMLElement;
-    backdrop: `none` | `block`; // | `hide`
+    backdrop: `none` | `block` | `hide`;
 }
 interface LayerExtended {
     element: HTMLElement;
@@ -39,6 +39,10 @@ const css = `
     zeejs-block {
         position: fixed;top: 0;left: 0;right: 0;bottom: 0;
     }
+    zeejs-hide {
+        position: fixed;top: 0;left: 0;right: 0;bottom: 0;
+        background: rgba(66, 66, 66, 0.50);
+    }
     zeejs-layer {
         pointer-events: none;
     }
@@ -60,7 +64,8 @@ export const Root = ({ className, style, children }: RootProps) => {
         const style = document.createElement(`style`);
         style.innerText = css;
         const block = document.createElement(`zeejs-block`);
-        return { style, block };
+        const hide = document.createElement(`zeejs-hide`);
+        return { style, block, hide };
     }, []);
 
     const updateLayers = useCallback(() => {
@@ -72,7 +77,10 @@ export const Root = ({ className, style, children }: RootProps) => {
         // ToDo: reorder/remove/add with minimal changes
         root.textContent = ``;
         for (const { element, settings } of layers) {
-            if (settings.backdrop === `block`) {
+            if (settings.backdrop !== `none`) {
+                if (settings.backdrop === `hide`) {
+                    root.appendChild(parts.hide);
+                }
                 root.appendChild(parts.block);
             }
             root.appendChild(element);
@@ -93,7 +101,6 @@ export const Root = ({ className, style, children }: RootProps) => {
                 layer.settings = settings;
                 layer.element = document.createElement(`zeejs-layer`); // ToDo: test that each layer has a unique element
                 if (layer.parentLayer) {
-                    // ToDo: reset pointer events under layers
                     if (settings.overlap === `window`) {
                         layer.element.classList.add(`zeejs--overlapWindow`);
                     } else if (settings.overlap instanceof HTMLElement) {

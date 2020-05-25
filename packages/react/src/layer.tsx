@@ -7,7 +7,7 @@ export interface LayerProps {
     style?: CSSProperties;
     children: ReactNode;
     overlap?: `window` | HTMLElement;
-    backdrop?: `none` | `block`; // | `hide`
+    backdrop?: `none` | `block` | `hide`;
 }
 
 // ToDo: handle styling on portal root
