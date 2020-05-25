@@ -10,7 +10,7 @@
         "clean": "lerna run clean --stream --parallel",
         "prebuild": "yarn clean",
         "build": "lerna run build --stream",
-        "pretest": "yarn test:types && yarn test:lint && test:prettier",
+        "pretest": "yarn test:types && yarn test:lint && yarn test:prettier",
         "test:prettier": "npx prettier --check \"packages/**/*.{js,ts,tsx}\"",
         "test:types": "tsc --noEmit",
         "test:lint": "eslint . --ext .js,.ts,.tsx -f codeframe",
