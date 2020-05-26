@@ -1,7 +1,7 @@
-import { constants, ImageSnapshotOptions } from './shared';
+import { constants, ImageSnapshotOptions, HookMessage } from './shared';
 
 export async function expectImageSnapshot(options: ImageSnapshotOptions) {
-    const result = await (window as any)[constants.imgSnapshotHook](options);
+    const result: HookMessage = await (window as any)[constants.imgSnapshotHook](options);
     switch (result.type) {
         case `error`:
             throw new Error(`${result.msg} for ${options.filePath}`);

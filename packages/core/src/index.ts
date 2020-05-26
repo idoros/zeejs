@@ -1,6 +1,6 @@
 const destroyLayer = Symbol(`destroy-layer`);
 
-export type Layer<T = {}, S = any> = T & {
+export type Layer<T = Record<string, unknown>, S = any> = T & {
     parentLayer: Layer<T, S> | null;
     createLayer: (options?: { onChange?: () => void; settings?: S }) => Layer<T>;
     removeLayer: (layer: Layer<T>) => void;
