@@ -11,7 +11,7 @@ chai.use(domElementMatchers);
 
 describe(`react`, () => {
     let testDriver: ReactTestDriver;
-    const { click, clickIfPossible } = getInteractionApi();
+    const { click, clickIfPossible, keyboard } = getInteractionApi();
 
     before('setup test driver', () => (testDriver = new ReactTestDriver()));
     afterEach('clear test driver', () => testDriver.clean());
@@ -371,6 +371,32 @@ describe(`react`, () => {
             await expectImageSnapshot({
                 filePath: `backdrop/should hide content between layer (backdrop=hide)`,
             });
+        });
+    });
+
+    describe(`focus`, () => {
+        it(`should keep layer as part of tab order`, async () => {
+            const { expectHTMLQuery } = testDriver.render<boolean>(() => (
+                <Root>
+                    <input id="bgBeforeInput" />
+                    <Layer>
+                        <input id="layerInput" />
+                    </Layer>
+                    <input id="bgAfterInput" />
+                </Root>
+            ));
+            const bgBeforeInput = expectHTMLQuery(`#bgBeforeInput`);
+            const layerInput = expectHTMLQuery(`#layerInput`);
+            const bgAfterInput = expectHTMLQuery(`#bgAfterInput`);
+
+            bgBeforeInput.focus();
+            expect(document.activeElement, `start focus before layer`).to.equal(bgBeforeInput);
+
+            await keyboard.press(`Tab`);
+            expect(document.activeElement, `focus inside layer`).to.equal(layerInput);
+
+            await keyboard.press(`Tab`);
+            expect(document.activeElement, `focus after layer`).to.equal(bgAfterInput);
         });
     });
 });

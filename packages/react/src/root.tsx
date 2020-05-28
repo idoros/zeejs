@@ -1,4 +1,4 @@
-import { bindOverlay } from '@zeejs/browser';
+import { bindOverlay, watchFocus } from '@zeejs/browser';
 import { createLayer, Layer } from '@zeejs/core';
 import React, {
     useRef,
@@ -33,6 +33,16 @@ export interface RootProps {
     className?: string;
     style?: CSSProperties;
     children: ReactNode;
+}
+
+declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace JSX {
+        interface IntrinsicElements {
+            'zeejs-origin': any;
+            'zeejs-layer': any;
+        }
+    }
 }
 
 const css = `
@@ -88,6 +98,7 @@ export const Root = ({ className, style, children }: RootProps) => {
     }, []);
 
     const layer = useMemo(() => {
+        let idCounter = 0;
         return createLayer({
             extendLayer: {
                 element: (null as unknown) as HTMLElement,
@@ -95,11 +106,13 @@ export const Root = ({ className, style, children }: RootProps) => {
             } as LayerExtended,
             defaultSettings: defaultLayerSettings,
             onChange() {
+                // console.log(`onChange!!!`, document.activeElement?.tagName);
                 updateLayers();
             },
             init(layer, settings) {
                 layer.settings = settings;
                 layer.element = document.createElement(`zeejs-layer`); // ToDo: test that each layer has a unique element
+                layer.element.dataset[`id`] = `layer-${idCounter++}`;
                 if (layer.parentLayer) {
                     if (settings.overlap === `window`) {
                         layer.element.classList.add(`zeejs--overlapWindow`);
@@ -118,18 +131,21 @@ export const Root = ({ className, style, children }: RootProps) => {
     }, []);
 
     useEffect(() => {
+        const wrapper = rootRef.current!;
         document.head.appendChild(parts.style);
-        layer.element = rootRef.current!.firstElementChild! as HTMLElement;
+        layer.element = wrapper.firstElementChild! as HTMLElement;
+        const { stop: stopFocus } = watchFocus(wrapper);
         updateLayers();
         () => {
             document.head.removeChild(parts.style);
+            stopFocus();
         };
     }, []);
 
     return (
         <div ref={rootRef} className={className} style={style}>
             <zeejsContext.Provider value={layer}>
-                <div>{children}</div>
+                <zeejs-layer>{children}</zeejs-layer>
                 {/* layers injected here*/}
             </zeejsContext.Provider>
         </div>
