@@ -289,4 +289,102 @@ describe(`focus`, () => {
         await keyboard.press(`Tab`);
         expect(document.activeElement, `back to start`).to.equal(layerInput);
     });
+
+    it(`should [Tab] trap focus and ignore elements of inert parent layer`, async () => {
+        const { expectHTMLQuery, container } = testDriver.render(
+            () => `
+            <div>
+                <zeejs-layer inert>
+                    <input id="bgBeforeInput" />
+                    <zeejs-origin data-origin="layerX" tabIndex="0">
+                    <input id="bgAfterInput" />
+                </zeejs-layer>
+                <zeejs-layer data-id="layerX" >
+                    <input id="layerFirstInput" />
+                    <input id="layerLastInput" />
+                </zeejs-layer>
+            </div>
+        `
+        );
+        watchFocus(container);
+
+        const layerFirstInput = expectHTMLQuery(`#layerFirstInput`);
+        const layerLastInput = expectHTMLQuery(`#layerLastInput`);
+
+        layerFirstInput.focus();
+        expect(document.activeElement, `start focus in layer`).to.equal(layerFirstInput);
+
+        await keyboard.press(`Tab`);
+        expect(document.activeElement, `move to another element in layer`).to.equal(layerLastInput);
+
+        await keyboard.press(`Tab`);
+        expect(document.activeElement, `back to layer start`).to.equal(layerFirstInput);
+
+        await keyboard.press(`Shift+Tab`);
+        expect(document.activeElement, `Shift+Tab in layer back to last`).to.equal(layerLastInput);
+    });
+
+    it(`should [Tab] trap focus and ignore elements of inert parent layer (multi layers)`, async () => {
+        const { expectHTMLQuery, container } = testDriver.render(
+            () => `
+            <div>
+                <zeejs-layer inert>
+                    <input id="bgBeforeInput" />
+                    <zeejs-origin data-origin="layerX" tabIndex="0">
+                    <input id="bgAfterInput" />
+                </zeejs-layer>
+                <zeejs-layer data-id="layerX" >
+                    <input id="layerXFirstInput" />
+                    <zeejs-origin data-origin="layerY" tabIndex="0">
+                    <input id="layerXLastInput" />
+                </zeejs-layer>
+                <zeejs-layer data-id="layerY" >
+                    <input id="layerYInput" />
+                </zeejs-layer>
+            </div>
+        `
+        );
+        watchFocus(container);
+
+        const layerXFirstInput = expectHTMLQuery(`#layerXFirstInput`);
+        const layerXLastInput = expectHTMLQuery(`#layerXLastInput`);
+        const layerYInput = expectHTMLQuery(`#layerYInput`);
+
+        layerXFirstInput.focus();
+        expect(document.activeElement, `start focus in layer`).to.equal(layerXFirstInput);
+
+        await keyboard.press(`Tab`);
+        expect(document.activeElement, `move into nested layer`).to.equal(layerYInput);
+
+        await keyboard.press(`Tab`);
+        expect(document.activeElement, `out to layer again`).to.equal(layerXLastInput);
+
+        await keyboard.press(`Tab`);
+        expect(document.activeElement, `rollback ignoring inert parent`).to.equal(layerXFirstInput);
+
+        await keyboard.press(`Shift+Tab`);
+        expect(document.activeElement, `Shift+Tab in layer back to last`).to.equal(layerXLastInput);
+    });
+
+    it(`should catch focus under inert and pass to first focusable element in a non-inert layer`, async () => {
+        const { expectHTMLQuery, container } = testDriver.render(
+            () => `
+            <div>
+                <zeejs-layer inert>
+                    <input id="bgBeforeInput" />
+                    <zeejs-origin data-origin="layerX" tabIndex="0">
+                </zeejs-layer>
+                <zeejs-layer data-id="layerX" >
+                    <input id="layerInput" />
+                </zeejs-layer>
+            </div>
+        `
+        );
+        watchFocus(container);
+
+        const layerInput = expectHTMLQuery(`#layerInput`);
+
+        await keyboard.press(`Tab`);
+        expect(document.activeElement, `focus first non inert input`).to.equal(layerInput);
+    });
 });

@@ -398,5 +398,26 @@ describe(`react`, () => {
             await keyboard.press(`Tab`);
             expect(document.activeElement, `focus after layer`).to.equal(bgAfterInput);
         });
+
+        it(`should trap focus in blocking layer`, async () => {
+            const { expectHTMLQuery } = testDriver.render<boolean>(() => (
+                <Root>
+                    <input id="bgBeforeInput" />
+                    <Layer backdrop="block">
+                        <input id="layerFirstInput" />
+                        <input id="layerLastInput" />
+                    </Layer>
+                    <input id="bgAfterInput" />
+                </Root>
+            ));
+            const layerFirstInput = expectHTMLQuery(`#layerFirstInput`);
+            const layerLastInput = expectHTMLQuery(`#layerLastInput`);
+
+            layerLastInput.focus();
+            expect(document.activeElement, `start focus in layer`).to.equal(layerLastInput);
+
+            await keyboard.press(`Tab`);
+            expect(document.activeElement, `ignore blocked parent`).to.equal(layerFirstInput);
+        });
     });
 });

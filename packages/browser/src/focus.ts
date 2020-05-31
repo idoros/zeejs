@@ -1,20 +1,52 @@
 import tabbable from 'tabbable';
 
 export function watchFocus(layersWrapper: HTMLElement) {
+    layersWrapper.addEventListener(`focus`, onFocus, { capture: true });
     layersWrapper.addEventListener(`keydown`, onKeyDown, { capture: true });
     return {
         stop() {
+            layersWrapper.removeEventListener(`focus`, onFocus);
             layersWrapper.removeEventListener(`keydown`, onKeyDown);
         },
     };
 }
 
+type Focusable = { focus: () => void };
+
+const onFocus = (event: FocusEvent) => {
+    if (event.target && event.target instanceof HTMLElement) {
+        const layer = findContainingLayer(event.target);
+        if (!layer || layer.hasAttribute(`inert`)) {
+            // ToDo: skip in case focus is invoked by `onKeyDown`
+            const availableLayers = Array.from(
+                document.querySelectorAll<HTMLElement>(`zeejs-layer:not([inert])`)
+            );
+            while (availableLayers.length) {
+                const layer = availableLayers.shift()!;
+                const layerId = layer.dataset.id!;
+                const origin = document.querySelector<HTMLElement>(`[data-origin="${layerId}"]`);
+                if (origin) {
+                    const element = queryFirstTabbable(layer, origin, true);
+                    if (element) {
+                        element.focus();
+                        return;
+                    }
+                }
+            }
+            event.target.blur();
+        }
+    }
+};
+
 const onKeyDown = (event: KeyboardEvent) => {
-    if (event.code === `Tab` && document.activeElement) {
-        const activeElement = document.activeElement;
+    if (event.code !== `Tab`) {
+        return;
+    }
+    const isForward = !event.shiftKey;
+    const activeElement = document.activeElement;
+    if (activeElement) {
         const layer = findContainingLayer(activeElement);
-        const isForward = !event.shiftKey;
-        if (layer && activeElement) {
+        if (layer) {
             const nextElement = queryNextTabbable(layer, activeElement, isForward);
             if (nextElement) {
                 event.preventDefault();
@@ -23,8 +55,6 @@ const onKeyDown = (event: KeyboardEvent) => {
         }
     }
 };
-
-type Focusable = { focus: () => void };
 
 function queryNextTabbable(
     layer: HTMLElement,
@@ -53,7 +83,6 @@ function queryNextTabbable(
             }
         } else {
             // nested layer
-            // ToDo: handle blocking layer
             const originElement = document.querySelector(`[data-origin="${layerId}"]`);
             if (!originElement) {
                 // ToDo: handle missing origin?
@@ -64,6 +93,12 @@ function queryNextTabbable(
                 // ToDo: handle missing origin layer, maybe return originElement?
                 return null;
             }
+            // stay in layer if parent is inert (trap focus)
+            if (originLayer.hasAttribute(`inert`)) {
+                const loopBackToElement = isForward ? list[0] : list[list.length - 1];
+                return queryTabbableElement(layer, loopBackToElement, isForward);
+            }
+            // move to next element in parent layer
             return queryNextTabbable(originLayer, originElement, isForward);
         }
     }

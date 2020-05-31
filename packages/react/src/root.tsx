@@ -94,6 +94,13 @@ export const Root = ({ className, style, children }: RootProps) => {
                 root.appendChild(parts.block);
             }
             root.appendChild(element);
+            element.removeAttribute(`inert`);
+        }
+        const indexOfBlock = Array.from(root.children).indexOf(parts.block);
+        if (indexOfBlock !== -1) {
+            for (let i = indexOfBlock; i >= 0; --i) {
+                root.children[i].setAttribute(`inert`, ``);
+            }
         }
     }, []);
 
