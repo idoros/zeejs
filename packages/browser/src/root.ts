@@ -1,4 +1,4 @@
-import { createLayer, Layer, Change } from '@zeejs/core';
+import { createLayer, Layer } from '@zeejs/core';
 import { bindOverlay } from './bind-overlay';
 
 export const overlapBindConfig = Symbol(`overlap-bind`);
@@ -22,7 +22,7 @@ export const defaultLayerSettings: LayerSettings = {
 export function createRoot({
     onChange,
 }: {
-    onChange?: (change: Change<LayerExtended, LayerSettings>) => void;
+    onChange?: () => void;
 } = {}) {
     let idCounter = 0;
     const rootLayer = createLayer({
@@ -31,9 +31,9 @@ export function createRoot({
             settings: defaultLayerSettings,
         } as LayerExtended,
         defaultSettings: defaultLayerSettings,
-        onChange(change) {
+        onChange() {
             if (onChange) {
-                onChange(change);
+                onChange();
             }
         },
         init(layer, settings) {
