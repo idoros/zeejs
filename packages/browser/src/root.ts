@@ -1,4 +1,4 @@
-import { createLayer, Layer } from '@zeejs/core';
+import { createLayer, Layer, Change } from '@zeejs/core';
 import { bindOverlay } from './bind-overlay';
 
 export const overlapBindConfig = Symbol(`overlap-bind`);
@@ -19,15 +19,23 @@ export const defaultLayerSettings: LayerSettings = {
     backdrop: `none`,
 };
 
-export function createRoot() {
+export function createRoot({
+    onChange,
+}: {
+    onChange?: (change: Change<LayerExtended, LayerSettings>) => void;
+} = {}) {
     let idCounter = 0;
-    let wrapper: HTMLElement;
     const rootLayer = createLayer({
         extendLayer: {
             element: (null as unknown) as HTMLElement,
             settings: defaultLayerSettings,
-        } as DOMLayer,
+        } as LayerExtended,
         defaultSettings: defaultLayerSettings,
+        onChange(change) {
+            if (onChange) {
+                onChange(change);
+            }
+        },
         init(layer, settings) {
             layer.settings = settings;
             layer.element = document.createElement(`zeejs-layer`); // ToDo: test that each layer has a unique element
@@ -47,16 +55,5 @@ export function createRoot() {
             }
         },
     });
-    return {
-        setWrapper(rootWrapper: HTMLElement, mainLayer?: HTMLElement) {
-            if (wrapper) {
-                return;
-            }
-            wrapper = rootWrapper;
-            if (mainLayer) {
-                rootLayer.element = mainLayer;
-            }
-        },
-        rootLayer,
-    };
+    return rootLayer;
 }

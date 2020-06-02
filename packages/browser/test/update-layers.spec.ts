@@ -10,9 +10,8 @@ describe(`update-layers`, () => {
     afterEach('clear test driver', () => testDriver.clean());
 
     it(`should append root layer`, () => {
-        const { rootLayer, setWrapper } = createRoot();
+        const rootLayer = createRoot();
         const wrapper = document.createElement(`div`);
-        setWrapper(wrapper);
 
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -21,9 +20,8 @@ describe(`update-layers`, () => {
     });
 
     it(`should append child layer after root layer`, () => {
-        const { rootLayer, setWrapper } = createRoot();
+        const rootLayer = createRoot();
         const wrapper = document.createElement(`div`);
-        setWrapper(wrapper);
 
         const childLayer = rootLayer.createLayer();
         updateLayers(wrapper, rootLayer, backdropParts);
@@ -34,9 +32,8 @@ describe(`update-layers`, () => {
     });
 
     it(`should append multiple changes (before first layer update)`, () => {
-        const { rootLayer, setWrapper } = createRoot();
+        const rootLayer = createRoot();
         const wrapper = document.createElement(`div`);
-        setWrapper(wrapper);
 
         const layerA = rootLayer.createLayer();
         const layerAChild = layerA.createLayer();
@@ -53,10 +50,8 @@ describe(`update-layers`, () => {
     });
 
     it(`should remove layers`, () => {
-        const { rootLayer, setWrapper } = createRoot();
+        const rootLayer = createRoot();
         const wrapper = document.createElement(`div`);
-        setWrapper(wrapper);
-
         const layerA = rootLayer.createLayer();
         const layerAChild = layerA.createLayer();
         const layerB = rootLayer.createLayer();
@@ -77,9 +72,8 @@ describe(`update-layers`, () => {
     });
 
     it(`should add a layer between layers`, () => {
-        const { rootLayer, setWrapper } = createRoot();
+        const rootLayer = createRoot();
         const wrapper = document.createElement(`div`);
-        setWrapper(wrapper);
         const layerA = rootLayer.createLayer();
         const layerB = rootLayer.createLayer();
         updateLayers(wrapper, rootLayer, backdropParts);
@@ -100,9 +94,8 @@ describe(`update-layers`, () => {
     });
 
     it(`should place block element before last layer with backdrop=block`, () => {
-        const { rootLayer, setWrapper } = createRoot();
+        const rootLayer = createRoot();
         const wrapper = document.createElement(`div`);
-        setWrapper(wrapper);
 
         const firstLayer = rootLayer.createLayer({
             settings: { backdrop: `block`, overlap: `window` },
@@ -120,9 +113,8 @@ describe(`update-layers`, () => {
     });
 
     it(`should place hide+block element before last layer with backdrop=hide`, () => {
-        const { rootLayer, setWrapper } = createRoot();
+        const rootLayer = createRoot();
         const wrapper = document.createElement(`div`);
-        setWrapper(wrapper);
 
         const firstLayer = rootLayer.createLayer({
             settings: { backdrop: `hide`, overlap: `window` },
@@ -141,9 +133,8 @@ describe(`update-layers`, () => {
     });
 
     it(`should place hide & block separately before last layers with backdrop=hide/block`, () => {
-        const { rootLayer, setWrapper } = createRoot();
+        const rootLayer = createRoot();
         const wrapper = document.createElement(`div`);
-        setWrapper(wrapper);
 
         const firstLayer = rootLayer.createLayer({
             settings: { backdrop: `hide`, overlap: `window` },
@@ -162,9 +153,8 @@ describe(`update-layers`, () => {
     });
 
     it(`should set attribute inert for all layers before backdrop=block`, () => {
-        const { rootLayer, setWrapper } = createRoot();
+        const rootLayer = createRoot();
         const wrapper = document.createElement(`div`);
-        setWrapper(wrapper);
 
         rootLayer.createLayer({ settings: { backdrop: `block`, overlap: `window` } });
         const secondLayer = rootLayer.createLayer({
@@ -201,8 +191,7 @@ describe(`update-layers`, () => {
 
     it(`should keep focus within a layer`, () => {
         const { container: wrapper } = testDriver.render(() => ``);
-        const { rootLayer, setWrapper } = createRoot();
-        setWrapper(wrapper);
+        const rootLayer = createRoot();
         const rootInput = document.createElement(`input`);
         rootLayer.element.appendChild(rootInput);
         wrapper.appendChild(rootLayer.element);
@@ -215,8 +204,7 @@ describe(`update-layers`, () => {
 
     it(`should blur within an inert layer`, () => {
         const { container: wrapper } = testDriver.render(() => ``);
-        const { rootLayer, setWrapper } = createRoot();
-        setWrapper(wrapper);
+        const rootLayer = createRoot();
         const rootInput = document.createElement(`input`);
         rootLayer.element.appendChild(rootInput);
         wrapper.appendChild(rootLayer.element);
@@ -226,5 +214,105 @@ describe(`update-layers`, () => {
         updateLayers(wrapper, rootLayer, backdropParts);
 
         expect(document.activeElement, `blur inert`).to.be.oneOf([null, document.body]);
+    });
+
+    it(`should re-focus last focused element of activate layer`, () => {
+        const { container: wrapper } = testDriver.render(() => ``);
+        const rootLayer = createRoot();
+        const rootInput = document.createElement(`input`);
+        rootLayer.element.appendChild(rootInput);
+        wrapper.appendChild(rootLayer.element);
+        rootInput.focus();
+        const blockingLayer = rootLayer.createLayer({
+            settings: { backdrop: `block`, overlap: `window` },
+        });
+
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(document.activeElement, `blur inert`).to.be.oneOf([null, document.body]);
+
+        rootLayer.removeLayer(blockingLayer);
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(document.activeElement, `refocus`).to.be.equal(rootInput);
+    });
+
+    it(`should re-focus last focused element of TOP activated layer`, () => {
+        const { container: wrapper } = testDriver.render(() => ``);
+        const rootLayer = createRoot();
+        const rootInput = document.createElement(`input`);
+        const middleLayerInput = document.createElement(`input`);
+        rootLayer.element.appendChild(rootInput);
+        wrapper.appendChild(rootLayer.element);
+        rootInput.focus();
+        const middleLayer = rootLayer.createLayer();
+        middleLayer.element.appendChild(middleLayerInput);
+        updateLayers(wrapper, rootLayer, backdropParts);
+        middleLayerInput.focus();
+
+        const blockingLayer = rootLayer.createLayer({
+            settings: { backdrop: `block`, overlap: `window` },
+        });
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(document.activeElement, `blur inert`).to.be.oneOf([null, document.body]);
+
+        rootLayer.removeLayer(blockingLayer);
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(document.activeElement, `refocus`).to.be.equal(middleLayerInput);
+    });
+
+    it(`should re-focus last focused element of TOP activated layer that HAD focus`, () => {
+        const { container: wrapper } = testDriver.render(() => ``);
+        const rootLayer = createRoot();
+        const rootInput = document.createElement(`input`);
+        const middleLayerInput = document.createElement(`input`);
+        rootLayer.element.appendChild(rootInput);
+        wrapper.appendChild(rootLayer.element);
+        rootInput.focus();
+        const middleLayer = rootLayer.createLayer();
+        middleLayer.element.appendChild(middleLayerInput);
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        const blockingLayer = rootLayer.createLayer({
+            settings: { backdrop: `block`, overlap: `window` },
+        });
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(document.activeElement, `blur inert`).to.be.oneOf([null, document.body]);
+
+        rootLayer.removeLayer(blockingLayer);
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(document.activeElement, `refocus`).to.be.equal(rootInput);
+    });
+
+    it(`should maintain focus in active layer even when a re-activated layer had previous focus`, () => {
+        const { container: wrapper } = testDriver.render(() => ``);
+        const rootLayer = createRoot();
+        const rootInput = document.createElement(`input`);
+        const topLayerInput = document.createElement(`input`);
+        rootLayer.element.appendChild(rootInput);
+        wrapper.appendChild(rootLayer.element);
+        rootInput.focus();
+        const middleLayer = rootLayer.createLayer({
+            settings: { backdrop: `block`, overlap: `window` },
+        });
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(document.activeElement, `blur inert`).to.be.oneOf([null, document.body]);
+
+        const topLayer = rootLayer.createLayer();
+        topLayer.element.appendChild(topLayerInput);
+        updateLayers(wrapper, rootLayer, backdropParts);
+        topLayerInput.focus();
+
+        expect(document.activeElement, `top focus`).to.equal(topLayerInput);
+
+        rootLayer.removeLayer(middleLayer);
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(document.activeElement, `top focus not changed`).to.equal(topLayerInput);
     });
 });

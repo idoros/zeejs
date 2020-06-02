@@ -419,5 +419,27 @@ describe(`react`, () => {
             await keyboard.press(`Tab`);
             expect(document.activeElement, `ignore blocked parent`).to.equal(layerFirstInput);
         });
+
+        it(`should re-focus last element of an un-blocked layer`, () => {
+            const { expectHTMLQuery, setData } = testDriver.render<boolean>(
+                (renderLayer) => (
+                    <Root>
+                        <input id="bgInput" />
+                        {renderLayer ? <Layer backdrop="block">layer content</Layer> : null}
+                    </Root>
+                ),
+                { initialData: false }
+            );
+            const bgInput = expectHTMLQuery(`#bgInput`);
+            bgInput.focus();
+
+            setData(true);
+
+            expect(document.activeElement, `blocked input blur`).to.equal(document.body);
+
+            setData(false);
+
+            expect(document.activeElement, `refocus input`).to.equal(bgInput);
+        });
     });
 });

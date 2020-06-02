@@ -1,24 +1,25 @@
 import { DOMLayer } from './root';
 import { findContainingLayer } from './focus';
 
-export function createBackdropParts() {
+export interface BackdropElements {
+    hide: HTMLElement;
+    block: HTMLElement;
+}
+export function createBackdropParts(): BackdropElements {
     return {
         block: document.createElement(`zeejs-block`),
         hide: document.createElement(`zeejs-hide`),
     };
 }
 
+const lastFocusMap = new WeakMap<Element, HTMLElement | SVGElement>();
+
 export function updateLayers(
     wrapper: HTMLElement,
     topLayer: DOMLayer,
-    {
-        hide,
-        block,
-    }: {
-        hide: HTMLElement;
-        block: HTMLElement;
-    }
+    { hide, block }: BackdropElements
 ) {
+    const focusedElement = (document.activeElement as unknown) as HTMLElement | SVGElement | null;
     const layers = topLayer.generateDisplayList();
     let blocking: HTMLElement | null = null;
     let hiding: HTMLElement | null = null;
@@ -37,7 +38,9 @@ export function updateLayers(
             }
         }
     }
-    // remove old layers & backdrop
+    // - remove un-needed layers/backdrop
+    // - find activated layers
+    const activatedLayers: Element[] = [];
     const blockedIndex = hiding
         ? Number(hiding.getAttribute(`z-index`))
         : blocking
@@ -47,9 +50,11 @@ export function updateLayers(
         if (!layersIds.has(element.id)) {
             wrapper.removeChild(element);
         } else {
-            if (Number(element.getAttribute(`z-index`)) < blockedIndex) {
+            const index = Number(element.getAttribute(`z-index`));
+            if (index < blockedIndex) {
                 element.setAttribute(`inert`, ``);
-            } else {
+            } else if (element.hasAttribute(`inert`)) {
+                activatedLayers.push(element);
                 element.removeAttribute(`inert`);
             }
         }
@@ -64,11 +69,32 @@ export function updateLayers(
         block.setAttribute(`z-index`, blocking.getAttribute(`z-index`)!);
     }
     // blur inert active element
-    if (document.activeElement) {
-        const focusedLayer = findContainingLayer(document.activeElement);
+    if (focusedElement) {
+        const focusedLayer = findContainingLayer(focusedElement);
         if (focusedLayer && focusedLayer.hasAttribute(`inert`)) {
-            ((document.activeElement as unknown) as HTMLOrSVGElement).blur();
+            lastFocusMap.set(focusedLayer, focusedElement);
+            focusedElement.blur();
         }
     }
-    return layers;
+    // re-focus last input from activated layer
+    const currentlyFocused = !!(
+        document.activeElement && findContainingLayer(document.activeElement)
+    );
+    if (!currentlyFocused && activatedLayers.length) {
+        // top layer last
+        const sortedLayers = activatedLayers.sort(
+            (a, b) => Number(a.getAttribute(`z-index`)) - Number(b.getAttribute(`z-index`))
+        );
+        let refocusElement: HTMLElement | SVGElement | void;
+        while (!refocusElement && sortedLayers.length) {
+            const currentLayer = sortedLayers.pop()!;
+            const lastInput = lastFocusMap.get(currentLayer);
+            if (lastInput) {
+                refocusElement = lastInput;
+            }
+        }
+        if (refocusElement) {
+            refocusElement.focus();
+        }
+    }
 }

@@ -1,33 +1,13 @@
-import { bindOverlay, watchFocus } from '@zeejs/browser';
-import { createLayer, Layer } from '@zeejs/core';
-import React, {
-    useRef,
-    useMemo,
-    createContext,
-    CSSProperties,
-    ReactNode,
-    useEffect,
-    useCallback,
-} from 'react';
+import {
+    watchFocus,
+    createRoot,
+    DOMLayer,
+    updateLayers,
+    createBackdropParts,
+} from '@zeejs/browser';
+import React, { useRef, useMemo, createContext, CSSProperties, ReactNode, useEffect } from 'react';
 
-const overlapBind = Symbol(`overlap-bind`);
-
-interface LayerSettings {
-    overlap: `window` | HTMLElement;
-    backdrop: `none` | `block` | `hide`;
-}
-interface LayerExtended {
-    element: HTMLElement;
-    settings: LayerSettings;
-    [overlapBind]: ReturnType<typeof bindOverlay>;
-}
-type ReactLayer = Layer<LayerExtended, LayerSettings>;
-export const zeejsContext = createContext<ReactLayer>((null as any) as ReactLayer);
-
-const defaultLayerSettings: LayerSettings = {
-    overlap: `window`,
-    backdrop: `none`,
-};
+export const zeejsContext = createContext<DOMLayer>((null as any) as DOMLayer);
 
 export interface RootProps {
     className?: string;
@@ -70,79 +50,32 @@ const css = `
 
 export const Root = ({ className, style, children }: RootProps) => {
     const rootRef = useRef<HTMLDivElement>(null);
-    const parts = useMemo(() => {
+
+    const { rootLayer, parts } = useMemo(() => {
         const style = document.createElement(`style`);
         style.innerText = css;
-        const block = document.createElement(`zeejs-block`);
-        const hide = document.createElement(`zeejs-hide`);
-        return { style, block, hide };
-    }, []);
-
-    const updateLayers = useCallback(() => {
-        const root = rootRef.current!;
-        if (!root) {
-            return;
-        }
-        const layers = layer.generateDisplayList();
-        // ToDo: reorder/remove/add with minimal changes
-        root.textContent = ``;
-        for (const { element, settings } of layers) {
-            if (settings.backdrop !== `none`) {
-                if (settings.backdrop === `hide`) {
-                    root.appendChild(parts.hide);
-                }
-                root.appendChild(parts.block);
-            }
-            root.appendChild(element);
-            element.removeAttribute(`inert`);
-        }
-        const indexOfBlock = Array.from(root.children).indexOf(parts.block);
-        if (indexOfBlock !== -1) {
-            for (let i = indexOfBlock; i >= 0; --i) {
-                root.children[i].setAttribute(`inert`, ``);
-            }
-        }
-    }, []);
-
-    const layer = useMemo(() => {
-        let idCounter = 0;
-        return createLayer({
-            extendLayer: {
-                element: (null as unknown) as HTMLElement,
-                settings: defaultLayerSettings,
-            } as LayerExtended,
-            defaultSettings: defaultLayerSettings,
+        const parts = { style, ...createBackdropParts() };
+        const rootLayer = createRoot({
             onChange() {
-                // console.log(`onChange!!!`, document.activeElement?.tagName);
-                updateLayers();
-            },
-            init(layer, settings) {
-                layer.settings = settings;
-                layer.element = document.createElement(`zeejs-layer`); // ToDo: test that each layer has a unique element
-                layer.element.dataset[`id`] = `layer-${idCounter++}`;
-                if (layer.parentLayer) {
-                    if (settings.overlap === `window`) {
-                        layer.element.classList.add(`zeejs--overlapWindow`);
-                    } else if (settings.overlap instanceof HTMLElement) {
-                        layer.element.classList.add(`zeejs--overlapElement`);
-                        layer[overlapBind] = bindOverlay(settings.overlap, layer.element);
-                    }
+                const wrapper = rootRef.current;
+                if (!wrapper) {
+                    return;
                 }
-            },
-            destroy(layer) {
-                if (layer[overlapBind]) {
-                    layer[overlapBind].stop(); // not tested because its a side effect:/
-                }
+                // ToDo: fix: "unstable_flushDiscreteUpdates: Cannot flush updates when React is already rendering"
+                // Layer component creates layer, causing sync changes to wrapper DOM.
+                // React console.error with "Warning: unstable_flushDiscreteUpdates" when there is a focused element withing a changing DOM element.
+                updateLayers(wrapper, rootLayer, parts);
             },
         });
+        return { rootLayer, parts };
     }, []);
 
     useEffect(() => {
         const wrapper = rootRef.current!;
         document.head.appendChild(parts.style);
-        layer.element = wrapper.firstElementChild! as HTMLElement;
+        rootLayer.element = wrapper.firstElementChild! as HTMLElement;
         const { stop: stopFocus } = watchFocus(wrapper);
-        updateLayers();
+        updateLayers(wrapper, rootLayer, parts);
         () => {
             document.head.removeChild(parts.style);
             stopFocus();
@@ -151,7 +84,7 @@ export const Root = ({ className, style, children }: RootProps) => {
 
     return (
         <div ref={rootRef} className={className} style={style}>
-            <zeejsContext.Provider value={layer}>
+            <zeejsContext.Provider value={rootLayer}>
                 <zeejs-layer>{children}</zeejs-layer>
                 {/* layers injected here*/}
             </zeejsContext.Provider>

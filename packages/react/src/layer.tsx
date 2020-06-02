@@ -32,7 +32,7 @@ export const Layer = ({ children, overlap = `window`, backdrop = `none` }: Layer
 
     return (
         <zeejsContext.Provider value={layer}>
-            <zeejs-origin tabIndex={0} data-origin={layer.element.dataset.id}>
+            <zeejs-origin tabIndex={0} data-origin={layer.element.id}>
                 {layer.element ? ReactDOM.createPortal(children, layer.element) : null}
             </zeejs-origin>
         </zeejsContext.Provider>

@@ -19,7 +19,7 @@ describe(`focus`, () => {
                     <zeejs-origin data-origin="layerX" tabIndex="0">
                     <input id="bgAfterInput" />
                 </zeejs-layer>
-                <zeejs-layer data-id="layerX" >
+                <zeejs-layer id="layerX" >
                     <input id="layerInput" />
                 </zeejs-layer>
             </div>
@@ -56,7 +56,7 @@ describe(`focus`, () => {
                     <zeejs-origin data-origin="layerX" tabIndex="0">
                     <input id="bgAfterInput" />
                 </zeejs-layer>
-                <zeejs-layer data-id="layerX" >
+                <zeejs-layer id="layerX" >
                     <input id="layerInput" />
                 </zeejs-layer>
             </div>
@@ -92,7 +92,7 @@ describe(`focus`, () => {
                     <input id="bgBeforeInput" />
                     <zeejs-origin data-origin="layerX" tabIndex="0">
                 </zeejs-layer>
-                <zeejs-layer data-id="layerX" >
+                <zeejs-layer id="layerX" >
                     <input id="layerInputA" />
                     <input id="layerInputB" />
                 </zeejs-layer>
@@ -126,7 +126,7 @@ describe(`focus`, () => {
                     <zeejs-origin data-origin="layerX" tabIndex="0">
                     <input id="bgAfterInput" />
                 </zeejs-layer>
-                <zeejs-layer data-id="layerX" >
+                <zeejs-layer id="layerX" >
                     <input id="layerInputA" />
                     <input id="layerInputB" />
                 </zeejs-layer>
@@ -161,10 +161,10 @@ describe(`focus`, () => {
                     <zeejs-origin data-origin="layerX" tabIndex="0">
                     <input id="bgAfterInput" />
                 </zeejs-layer>
-                <zeejs-layer data-id="layerX" >
+                <zeejs-layer id="layerX" >
                     <zeejs-origin data-origin="layerY" tabIndex="0">
                 </zeejs-layer>
-                <zeejs-layer data-id="layerY" >
+                <zeejs-layer id="layerY" >
                     <input id="layerDeepInput" />
                 </zeejs-layer>
             </div>
@@ -195,7 +195,7 @@ describe(`focus`, () => {
                     <zeejs-origin data-origin="layerX" tabIndex="0">
                     <input id="bgAfterInput" />
                 </zeejs-layer>
-                <zeejs-layer data-id="layerX" >
+                <zeejs-layer id="layerX" >
                     <span>no tabbable elements />
                 </zeejs-layer>
             </div>
@@ -245,10 +245,10 @@ describe(`focus`, () => {
                     <zeejs-origin data-origin="firstLayer" tabIndex="0">
                     <zeejs-origin data-origin="lastLayer" tabIndex="0">
                 </zeejs-layer>
-                <zeejs-layer data-id="firstLayer" >
+                <zeejs-layer id="firstLayer" >
                     <input id="firstLayerInput" />
                 </zeejs-layer>
-                <zeejs-layer data-id="lastLayer" >
+                <zeejs-layer id="lastLayer" >
                     <input id="lastLayerInput" />
                 </zeejs-layer>
             </div>
@@ -273,7 +273,7 @@ describe(`focus`, () => {
                 <zeejs-layer>
                     <zeejs-origin data-origin="layerX" tabIndex="0">
                 </zeejs-layer>
-                <zeejs-layer data-id="layerX" >
+                <zeejs-layer id="layerX" >
                     <input id="layerInput" />
                 </zeejs-layer>
             </div>
@@ -299,7 +299,7 @@ describe(`focus`, () => {
                     <zeejs-origin data-origin="layerX" tabIndex="0">
                     <input id="bgAfterInput" />
                 </zeejs-layer>
-                <zeejs-layer data-id="layerX" >
+                <zeejs-layer id="layerX" >
                     <input id="layerFirstInput" />
                     <input id="layerLastInput" />
                 </zeejs-layer>
@@ -333,12 +333,12 @@ describe(`focus`, () => {
                     <zeejs-origin data-origin="layerX" tabIndex="0">
                     <input id="bgAfterInput" />
                 </zeejs-layer>
-                <zeejs-layer data-id="layerX" >
+                <zeejs-layer id="layerX" >
                     <input id="layerXFirstInput" />
                     <zeejs-origin data-origin="layerY" tabIndex="0">
                     <input id="layerXLastInput" />
                 </zeejs-layer>
-                <zeejs-layer data-id="layerY" >
+                <zeejs-layer id="layerY" >
                     <input id="layerYInput" />
                 </zeejs-layer>
             </div>
@@ -374,7 +374,7 @@ describe(`focus`, () => {
                     <input id="bgBeforeInput" />
                     <zeejs-origin data-origin="layerX" tabIndex="0">
                 </zeejs-layer>
-                <zeejs-layer data-id="layerX" >
+                <zeejs-layer id="layerX" >
                     <input id="layerInput" />
                 </zeejs-layer>
             </div>

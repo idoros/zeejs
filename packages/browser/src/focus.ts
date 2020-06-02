@@ -23,7 +23,7 @@ const onFocus = (event: FocusEvent) => {
             );
             while (availableLayers.length) {
                 const layer = availableLayers.shift()!;
-                const layerId = layer.dataset.id!;
+                const layerId = layer.id;
                 const origin = document.querySelector<HTMLElement>(`[data-origin="${layerId}"]`);
                 if (origin) {
                     const element = queryFirstTabbable(layer, origin, true);
@@ -70,7 +70,7 @@ function queryNextTabbable(
     const edgeIndex = isForward ? list.length - 1 : 0;
     const currentIndex = list.indexOf(currentElement as HTMLElement);
     if (currentIndex === edgeIndex) {
-        const layerId = layer.dataset.id;
+        const layerId = layer.id;
         if (!layerId) {
             // top layer
             if (isForward) {
@@ -131,7 +131,7 @@ function queryFirstTabbable(
         // ToDo: handle invalid origin element
         return null;
     }
-    const layer = document.querySelector<HTMLElement>(`[data-id="${originId}"]`);
+    const layer = document.querySelector<HTMLElement>(`#${originId}`);
     if (!layer) {
         // skip missing layer
         return queryNextTabbable(originLayer, originElement, isForward);
@@ -151,7 +151,7 @@ function queryFirstTabbable(
     }
 }
 
-function findContainingLayer(element: Element) {
+export function findContainingLayer(element: Element) {
     let current: Element | null = element;
     while (current) {
         if (current.tagName === `ZEEJS-LAYER`) {
