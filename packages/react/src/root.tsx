@@ -61,10 +61,8 @@ export const Root = ({ className, style, children }: RootProps) => {
                 if (!wrapper) {
                     return;
                 }
-                // ToDo: fix: "unstable_flushDiscreteUpdates: Cannot flush updates when React is already rendering"
-                // Layer component creates layer, causing sync changes to wrapper DOM.
-                // React console.error with "Warning: unstable_flushDiscreteUpdates" when there is a focused element withing a changing DOM element.
-                updateLayers(wrapper, rootLayer, parts);
+                // buffer delay blur/re-focus because Layer renders and updates during render
+                updateLayers(wrapper, rootLayer, parts, /*asyncFocusChange*/ true);
             },
         });
         return { rootLayer, parts };

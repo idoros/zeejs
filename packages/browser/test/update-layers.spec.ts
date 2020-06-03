@@ -315,4 +315,33 @@ describe(`update-layers`, () => {
 
         expect(document.activeElement, `top focus not changed`).to.equal(topLayerInput);
     });
+
+    it(`should optionally blur/refocus asynchronically`, async () => {
+        const { container: wrapper } = testDriver.render(() => ``);
+        const rootLayer = createRoot();
+        const rootInput = document.createElement(`input`);
+        rootLayer.element.appendChild(rootInput);
+        wrapper.appendChild(rootLayer.element);
+        rootInput.focus();
+        const blockingLayer = rootLayer.createLayer({
+            settings: { backdrop: `block`, overlap: `window` },
+        });
+
+        const waitForBlur = updateLayers(wrapper, rootLayer, backdropParts, true /*async*/);
+
+        expect(document.activeElement, `no sync blur`).to.equal(rootInput);
+
+        await waitForBlur;
+
+        expect(document.activeElement, `async blur`).to.be.oneOf([null, document.body]);
+
+        rootLayer.removeLayer(blockingLayer);
+        const waitForRefocus = updateLayers(wrapper, rootLayer, backdropParts, true /*async*/);
+
+        expect(document.activeElement, `no sync blur`).to.be.oneOf([null, document.body]);
+
+        await waitForRefocus;
+
+        expect(document.activeElement, `async re-focus`).to.equal(rootInput);
+    });
 });

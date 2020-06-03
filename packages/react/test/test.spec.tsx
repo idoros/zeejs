@@ -3,8 +3,9 @@ import { domElementMatchers } from './chai-dom-element';
 import { ReactTestDriver } from './react-test-driver';
 import { expectImageSnapshot, getInteractionApi } from '@zeejs/test-browser/browser';
 import React from 'react';
+import { waitFor } from 'promise-assist';
 import chai, { expect } from 'chai';
-import { stub } from 'sinon';
+import { stub, spy } from 'sinon';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 chai.use(domElementMatchers);
@@ -420,7 +421,9 @@ describe(`react`, () => {
             expect(document.activeElement, `ignore blocked parent`).to.equal(layerFirstInput);
         });
 
-        it(`should re-focus last element of an un-blocked layer`, () => {
+        it(`should re-focus last element of an un-blocked layer`, async () => {
+            const warnSpy = spy(console, `warn`);
+            const errorSpy = spy(console, `error`);
             const { expectHTMLQuery, setData } = testDriver.render<boolean>(
                 (renderLayer) => (
                     <Root>
@@ -435,11 +438,19 @@ describe(`react`, () => {
 
             setData(true);
 
-            expect(document.activeElement, `blocked input blur`).to.equal(document.body);
+            await waitFor(() => {
+                expect(document.activeElement, `blocked input blur`).to.equal(document.body);
+            });
 
             setData(false);
 
-            expect(document.activeElement, `refocus input`).to.equal(bgInput);
+            await waitFor(() => {
+                expect(document.activeElement, `refocus input`).to.equal(bgInput);
+            });
+            /* blur/re-focus is delayed because React listens for blur of rendered elements during render.
+            just check that no logs have been called. */
+            expect(warnSpy, `no react warning`).to.have.callCount(0);
+            expect(errorSpy, `no react error`).to.have.callCount(0);
         });
     });
 });

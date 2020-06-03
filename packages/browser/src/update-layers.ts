@@ -12,14 +12,37 @@ export function createBackdropParts(): BackdropElements {
     };
 }
 
-const lastFocusMap = new WeakMap<Element, HTMLElement | SVGElement>();
+type Focusable = HTMLElement | SVGElement;
+
+const lastFocusMap = new WeakMap<Element, Focusable>();
+const asyncFocusChangePromise = new WeakMap<
+    Element,
+    {
+        promise: Promise<void>;
+        blur: Focusable | void;
+        focus: Focusable | void;
+    }
+>();
 
 export function updateLayers(
     wrapper: HTMLElement,
     topLayer: DOMLayer,
-    { hide, block }: BackdropElements
-) {
-    const focusedElement = (document.activeElement as unknown) as HTMLElement | SVGElement | null;
+    { hide, block }: BackdropElements,
+    asyncFocusChange?: false
+): void;
+export function updateLayers(
+    wrapper: HTMLElement,
+    topLayer: DOMLayer,
+    { hide, block }: BackdropElements,
+    asyncFocusChange: true
+): Promise<void>;
+export async function updateLayers(
+    wrapper: HTMLElement,
+    topLayer: DOMLayer,
+    { hide, block }: BackdropElements,
+    asyncFocusChange?: boolean
+): Promise<void> {
+    const focusedElement = (document.activeElement as unknown) as Focusable | null;
     const layers = topLayer.generateDisplayList();
     let blocking: HTMLElement | null = null;
     let hiding: HTMLElement | null = null;
@@ -44,8 +67,8 @@ export function updateLayers(
     const blockedIndex = hiding
         ? Number(hiding.getAttribute(`z-index`))
         : blocking
-        ? Number(blocking.getAttribute(`z-index`))
-        : 0;
+            ? Number(blocking.getAttribute(`z-index`))
+            : 0;
     for (const element of Array.from(wrapper.children)) {
         if (!layersIds.has(element.id)) {
             wrapper.removeChild(element);
@@ -68,15 +91,17 @@ export function updateLayers(
         wrapper.insertBefore(block, blocking);
         block.setAttribute(`z-index`, blocking.getAttribute(`z-index`)!);
     }
-    // blur inert active element
+    // find and save reference for active element in inert layer
+    let elementToBlur: void | Focusable;
+    let elementToFocus: void | Focusable;
     if (focusedElement) {
         const focusedLayer = findContainingLayer(focusedElement);
         if (focusedLayer && focusedLayer.hasAttribute(`inert`)) {
             lastFocusMap.set(focusedLayer, focusedElement);
-            focusedElement.blur();
+            elementToBlur = focusedElement;
         }
     }
-    // re-focus last input from activated layer
+    // find re-focus last input from activated layer
     const currentlyFocused = !!(
         document.activeElement && findContainingLayer(document.activeElement)
     );
@@ -85,7 +110,7 @@ export function updateLayers(
         const sortedLayers = activatedLayers.sort(
             (a, b) => Number(a.getAttribute(`z-index`)) - Number(b.getAttribute(`z-index`))
         );
-        let refocusElement: HTMLElement | SVGElement | void;
+        let refocusElement: Focusable | void;
         while (!refocusElement && sortedLayers.length) {
             const currentLayer = sortedLayers.pop()!;
             const lastInput = lastFocusMap.get(currentLayer);
@@ -94,7 +119,43 @@ export function updateLayers(
             }
         }
         if (refocusElement) {
-            refocusElement.focus();
+            elementToFocus = refocusElement;
         }
+    }
+    // sync/async blur/refocus
+    if (asyncFocusChange) {
+        let buffered = asyncFocusChangePromise.get(wrapper);
+        if (buffered) {
+            buffered.blur = elementToBlur;
+            buffered.focus = elementToFocus;
+        } else {
+            buffered = {
+                promise: Promise.resolve().then(() => {
+                    const change = asyncFocusChangePromise.get(wrapper);
+                    if (change) {
+                        changeFocus(change);
+                    }
+                    asyncFocusChangePromise.delete(wrapper);
+                }),
+                blur: elementToBlur,
+                focus: elementToFocus,
+            };
+            asyncFocusChangePromise.set(wrapper, buffered);
+        }
+        return buffered.promise;
+    } else {
+        changeFocus({
+            blur: elementToBlur,
+            focus: elementToFocus,
+        });
+    }
+}
+
+function changeFocus({ blur, focus }: { blur: Focusable | void; focus: Focusable | void }) {
+    if (blur) {
+        blur.blur();
+    }
+    if (focus) {
+        focus.focus();
     }
 }
