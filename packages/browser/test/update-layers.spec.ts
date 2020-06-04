@@ -118,10 +118,10 @@ describe(`update-layers`, () => {
         const wrapper = document.createElement(`div`);
 
         const firstLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
         const secondLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -137,10 +137,10 @@ describe(`update-layers`, () => {
         const wrapper = document.createElement(`div`);
 
         const firstLayer = rootLayer.createLayer({
-            settings: { backdrop: `hide`, overlap: `window` },
+            settings: { backdrop: `hide` },
         });
         const secondLayer = rootLayer.createLayer({
-            settings: { backdrop: `hide`, overlap: `window` },
+            settings: { backdrop: `hide` },
         });
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -157,10 +157,10 @@ describe(`update-layers`, () => {
         const wrapper = document.createElement(`div`);
 
         const firstLayer = rootLayer.createLayer({
-            settings: { backdrop: `hide`, overlap: `window` },
+            settings: { backdrop: `hide` },
         });
         const secondLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -176,9 +176,9 @@ describe(`update-layers`, () => {
         const rootLayer = createRoot();
         const wrapper = document.createElement(`div`);
 
-        rootLayer.createLayer({ settings: { backdrop: `block`, overlap: `window` } });
+        rootLayer.createLayer({ settings: { backdrop: `block` } });
         const secondLayer = rootLayer.createLayer({
-            settings: { backdrop: `hide`, overlap: `window` },
+            settings: { backdrop: `hide` },
         });
         secondLayer.createLayer();
         updateLayers(wrapper, rootLayer, backdropParts);
@@ -229,7 +229,7 @@ describe(`update-layers`, () => {
         rootLayer.element.appendChild(rootInput);
         wrapper.appendChild(rootLayer.element);
         rootInput.focus();
-        rootLayer.createLayer({ settings: { backdrop: `block`, overlap: `window` } });
+        rootLayer.createLayer({ settings: { backdrop: `block` } });
 
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -244,7 +244,7 @@ describe(`update-layers`, () => {
         wrapper.appendChild(rootLayer.element);
         rootInput.focus();
         const blockingLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
 
         updateLayers(wrapper, rootLayer, backdropParts);
@@ -271,7 +271,7 @@ describe(`update-layers`, () => {
         middleLayerInput.focus();
 
         const blockingLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -296,7 +296,7 @@ describe(`update-layers`, () => {
         updateLayers(wrapper, rootLayer, backdropParts);
 
         const blockingLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -317,7 +317,7 @@ describe(`update-layers`, () => {
         wrapper.appendChild(rootLayer.element);
         rootInput.focus();
         const middleLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -344,7 +344,7 @@ describe(`update-layers`, () => {
         wrapper.appendChild(rootLayer.element);
         rootInput.focus();
         const blockingLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
 
         const waitForBlur = updateLayers(wrapper, rootLayer, backdropParts, true /*async*/);
