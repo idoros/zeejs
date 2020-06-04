@@ -49,10 +49,12 @@ export async function updateLayers(
     const layersIds = new Set<string>();
     // append new layers, set order and find backdrop position
     for (const [index, { element, settings }] of layers.entries()) {
-        layersIds.add(element.id);
-        element.setAttribute(`z-index`, String(index));
-        if (element.parentElement !== wrapper) {
-            wrapper.appendChild(element);
+        if (element) {
+            layersIds.add(element.id);
+            element.setAttribute(`z-index`, String(index));
+            if (element.parentElement !== wrapper) {
+                wrapper.appendChild(element);
+            }
         }
         if (settings.backdrop !== `none`) {
             blocking = element;
@@ -67,8 +69,8 @@ export async function updateLayers(
     const blockedIndex = hiding
         ? Number(hiding.getAttribute(`z-index`))
         : blocking
-            ? Number(blocking.getAttribute(`z-index`))
-            : 0;
+        ? Number(blocking.getAttribute(`z-index`))
+        : 0;
     for (const element of Array.from(wrapper.children)) {
         if (!layersIds.has(element.id)) {
             wrapper.removeChild(element);

@@ -2,7 +2,7 @@ const destroyLayer = Symbol(`destroy-layer`);
 
 export type Layer<T = Record<string, unknown>, S = any> = T & {
     parentLayer: Layer<T, S> | null;
-    createLayer: (options?: { onChange?: () => void; settings?: S }) => Layer<T>;
+    createLayer: (options?: { onChange?: () => void; settings?: Partial<S> }) => Layer<T>;
     removeLayer: (layer: Layer<T>) => void;
     generateDisplayList: () => Layer<T>[];
     [destroyLayer]: () => void;
@@ -14,25 +14,23 @@ export type LayerOptions<T, S> = {
     onChange?: () => void;
     extendLayer?: T;
     defaultSettings?: S;
-    settings?: S;
+    settings?: Partial<S>;
 };
 
 export function createLayer(): Layer;
 export function createLayer<T, S>(options: LayerOptions<T, S>): Layer<T, S>;
-export function createLayer<T, S>({
-    parentLayer,
-    onChange = noop,
-    init,
-    destroy,
-    extendLayer,
-    defaultSettings,
-    settings,
-}: LayerOptions<T, S> = {}): Layer | Layer<T> {
+export function createLayer<T, S>(
+    {
+        parentLayer,
+        onChange = noop,
+        init,
+        destroy,
+        extendLayer,
+        defaultSettings = {} as S,
+        settings,
+    }: LayerOptions<T, S> = { defaultSettings: {} as S }
+): Layer | Layer<T> {
     const children: Layer<T, S>[] = [];
-    settings = {
-        ...(defaultSettings || {}),
-        ...(settings || {}), // ToDo: fix fallback for undefined
-    } as S;
     const extendedData: T = extendLayer ? extendLayer : ({} as T);
     const layer: Layer<T, S> = {
         ...extendedData,
@@ -81,7 +79,10 @@ export function createLayer<T, S>({
         },
     };
     if (init) {
-        init(layer, settings);
+        init(layer, {
+            ...defaultSettings,
+            ...(settings || {}), // ToDo: fix fallback for undefined
+        });
     }
     return layer;
 }

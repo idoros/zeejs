@@ -93,15 +93,35 @@ describe(`update-layers`, () => {
         // ToDo: add a screen snapshot test
     });
 
+    it(`should handle layers with delayed element creation`, () => {
+        const rootLayer = createRoot();
+        const wrapper = document.createElement(`div`);
+
+        const parentLayer = rootLayer.createLayer({
+            settings: { generateElement: false },
+        });
+        const childLayer = parentLayer.createLayer();
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(wrapper.children.length, `skip parent layer element`).to.equal(2);
+        expect(wrapper.children[0], `root`).to.equal(rootLayer.element);
+        expect(wrapper.children[1], `child`).to.equal(childLayer.element);
+
+        parentLayer.setElement(document.createElement(`zeejs-layer`));
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(wrapper.children.length, `parent layer element added`).to.equal(3);
+    });
+
     it(`should place block element before last layer with backdrop=block`, () => {
         const rootLayer = createRoot();
         const wrapper = document.createElement(`div`);
 
         const firstLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
         const secondLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -117,10 +137,10 @@ describe(`update-layers`, () => {
         const wrapper = document.createElement(`div`);
 
         const firstLayer = rootLayer.createLayer({
-            settings: { backdrop: `hide`, overlap: `window` },
+            settings: { backdrop: `hide` },
         });
         const secondLayer = rootLayer.createLayer({
-            settings: { backdrop: `hide`, overlap: `window` },
+            settings: { backdrop: `hide` },
         });
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -137,10 +157,10 @@ describe(`update-layers`, () => {
         const wrapper = document.createElement(`div`);
 
         const firstLayer = rootLayer.createLayer({
-            settings: { backdrop: `hide`, overlap: `window` },
+            settings: { backdrop: `hide` },
         });
         const secondLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -156,9 +176,9 @@ describe(`update-layers`, () => {
         const rootLayer = createRoot();
         const wrapper = document.createElement(`div`);
 
-        rootLayer.createLayer({ settings: { backdrop: `block`, overlap: `window` } });
+        rootLayer.createLayer({ settings: { backdrop: `block` } });
         const secondLayer = rootLayer.createLayer({
-            settings: { backdrop: `hide`, overlap: `window` },
+            settings: { backdrop: `hide` },
         });
         secondLayer.createLayer();
         updateLayers(wrapper, rootLayer, backdropParts);
@@ -209,7 +229,7 @@ describe(`update-layers`, () => {
         rootLayer.element.appendChild(rootInput);
         wrapper.appendChild(rootLayer.element);
         rootInput.focus();
-        rootLayer.createLayer({ settings: { backdrop: `block`, overlap: `window` } });
+        rootLayer.createLayer({ settings: { backdrop: `block` } });
 
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -224,7 +244,7 @@ describe(`update-layers`, () => {
         wrapper.appendChild(rootLayer.element);
         rootInput.focus();
         const blockingLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
 
         updateLayers(wrapper, rootLayer, backdropParts);
@@ -251,7 +271,7 @@ describe(`update-layers`, () => {
         middleLayerInput.focus();
 
         const blockingLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -276,7 +296,7 @@ describe(`update-layers`, () => {
         updateLayers(wrapper, rootLayer, backdropParts);
 
         const blockingLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -297,7 +317,7 @@ describe(`update-layers`, () => {
         wrapper.appendChild(rootLayer.element);
         rootInput.focus();
         const middleLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
         updateLayers(wrapper, rootLayer, backdropParts);
 
@@ -324,7 +344,7 @@ describe(`update-layers`, () => {
         wrapper.appendChild(rootLayer.element);
         rootInput.focus();
         const blockingLayer = rootLayer.createLayer({
-            settings: { backdrop: `block`, overlap: `window` },
+            settings: { backdrop: `block` },
         });
 
         const waitForBlur = updateLayers(wrapper, rootLayer, backdropParts, true /*async*/);

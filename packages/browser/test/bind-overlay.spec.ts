@@ -3,7 +3,7 @@ import { HTMLTestDriver } from './html-test-driver';
 import { expect } from 'chai';
 import { waitFor } from 'promise-assist';
 
-describe(`browser test`, () => {
+describe(`bind-overlay`, () => {
     let testDriver: HTMLTestDriver;
 
     before('setup test driver', () => (testDriver = new HTMLTestDriver()));
