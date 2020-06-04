@@ -3,22 +3,22 @@
     import { setContext, onMount } from 'svelte';
 
     let wrapper;
+    let rootLayerElement;
     const backdrop = createBackdropParts();
-    const rootLayer = createRoot({
-        onChange() {
-            if (!wrapper) {
-                return;
-            }
-            updateLayers(wrapper, rootLayer, backdrop);
+    const onChange = () => {
+        if (!wrapper) {
+            return;
         }
-    });
+        rootLayer.element = rootLayerElement;
+        updateLayers(wrapper, rootLayer, backdrop);
+    };
+    const rootLayer = createRoot({ onChange });
 
     setContext(`zeejs-context`, rootLayer);
 
     onMount(() => {
-        rootLayer.element = wrapper.firstElementChild;
         const { stop: stopFocus } = watchFocus(wrapper);
-        updateLayers(wrapper, rootLayer, backdrop);
+        onChange();
         return () => {
             stopFocus();
         };
@@ -58,7 +58,7 @@
 </style>
 
 <div bind:this={wrapper}>
-    <zeejs-layer>
+    <zeejs-layer bind:this={rootLayerElement}>
         <slot />
     </zeejs-layer>
     <!-- layers injected here -->

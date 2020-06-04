@@ -63,7 +63,7 @@ export class SvelteTestDriver {
 
     public clean() {
         for (const element of this.stages) {
-            // ToDo: distroy fixture component instance; .$destroy()? 
+            // ToDo: distroy fixture component instance; .$destroy()?
             if (element.dataset.insertedByTestDriver === 'true') {
                 document.body.removeChild(element);
             }
