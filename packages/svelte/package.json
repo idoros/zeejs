@@ -1,0 +1,37 @@
+{
+    "name": "@zeejs/svelte",
+    "version": "0.0.1",
+    "description": "Svelte layering",
+    "author": "Ido Rosenthal",
+    "main": "./cjs/index.js",
+    "module": "esm/index.js",
+    "types": "esm/index.d.ts",
+    "svelte": "esm/index.js",
+    "scripts": {
+        "clean": "rimraf ./cjs ./esm",
+        "build": "ts-build ./src --cjs --esm",
+        "test": "node -r @ts-tools/node/r ./test/setup.ts",
+        "prepack": "yarn build"
+    },
+    "dependencies": {
+        "@zeejs/browser": "^0.0.1",
+        "@zeejs/core": "^0.0.1"
+    },
+    "devDependencies": {
+        "svelte": "^3.23.0",
+        "svelte-loader": "2.13.6"
+    },
+    "files": [
+        "cjs",
+        "esm",
+        "src"
+    ],
+    "engines": {
+        "node": ">=10"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "license": "MIT",
+    "repository": "https://github.com/idoros/zeejs/tree/master/packages/svelte"
+}
