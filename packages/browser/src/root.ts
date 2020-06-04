@@ -6,6 +6,7 @@ export const overlapBindConfig = Symbol(`overlap-bind`);
 export interface LayerSettings {
     overlap: `window` | HTMLElement;
     backdrop: `none` | `block` | `hide`;
+    onClickOutside?: () => void;
     generateElement: boolean;
 }
 export interface LayerExtended {
