@@ -1,5 +1,5 @@
 <script>
-    import { createRoot, updateLayers, watchFocus, createBackdropParts } from '@zeejs/browser';
+    import { createRoot, updateLayers, watchFocus, watchClickOutside, createBackdropParts } from '@zeejs/browser';
     import { setContext, onMount } from 'svelte';
 
     let wrapper;
@@ -18,9 +18,11 @@
 
     onMount(() => {
         const { stop: stopFocus } = watchFocus(wrapper);
+        const { stop: stopClickOutside } = watchClickOutside(wrapper, rootLayer);
         onChange();
         return () => {
             stopFocus();
+            stopClickOutside();
         };
     });
 </script>

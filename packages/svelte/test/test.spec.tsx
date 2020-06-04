@@ -450,4 +450,61 @@ describe(`svelte`, () => {
             expect(document.activeElement, `refocus input`).to.equal(bgInput);
         });
     });
+
+    describe(`click outside`, () => {
+        it(`should invoke onClickOutside handler for click on root`, async () => {
+            const onClickOutside = stub();
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let onClickOutside;
+                </script>
+                <Root>
+                    <div id="root-node" style="width: 100px; height: 100px; background: green;">
+                        <Layer onClickOutside={onClickOutside}>
+                            <div id="layer-node" style="width: 50px; height: 50px; background: red;" />
+                        </Layer>
+                    </div>
+                </Root>
+            `,
+                { onClickOutside }
+            );
+
+            await click(`#root-node`);
+
+            expect(onClickOutside, `click on root`).to.have.callCount(1);
+
+            await click(`#layer-node`);
+
+            expect(onClickOutside, `click on root`).to.have.callCount(1);
+        });
+
+        it(`should not invoke onClickOutside handler for nested layer click`, async () => {
+            const onClickOutside = stub();
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let onClickOutside;
+                </script>
+                <Root>
+                    <div id="root-node" style="width: 100px; height: 100px; background: green;">
+                        <Layer onClickOutside={onClickOutside}>
+                            <div id="shallow-node" style="width: 50px; height: 50px; background: orange;" />
+                            <Layer>
+                                <div id="deep-node" style="width: 25px; height: 25px; background: red;" />
+                            </Layer>
+                        </Layer>
+                    </div>
+                </Root>
+            `,
+                { onClickOutside }
+            );
+
+            await click(`#deep-node`);
+
+            expect(onClickOutside, `no invocation for nested click`).to.have.callCount(0);
+        });
+    });
 });
