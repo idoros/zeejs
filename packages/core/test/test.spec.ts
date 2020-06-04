@@ -132,6 +132,7 @@ describe(`core`, () => {
                 defaultSettings: {
                     optionA: `default a`,
                     optionB: 5,
+                    optionC: `default C`,
                 },
                 init(layer, settings) {
                     layer.settings = settings;
@@ -148,6 +149,7 @@ describe(`core`, () => {
             expect(layer.settings).to.eql({
                 optionA: `custom A`,
                 optionB: 999,
+                optionC: `default C`,
             });
         });
     });
