@@ -1,5 +1,6 @@
 import {
     watchFocus,
+    watchClickOutside,
     createRoot,
     DOMLayer,
     updateLayers,
@@ -73,10 +74,12 @@ export const Root = ({ className, style, children }: RootProps) => {
         document.head.appendChild(parts.style);
         rootLayer.element = wrapper.firstElementChild! as HTMLElement;
         const { stop: stopFocus } = watchFocus(wrapper);
+        const { stop: stopClickOutside } = watchClickOutside(wrapper, rootLayer);
         updateLayers(wrapper, rootLayer, parts);
         () => {
             document.head.removeChild(parts.style);
             stopFocus();
+            stopClickOutside();
         };
     }, []);
 
