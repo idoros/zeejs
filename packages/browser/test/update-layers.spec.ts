@@ -93,6 +93,26 @@ describe(`update-layers`, () => {
         // ToDo: add a screen snapshot test
     });
 
+    it(`should handle layers with delayed element creation`, () => {
+        const rootLayer = createRoot();
+        const wrapper = document.createElement(`div`);
+
+        const parentLayer = rootLayer.createLayer({
+            settings: { generateElement: false },
+        });
+        const childLayer = parentLayer.createLayer();
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(wrapper.children.length, `skip parent layer element`).to.equal(2);
+        expect(wrapper.children[0], `root`).to.equal(rootLayer.element);
+        expect(wrapper.children[1], `child`).to.equal(childLayer.element);
+
+        parentLayer.setElement(document.createElement(`zeejs-layer`));
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(wrapper.children.length, `parent layer element added`).to.equal(3);
+    });
+
     it(`should place block element before last layer with backdrop=block`, () => {
         const rootLayer = createRoot();
         const wrapper = document.createElement(`div`);

@@ -6,10 +6,13 @@ export const overlapBindConfig = Symbol(`overlap-bind`);
 export interface LayerSettings {
     overlap: `window` | HTMLElement;
     backdrop: `none` | `block` | `hide`;
+    generateElement: boolean;
 }
 export interface LayerExtended {
+    id: string;
     element: HTMLElement;
     settings: LayerSettings;
+    setElement: (this: DOMLayer, element: HTMLElement) => void;
     [overlapBindConfig]: ReturnType<typeof bindOverlay>;
 }
 export type DOMLayer = Layer<LayerExtended, LayerSettings>;
@@ -17,6 +20,7 @@ export type DOMLayer = Layer<LayerExtended, LayerSettings>;
 export const defaultLayerSettings: LayerSettings = {
     overlap: `window`,
     backdrop: `none`,
+    generateElement: true,
 };
 
 export function createRoot({
@@ -29,6 +33,21 @@ export function createRoot({
         extendLayer: {
             element: (null as unknown) as HTMLElement,
             settings: defaultLayerSettings,
+            setElement: function (element: HTMLElement) {
+                if (this.element) {
+                    throw new Error(
+                        `cannot setElement on a layer that was already initiated with an element`
+                    );
+                }
+                if (element.tagName !== `ZEEJS-LAYER`) {
+                    throw new Error(`cannot setElement on a layer that is not <zeejs-layer>`);
+                }
+                this.element = element;
+                initLayerElement(this);
+                if (onChange) {
+                    onChange();
+                }
+            },
         } as LayerExtended,
         defaultSettings: defaultLayerSettings,
         onChange() {
@@ -38,15 +57,10 @@ export function createRoot({
         },
         init(layer, settings) {
             layer.settings = settings;
-            layer.element = document.createElement(`zeejs-layer`); // ToDo: test that each layer has a unique element
-            layer.element.id = `zeejs-layer-${idCounter++}`;
-            if (layer.parentLayer) {
-                if (settings.overlap === `window`) {
-                    layer.element.classList.add(`zeejs--overlapWindow`);
-                } else if (settings.overlap instanceof HTMLElement) {
-                    layer.element.classList.add(`zeejs--overlapElement`);
-                    layer[overlapBindConfig] = bindOverlay(settings.overlap, layer.element);
-                }
+            layer.id = `zeejs-layer-${idCounter++}`;
+            if (settings.generateElement) {
+                layer.element = document.createElement(`zeejs-layer`); // ToDo: test that each layer has a unique element
+                initLayerElement(layer);
             }
         },
         destroy(layer) {
@@ -55,5 +69,17 @@ export function createRoot({
             }
         },
     });
+    function initLayerElement(layer: DOMLayer) {
+        const { element, settings, parentLayer } = layer;
+        element.id = layer.id;
+        if (parentLayer) {
+            if (settings.overlap === `window`) {
+                element.classList.add(`zeejs--overlapWindow`);
+            } else if (settings.overlap instanceof HTMLElement) {
+                element.classList.add(`zeejs--overlapElement`);
+                layer[overlapBindConfig] = bindOverlay(settings.overlap, element);
+            }
+        }
+    }
     return rootLayer;
 }
