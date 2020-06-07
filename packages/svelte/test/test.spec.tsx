@@ -1,9 +1,15 @@
 import * as zeejsSvelte from '../src';
 import { domElementMatchers } from './chai-dom-element';
+import RenderRootServerFixture from './server-fixtures/RenderRoot.svelte';
+import RenderLayerServerFixture from './server-fixtures/RenderLayer.svelte';
 import { SvelteTestDriver } from './svelte-test-driver';
-import { expectImageSnapshot, getInteractionApi } from '@zeejs/test-browser/browser';
+import {
+    expectImageSnapshot,
+    getInteractionApi,
+    expectServerFixture,
+} from '@zeejs/test-browser/browser';
 import chai, { expect } from 'chai';
-import { stub } from 'sinon';
+import sinon, { stub, spy } from 'sinon';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 chai.use(domElementMatchers);
@@ -17,7 +23,10 @@ describe(`svelte`, () => {
             '@zeejs/svelte': zeejsSvelte,
         });
     });
-    afterEach('clear test driver', () => testDriver.clean());
+    afterEach('clear test driver', () => {
+        testDriver.clean();
+        sinon.restore();
+    });
 
     it(`should render main layer`, () => {
         const { container } = testDriver.render(`
@@ -505,6 +514,61 @@ describe(`svelte`, () => {
             await click(`#deep-node`);
 
             expect(onClickOutside, `no invocation for nested click`).to.have.callCount(0);
+        });
+    });
+
+    describe(`server rendering`, () => {
+        it(`should render root on server and connect in browser`, async () => {
+            const warnSpy = spy(console, `warn`);
+            const errorSpy = spy(console, `error`);
+            const container = document.createElement(`div`);
+
+            // ToDo: test CSS once figured out how best to deliver it...
+            const { html } = await expectServerFixture({
+                fixtureFileName: `server-render.ts`,
+                exportName: `renderRoot`,
+            });
+            container.innerHTML = html;
+
+            new RenderRootServerFixture({
+                target: container,
+                hydrate: true,
+            });
+
+            expect(container.textContent?.trim()).to.equal(`content`);
+            expect(warnSpy, `no svelte warning`).to.have.callCount(0);
+            expect(errorSpy, `no svelte error`).to.have.callCount(0);
+        });
+
+        it(`should render layers nested and flattened in browser`, async () => {
+            const warnSpy = spy(console, `warn`);
+            const errorSpy = spy(console, `error`);
+            const container = document.createElement(`div`);
+            document.body.appendChild(container);
+
+            const { html } = await expectServerFixture({
+                fixtureFileName: `server-render.ts`,
+                exportName: `renderLayer`,
+            });
+            container.innerHTML = html;
+
+            const rootNode = testDriver.expectHTMLQuery(container, `#root-node`);
+            const layerNode = testDriver.expectHTMLQuery(container, `#layer-node`);
+            expect(rootNode, `root exist in string`).domElement();
+            expect(rootNode, `layer inside root before client render`)
+                .domElement()
+                .contains(layerNode);
+
+            new RenderLayerServerFixture({
+                target: container,
+                hydrate: true,
+            });
+
+            expect(layerNode, `layer exist after client render`).domElement();
+            expect(rootNode, `layer after root`).domElement().preceding(layerNode);
+            expect(warnSpy, `no react warning`).to.have.callCount(0);
+            expect(errorSpy, `no react error`).to.have.callCount(0);
+            document.body.removeChild(container);
         });
     });
 });

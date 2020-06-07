@@ -1,5 +1,6 @@
 import { createLayer, Layer } from '@zeejs/core';
 import { bindOverlay } from './bind-overlay';
+import { isBrowser } from './utils';
 
 export const overlapBindConfig = Symbol(`overlap-bind`);
 
@@ -59,7 +60,7 @@ export function createRoot({
         init(layer, settings) {
             layer.settings = settings;
             layer.id = `zeejs-layer-${idCounter++}`;
-            if (settings.generateElement) {
+            if (settings.generateElement && isBrowser) {
                 layer.element = document.createElement(`zeejs-layer`); // ToDo: test that each layer has a unique element
                 initLayerElement(layer);
             }

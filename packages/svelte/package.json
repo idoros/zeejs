@@ -10,7 +10,7 @@
     "scripts": {
         "clean": "rimraf ./cjs ./esm",
         "build": "ts-build ./src --cjs --esm",
-        "test": "node -r @ts-tools/node/r ./test/setup.ts",
+        "test": "node -r @ts-tools/node/r -r tsconfig-paths/register ./test/setup.ts",
         "prepack": "yarn build"
     },
     "dependencies": {

@@ -6,6 +6,7 @@ import { runTests, RunTestsOptions } from './run-tests';
 
 export { hookImageSnapshot } from './image-snapshot/node';
 export { hookInteractionApi } from './interaction-api/node';
+export { hookServerFixtures } from './server-fixtures/node';
 
 export const browserTest = ({
     files,
