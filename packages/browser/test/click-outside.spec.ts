@@ -1,4 +1,4 @@
-import { watchClickOutside, createRoot, updateLayers, createBackdropParts } from '../src';
+import { watchClickOutside, createRoot, updateLayers, createBackdropParts, css } from '../src';
 import { HTMLTestDriver } from './html-test-driver';
 import { getInteractionApi } from '@zeejs/test-browser/browser';
 import chai, { expect } from 'chai';
@@ -15,6 +15,7 @@ describe(`click-outside`, () => {
 
     it(`should inform layer on root click`, async () => {
         const onClickOutside = stub();
+        const backdrop = createBackdropParts();
         const { container, expectQuery } = testDriver.render(
             () => `
             <div id="root-node" style="width: 100px; height: 100px; background: green;"></div>
@@ -25,9 +26,9 @@ describe(`click-outside`, () => {
         const childLayer = rootLayer.createLayer({ settings: { onClickOutside } });
         rootLayer.element.appendChild(expectQuery(`#root-node`));
         childLayer.element.appendChild(expectQuery(`#child-node`));
-        updateLayers(container, rootLayer, createBackdropParts());
+        updateLayers(container, rootLayer, backdrop);
 
-        watchClickOutside(container, rootLayer);
+        watchClickOutside(container, rootLayer, backdrop);
 
         await click(`#root-node`);
 
@@ -41,6 +42,7 @@ describe(`click-outside`, () => {
     it(`should not be called when an internal layer is clicked`, async () => {
         const onShallowClickOutside = stub();
         const onDeepClickOutside = stub();
+        const backdrop = createBackdropParts();
         const { container, expectQuery } = testDriver.render(
             () => `
             <div id="root-node" style="width: 100px; height: 100px; background: green;"></div>
@@ -58,9 +60,9 @@ describe(`click-outside`, () => {
         rootLayer.element.appendChild(expectQuery(`#root-node`));
         shallowLayer.element.appendChild(expectQuery(`#shallow-node`));
         deepLayer.element.appendChild(expectQuery(`#deep-node`));
-        updateLayers(container, rootLayer, createBackdropParts());
+        updateLayers(container, rootLayer, backdrop);
 
-        watchClickOutside(container, rootLayer);
+        watchClickOutside(container, rootLayer, backdrop);
 
         await click(`#root-node`);
 
@@ -80,6 +82,7 @@ describe(`click-outside`, () => {
     it(`should inform layer on another layer click`, async () => {
         const onClickOutsideA = stub();
         const onClickOutsideB = stub();
+        const backdrop = createBackdropParts();
         const { container, expectQuery } = testDriver.render(
             () => `
             <div id="root-node" style="width: 100px; height: 100px; background: darkgreen;"></div>
@@ -93,9 +96,9 @@ describe(`click-outside`, () => {
         rootLayer.element.appendChild(expectQuery(`#root-node`));
         aLayer.element.appendChild(expectQuery(`#layerA-node`));
         bLayer.element.appendChild(expectQuery(`#layerB-node`));
-        updateLayers(container, rootLayer, createBackdropParts());
+        updateLayers(container, rootLayer, backdrop);
 
-        watchClickOutside(container, rootLayer);
+        watchClickOutside(container, rootLayer, backdrop);
 
         await click(`#root-node`);
 
@@ -111,5 +114,60 @@ describe(`click-outside`, () => {
 
         expect(onClickOutsideA, `catch click on layerB for layerA`).to.have.callCount(2);
         expect(onClickOutsideB, `no dispatch for layerA click`).to.have.callCount(2);
+    });
+
+    it(`should consider the backdrop as part of the parent layer`, async () => {
+        const onClickOutsideParent = stub();
+        const onClickOutsideChild = stub();
+        const backdrop = createBackdropParts();
+        const { container, expectQuery } = testDriver.render(
+            () => `
+            <div id="root-node" style="width: 100px; height: 100px; background: red;">
+                <style>${css}</style>
+            </div>
+        `
+        );
+        const rootLayer = createRoot();
+        const parentLayer = rootLayer.createLayer({
+            settings: { onClickOutside: onClickOutsideParent },
+        });
+        parentLayer.createLayer({
+            settings: { backdrop: `block`, onClickOutside: onClickOutsideChild },
+        });
+        rootLayer.element.appendChild(expectQuery(`#root-node`));
+        backdrop.block.id = `backdrop`;
+        updateLayers(container, rootLayer, backdrop);
+
+        watchClickOutside(container, rootLayer, backdrop);
+
+        await click(`#backdrop`);
+
+        expect(onClickOutsideParent, `no dispatch for parent layer`).to.have.callCount(0);
+        expect(onClickOutsideChild, `catch click on child backdrop`).to.have.callCount(1);
+    });
+
+    it(`should NOT inform layer under backdrop`, async () => {
+        const onClickOutsideUnder = stub();
+        const backdrop = createBackdropParts();
+        const { container, expectQuery } = testDriver.render(
+            () => `
+            <div id="root-node" style="width: 100px; height: 100px; background: red;">
+                <style>${css}</style>
+            </div>
+        `
+        );
+        const rootLayer = createRoot();
+        rootLayer.createLayer({ settings: { onClickOutside: onClickOutsideUnder } });
+        const parentLayer = rootLayer.createLayer();
+        parentLayer.createLayer({ settings: { backdrop: `block` } });
+        rootLayer.element.appendChild(expectQuery(`#root-node`));
+        backdrop.block.id = `backdrop`;
+        updateLayers(container, rootLayer, backdrop);
+
+        watchClickOutside(container, rootLayer, backdrop);
+
+        await click(`#backdrop`);
+
+        expect(onClickOutsideUnder, `no dispatch for layer under backdrop`).to.have.callCount(0);
     });
 });

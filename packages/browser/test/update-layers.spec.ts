@@ -1,4 +1,4 @@
-import { updateLayers, createRoot, createBackdropParts } from '../src';
+import { updateLayers, createRoot, createBackdropParts, css } from '../src';
 import { HTMLTestDriver } from './html-test-driver';
 import { expectImageSnapshot } from '@zeejs/test-browser/browser';
 import { expect } from 'chai';
@@ -76,7 +76,7 @@ describe(`update-layers`, () => {
         const rootLayer = createRoot();
         const { expectHTMLQuery } = testDriver.render(
             () => `
-            <style>.zeejs--overlapWindow {position: fixed; top: 0;}</style>
+            <style>${css}</style>
             <div id="wrapper"></div>
             <div id="root-node" style="width: 100px; height: 100px; background: red;"></div>
             <div id="layerA-node" style="width: 80px; height: 80px; background: green;"></div>
