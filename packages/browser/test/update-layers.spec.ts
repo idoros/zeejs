@@ -1,5 +1,6 @@
-import { updateLayers, createRoot, createBackdropParts } from '../src';
+import { updateLayers, createRoot, createBackdropParts, css } from '../src';
 import { HTMLTestDriver } from './html-test-driver';
+import { expectImageSnapshot } from '@zeejs/test-browser/browser';
 import { expect } from 'chai';
 
 describe(`update-layers`, () => {
@@ -71,14 +72,29 @@ describe(`update-layers`, () => {
         expect(wrapper.children[3], `layerBChild`).to.equal(layerBChild.element);
     });
 
-    it(`should add a layer between layers`, () => {
+    it(`should add a layer between layers`, async () => {
         const rootLayer = createRoot();
-        const wrapper = document.createElement(`div`);
+        const { expectHTMLQuery } = testDriver.render(
+            () => `
+            <style>${css}</style>
+            <div id="wrapper"></div>
+            <div id="root-node" style="width: 100px; height: 100px; background: red;"></div>
+            <div id="layerA-node" style="width: 80px; height: 80px; background: green;"></div>
+            <div id="layerAChild-node" style="width: 60px; height: 60px; background: blue;"></div>
+            <div id="layerB-node" style="width: 40px; height: 40px; background: gold;"></div>
+        `
+        );
+        const wrapper = expectHTMLQuery(`#wrapper`);
         const layerA = rootLayer.createLayer();
         const layerB = rootLayer.createLayer();
+        rootLayer.element.appendChild(expectHTMLQuery(`#root-node`));
+        layerA.element.appendChild(expectHTMLQuery(`#layerA-node`));
+        layerB.element.appendChild(expectHTMLQuery(`#layerB-node`));
+        const layerAChildNode = expectHTMLQuery(`#layerAChild-node`);
         updateLayers(wrapper, rootLayer, backdropParts);
 
         const layerAChild = layerA.createLayer();
+        layerAChild.element.appendChild(layerAChildNode);
         updateLayers(wrapper, rootLayer, backdropParts);
 
         expect(wrapper.children.length, `root, A, AChild, B`).to.equal(4);
@@ -86,11 +102,13 @@ describe(`update-layers`, () => {
         expect(wrapper.children[1], `layerA`).to.equal(layerA.element);
         expect(wrapper.children[2], `layerB`).to.equal(layerB.element);
         expect(wrapper.children[3], `layerAChild`).to.equal(layerAChild.element);
-        expect(wrapper.children[0].getAttribute(`z-index`), `root 1st`).to.equal(`0`);
-        expect(wrapper.children[1].getAttribute(`z-index`), `layerA 2nd`).to.equal(`1`);
-        expect(wrapper.children[3].getAttribute(`z-index`), `layerAChild 3rd`).to.equal(`2`);
-        expect(wrapper.children[2].getAttribute(`z-index`), `layerB 4th`).to.equal(`3`);
-        // ToDo: add a screen snapshot test
+        expect(rootLayer.element.style.zIndex, `root 1st`).to.equal(`0`);
+        expect(layerA.element.style.zIndex, `layerA 2nd`).to.equal(`1`);
+        expect(layerAChild.element.style.zIndex, `layerAChild 3rd`).to.equal(`2`);
+        expect(layerB.element.style.zIndex, `layerB 4th`).to.equal(`3`);
+        await expectImageSnapshot({
+            filePath: `update-layers/should add a layer between layers`,
+        });
     });
 
     it(`should handle layers with delayed element creation`, () => {

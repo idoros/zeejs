@@ -3,6 +3,7 @@
 
     export let overlap = `window`;
     export let backdrop = `none`;
+    export let onClickOutside;
 
     let originRoot;
     let element;
@@ -11,9 +12,12 @@
         settings: {
             overlap,
             backdrop,
+            onClickOutside,
             generateElement: false
         }
     });
+
+    setContext(`zeejs-context`, layer);
 
     onMount(() => {
         layer.setElement(element);

@@ -2,12 +2,12 @@ const destroyLayer = Symbol(`destroy-layer`);
 
 export type Layer<T = Record<string, unknown>, S = any> = T & {
     parentLayer: Layer<T, S> | null;
-    createLayer: (options?: { onChange?: () => void; settings?: Partial<S> }) => Layer<T>;
+    createLayer: (options?: { onChange?: () => void; settings?: Partial<S> }) => Layer<T, S>;
     removeLayer: (layer: Layer<T>) => void;
-    generateDisplayList: () => Layer<T>[];
+    generateDisplayList: () => Layer<T, S>[];
     [destroyLayer]: () => void;
 };
-export type LayerOptions<T, S> = {
+export type TopLayerOptions<T, S> = {
     parentLayer?: Layer<T, S>;
     init?: (layer: Layer<T, S>, settings: S) => void;
     destroy?: (layer: Layer<T, S>) => void;
@@ -18,7 +18,7 @@ export type LayerOptions<T, S> = {
 };
 
 export function createLayer(): Layer;
-export function createLayer<T, S>(options: LayerOptions<T, S>): Layer<T, S>;
+export function createLayer<T, S>(options: TopLayerOptions<T, S>): Layer<T, S>;
 export function createLayer<T, S>(
     {
         parentLayer,
@@ -28,8 +28,8 @@ export function createLayer<T, S>(
         extendLayer,
         defaultSettings = {} as S,
         settings,
-    }: LayerOptions<T, S> = { defaultSettings: {} as S }
-): Layer | Layer<T> {
+    }: TopLayerOptions<T, S> = { defaultSettings: {} as S }
+): Layer | Layer<T, S> {
     const children: Layer<T, S>[] = [];
     const extendedData: T = extendLayer ? extendLayer : ({} as T);
     const layer: Layer<T, S> = {

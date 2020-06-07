@@ -453,4 +453,62 @@ describe(`react`, () => {
             expect(errorSpy, `no react error`).to.have.callCount(0);
         });
     });
+
+    describe(`click outside`, () => {
+        it(`should invoke onClickOutside handler for click on root`, async () => {
+            const onClickOutside = stub();
+            testDriver.render(() => (
+                <Root>
+                    <div
+                        id="root-node"
+                        style={{ width: `100px`, height: `100px`, background: `green` }}
+                    >
+                        <Layer onClickOutside={onClickOutside}>
+                            <div
+                                id="layer-node"
+                                style={{ width: `50px`, height: `50px`, background: `red` }}
+                            />
+                        </Layer>
+                    </div>
+                </Root>
+            ));
+
+            await click(`#root-node`);
+
+            expect(onClickOutside, `click on root`).to.have.callCount(1);
+
+            await click(`#layer-node`);
+
+            expect(onClickOutside, `click on root`).to.have.callCount(1);
+        });
+
+        it(`should not invoke onClickOutside handler for nested layer click`, async () => {
+            const onClickOutside = stub();
+            testDriver.render(() => (
+                <Root>
+                    <div
+                        id="root-node"
+                        style={{ width: `100px`, height: `100px`, background: `green` }}
+                    >
+                        <Layer onClickOutside={onClickOutside}>
+                            <div
+                                id="shallow-node"
+                                style={{ width: `50px`, height: `50px`, background: `orange` }}
+                            />
+                            <Layer>
+                                <div
+                                    id="deep-node"
+                                    style={{ width: `25px`, height: `25px`, background: `red` }}
+                                />
+                            </Layer>
+                        </Layer>
+                    </div>
+                </Root>
+            ));
+
+            await click(`#deep-node`);
+
+            expect(onClickOutside, `no invocation for nested click`).to.have.callCount(0);
+        });
+    });
 });

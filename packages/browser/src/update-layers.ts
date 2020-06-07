@@ -51,7 +51,7 @@ export async function updateLayers(
     for (const [index, { element, settings }] of layers.entries()) {
         if (element) {
             layersIds.add(element.id);
-            element.setAttribute(`z-index`, String(index));
+            element.style.zIndex = String(index);
             if (element.parentElement !== wrapper) {
                 wrapper.appendChild(element);
             }
@@ -65,17 +65,17 @@ export async function updateLayers(
     }
     // - remove un-needed layers/backdrop
     // - find activated layers
-    const activatedLayers: Element[] = [];
+    const activatedLayers: HTMLElement[] = [];
     const blockedIndex = hiding
-        ? Number(hiding.getAttribute(`z-index`))
+        ? Number(hiding.style.zIndex)
         : blocking
-        ? Number(blocking.getAttribute(`z-index`))
+        ? Number(blocking.style.zIndex)
         : 0;
     for (const element of Array.from(wrapper.children)) {
-        if (!layersIds.has(element.id)) {
+        if (!layersIds.has(element.id) || !(element instanceof HTMLElement)) {
             wrapper.removeChild(element);
         } else {
-            const index = Number(element.getAttribute(`z-index`));
+            const index = Number(element.style.zIndex);
             if (index < blockedIndex) {
                 element.setAttribute(`inert`, ``);
             } else if (element.hasAttribute(`inert`)) {
@@ -87,11 +87,11 @@ export async function updateLayers(
     // append backdrop if needed
     if (hiding) {
         wrapper.insertBefore(hide, hiding);
-        hide.setAttribute(`z-index`, hiding.getAttribute(`z-index`)!);
+        hide.style.zIndex = hiding.style.zIndex;
     }
     if (blocking) {
         wrapper.insertBefore(block, blocking);
-        block.setAttribute(`z-index`, blocking.getAttribute(`z-index`)!);
+        block.style.zIndex = blocking.style.zIndex;
     }
     // find and save reference for active element in inert layer
     let elementToBlur: void | Focusable;
@@ -110,7 +110,7 @@ export async function updateLayers(
     if (!currentlyFocused && activatedLayers.length) {
         // top layer last
         const sortedLayers = activatedLayers.sort(
-            (a, b) => Number(a.getAttribute(`z-index`)) - Number(b.getAttribute(`z-index`))
+            (a, b) => Number(a.style.zIndex) - Number(b.style.zIndex)
         );
         let refocusElement: Focusable | void;
         while (!refocusElement && sortedLayers.length) {
