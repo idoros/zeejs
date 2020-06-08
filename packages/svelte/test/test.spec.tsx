@@ -211,6 +211,44 @@ describe(`svelte`, () => {
         expect(layerNode.getBoundingClientRect()).to.eql(relativeNode.getBoundingClientRect());
     });
 
+    it(`should hide layer component placeholder inline`, () => {
+        const { expectQuery } = testDriver.render(`
+            <script>
+                import {Root, Layer} from '@zeejs/svelte';
+                let relativeNode;
+            </script>
+            <Root>
+                <div id="root-node">
+                    <span id="before">before</span>
+                    <Layer>
+                        <div id="layer-node" />
+                    </Layer>
+                    <span id="after">after</span>
+                </div>
+            </Root>
+        `);
+
+        const before = expectQuery(`#before`);
+        const layerPlaceholder = before.nextElementSibling!;
+        const after = expectQuery(`#after`);
+
+        expect(layerPlaceholder, `placeholder exist`).domElement();
+        expect(layerPlaceholder.getBoundingClientRect(), `zero size`).to.include({
+            width: 0,
+            height: 0,
+        });
+        expect(window.getComputedStyle(before).top, `inline`).to.equal(
+            window.getComputedStyle(after).top
+        );
+
+        layerPlaceholder.innerHTML = `<div style="width: 100px; height: 100px;"></div>`;
+
+        expect(layerPlaceholder.getBoundingClientRect(), `zero size with content`).to.include({
+            width: 0,
+            height: 0,
+        });
+    });
+
     describe(`backdrop`, () => {
         it(`should click through backdrop by default (backdrop="none")`, async () => {
             const contentClick = stub();
