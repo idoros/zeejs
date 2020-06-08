@@ -1,4 +1,9 @@
-import { browserTest, hookImageSnapshot, hookInteractionApi } from '@zeejs/test-browser';
+import {
+    browserTest,
+    hookImageSnapshot,
+    hookInteractionApi,
+    hookServerFixtures,
+} from '@zeejs/test-browser';
 import { join } from 'path';
 
 browserTest({
@@ -8,6 +13,9 @@ browserTest({
         hookInteractionApi(page);
         hookImageSnapshot(page, {
             rootPath: join(__dirname, `__snapshots__`),
+        });
+        hookServerFixtures(page, {
+            rootPath: join(__dirname, `server-fixtures`),
         });
     },
     process,

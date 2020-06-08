@@ -39,8 +39,8 @@ export const Layer = ({
 
     return (
         <zeejsContext.Provider value={layer}>
-            <zeejs-origin tabIndex={0} data-origin={layer.element.id}>
-                {layer.element ? ReactDOM.createPortal(children, layer.element) : null}
+            <zeejs-origin tabIndex={0} data-origin={layer.id}>
+                {layer.element ? ReactDOM.createPortal(children, layer.element) : children}
             </zeejs-origin>
         </zeejsContext.Provider>
     );

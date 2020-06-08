@@ -6,6 +6,7 @@ import {
     updateLayers,
     createBackdropParts,
     css,
+    isBrowser,
 } from '@zeejs/browser';
 import React, { useRef, useMemo, createContext, CSSProperties, ReactNode, useEffect } from 'react';
 
@@ -31,9 +32,9 @@ export const Root = ({ className, style, children }: RootProps) => {
     const rootRef = useRef<HTMLDivElement>(null);
 
     const { rootLayer, parts } = useMemo(() => {
-        const style = document.createElement(`style`);
+        const style = isBrowser ? document.createElement(`style`) : { innerText: `` };
         style.innerText = css;
-        const parts = { style, ...createBackdropParts() };
+        const parts = { style: style as HTMLStyleElement, ...createBackdropParts() };
         const rootLayer = createRoot({
             onChange() {
                 const wrapper = rootRef.current;

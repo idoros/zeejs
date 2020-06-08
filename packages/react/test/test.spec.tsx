@@ -1,12 +1,18 @@
 import { Root, Layer } from '../src';
 import { domElementMatchers } from './chai-dom-element';
 import { ReactTestDriver } from './react-test-driver';
-import { expectImageSnapshot, getInteractionApi } from '@zeejs/test-browser/browser';
+import {
+    expectImageSnapshot,
+    getInteractionApi,
+    expectServerFixture,
+} from '@zeejs/test-browser/browser';
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { waitFor } from 'promise-assist';
 import chai, { expect } from 'chai';
-import { stub, spy } from 'sinon';
+import sinon, { stub, spy } from 'sinon';
 import sinonChai from 'sinon-chai';
+import { act } from 'react-dom/test-utils';
 chai.use(sinonChai);
 chai.use(domElementMatchers);
 
@@ -15,7 +21,10 @@ describe(`react`, () => {
     const { click, clickIfPossible, keyboard } = getInteractionApi();
 
     before('setup test driver', () => (testDriver = new ReactTestDriver()));
-    afterEach('clear test driver', () => testDriver.clean());
+    afterEach('clear test driver', () => {
+        testDriver.clean();
+        sinon.restore();
+    });
 
     it(`should render main layer`, () => {
         const { container } = testDriver.render(() => (
@@ -218,6 +227,40 @@ describe(`react`, () => {
 
         const layerNode = expectHTMLQuery(`#layer-node`);
         expect(layerNode.getBoundingClientRect()).to.eql(relativeNode.getBoundingClientRect());
+    });
+
+    it(`should hide layer component placeholder inline`, () => {
+        const { expectQuery } = testDriver.render(() => (
+            <Root>
+                <div id="root-node">
+                    <span id="before">before</span>
+                    <Layer>
+                        <div id="layer-node" />
+                    </Layer>
+                    <span id="after">after</span>
+                </div>
+            </Root>
+        ));
+
+        const before = expectQuery(`#before`);
+        const layerPlaceholder = before.nextElementSibling!;
+        const after = expectQuery(`#after`);
+
+        expect(layerPlaceholder, `placeholder exist`).domElement();
+        expect(layerPlaceholder.getBoundingClientRect(), `zero size`).to.include({
+            width: 0,
+            height: 0,
+        });
+        expect(window.getComputedStyle(before).top, `inline`).to.equal(
+            window.getComputedStyle(after).top
+        );
+
+        layerPlaceholder.innerHTML = `<div style="width: 100px; height: 100px;"></div>`;
+
+        expect(layerPlaceholder.getBoundingClientRect(), `zero size with content`).to.include({
+            width: 0,
+            height: 0,
+        });
     });
 
     describe(`backdrop`, () => {
@@ -509,6 +552,67 @@ describe(`react`, () => {
             await click(`#deep-node`);
 
             expect(onClickOutside, `no invocation for nested click`).to.have.callCount(0);
+        });
+    });
+
+    describe(`server rendering`, () => {
+        it(`should render root on server and connect in browser`, async () => {
+            const warnSpy = spy(console, `warn`);
+            const errorSpy = spy(console, `error`);
+            const container = document.createElement(`div`);
+            document.body.appendChild(container);
+
+            container.innerHTML = await expectServerFixture({
+                fixtureFileName: `render-root.tsx`,
+            });
+
+            act(() => {
+                ReactDOM.hydrate(<Root>content</Root>, container);
+            });
+
+            expect(container.textContent).to.equal(`content`);
+            expect(warnSpy, `no react warning`).to.have.callCount(0);
+            expect(errorSpy, `no react error`).to.have.callCount(0);
+            document.body.removeChild(container);
+        });
+
+        it(`should render layers nested and flattened in browser`, async () => {
+            const warnSpy = spy(console, `warn`);
+            const errorSpy = spy(console, `error`);
+            const container = document.createElement(`div`);
+            document.body.appendChild(container);
+
+            container.innerHTML = await expectServerFixture({
+                fixtureFileName: `render-layer.tsx`,
+            });
+
+            let rootNode = testDriver.expectHTMLQuery(container, `#root-node`);
+            let layerNode = testDriver.expectHTMLQuery(container, `#layer-node`);
+            expect(rootNode, `root exist in string`).domElement();
+            expect(rootNode, `layer inside root before client render`)
+                .domElement()
+                .contains(layerNode);
+
+            act(() => {
+                ReactDOM.hydrate(
+                    <Root>
+                        <div id="root-node">
+                            <Layer>
+                                <div id="layer-node" />
+                            </Layer>
+                        </div>
+                    </Root>,
+                    container
+                );
+            });
+
+            rootNode = testDriver.expectHTMLQuery(container, `#root-node`);
+            layerNode = testDriver.expectHTMLQuery(container, `#layer-node`);
+            expect(layerNode, `layer exist after client render`).domElement();
+            expect(rootNode, `layer after root`).domElement().preceding(layerNode);
+            expect(warnSpy, `no react warning`).to.have.callCount(0);
+            expect(errorSpy, `no react error`).to.have.callCount(0);
+            document.body.removeChild(container);
         });
     });
 });

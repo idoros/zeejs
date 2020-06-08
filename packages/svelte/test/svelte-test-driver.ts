@@ -26,6 +26,7 @@ export class SvelteTestDriver {
         const { $set } = new FixtureComp({
             target: container,
             props,
+            // hydrate: true // ?
         });
         return {
             updateProps: async (props: Record<string, any>) => {
@@ -42,7 +43,11 @@ export class SvelteTestDriver {
     }
 
     private evaluateFixture(fixture: string) {
-        const r = compile(fixture, { format: `cjs` }) as { js: { code: string } };
+        const r = compile(fixture, {
+            format: `cjs`,
+            generate: `dom`,
+            hydratable: true,
+        }) as { js: { code: string } };
         const _module: any = {
             id: `test-fixture`,
             exports: {},

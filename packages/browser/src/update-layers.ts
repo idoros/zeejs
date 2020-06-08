@@ -1,14 +1,16 @@
 import { DOMLayer } from './root';
 import { findContainingLayer } from './focus';
+import { isBrowser } from './utils';
 
 export interface BackdropElements {
     hide: HTMLElement;
     block: HTMLElement;
 }
+
 export function createBackdropParts(): BackdropElements {
     return {
-        block: document.createElement(`zeejs-block`),
-        hide: document.createElement(`zeejs-hide`),
+        block: isBrowser ? document.createElement(`zeejs-block`) : ({} as HTMLElement),
+        hide: isBrowser ? document.createElement(`zeejs-hide`) : ({} as HTMLElement),
     };
 }
 

@@ -50,6 +50,12 @@
         bottom: 0;
         background: rgba(66, 66, 66, 0.5);
     }
+    :global(zeejs-origin) {
+        overflow: hidden;
+        display: inline-block;
+        width: 0;
+        height: 0;
+    }
     :global(zeejs-layer) {
         pointer-events: none;
     }

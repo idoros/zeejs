@@ -29,6 +29,8 @@ module.exports = {
                     options: {
                         emitCss: true,
                         hotReload: true,
+                        generate: `dom`,
+                        hydratable: true,
                     },
                 },
             },

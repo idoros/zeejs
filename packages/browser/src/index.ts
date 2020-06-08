@@ -4,4 +4,5 @@ export { bindOverlay } from './bind-overlay';
 export { watchFocus } from './focus';
 export { watchClickOutside } from './click-outside';
 export { updateLayers, createBackdropParts } from './update-layers';
+export { isBrowser } from './utils';
 export { css } from './css';
