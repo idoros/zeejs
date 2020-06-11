@@ -190,6 +190,22 @@ describe(`update-layers`, () => {
         expect(wrapper.children[4], `secondLayer`).to.equal(secondLayer.element);
     });
 
+    it(`should remove hide/block when blocking layer is removed`, () => {
+        const wrapper = document.createElement(`div`);
+        const rootLayer = createRoot();
+        rootLayer.element.id = ``; // root can be override and doesn't require id
+        const blockingLayer = rootLayer.createLayer({
+            settings: { backdrop: `hide` },
+        });
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        rootLayer.removeLayer(blockingLayer);
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(wrapper.children.length, `root`).to.equal(1);
+        expect(wrapper.children[0], `root`).to.equal(rootLayer.element);
+    });
+
     it(`should set attribute inert for all layers before backdrop=block`, () => {
         const rootLayer = createRoot();
         const wrapper = document.createElement(`div`);
