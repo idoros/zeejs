@@ -68,11 +68,7 @@ export async function updateLayers(
     // - remove un-needed layers/backdrop
     // - find activated layers
     const activatedLayers: HTMLElement[] = [];
-    const blockedIndex = hiding
-        ? Number(hiding.style.zIndex)
-        : blocking
-        ? Number(blocking.style.zIndex)
-        : 0;
+    const blockedIndex = blocking ? Number(blocking.style.zIndex) : 0;
     for (const element of Array.from(wrapper.children)) {
         if (element instanceof HTMLElement && layersElementsToKeep.has(element)) {
             const index = Number(element.style.zIndex);
