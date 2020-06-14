@@ -190,10 +190,45 @@ describe(`update-layers`, () => {
         expect(wrapper.children[4], `secondLayer`).to.equal(secondLayer.element);
     });
 
-    it(`should set attribute inert for all layers before backdrop=block`, () => {
-        const rootLayer = createRoot();
+    it(`should remove hide/block when blocking layer is removed`, () => {
         const wrapper = document.createElement(`div`);
+        const rootLayer = createRoot();
+        rootLayer.element.id = ``; // root can be override and doesn't require id
+        const blockingLayer = rootLayer.createLayer({
+            settings: { backdrop: `hide` },
+        });
+        updateLayers(wrapper, rootLayer, backdropParts);
 
+        rootLayer.removeLayer(blockingLayer);
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(wrapper.children.length, `root`).to.equal(1);
+        expect(wrapper.children[0], `root`).to.equal(rootLayer.element);
+    });
+
+    it(`should set attribute inert for all layers before backdrop=block (separated hide&block)`, () => {
+        const wrapper = document.createElement(`div`);
+        const rootLayer = createRoot();
+        const layer2 = rootLayer.createLayer({ settings: { backdrop: `hide` } });
+        const layer3 = rootLayer.createLayer({ settings: { backdrop: `block` } });
+
+        updateLayers(wrapper, rootLayer, backdropParts);
+
+        expect(Array.from(wrapper.children), `order`).to.eql([
+            rootLayer.element,
+            backdropParts.hide,
+            layer2.element,
+            backdropParts.block,
+            layer3.element,
+        ]);
+        expect(rootLayer.element.hasAttribute(`inert`), `root inert`).to.equal(true);
+        expect(layer2.element.hasAttribute(`inert`), `layer2 inert`).to.equal(true);
+        expect(layer3.element.hasAttribute(`inert`), `layer3 not inert`).to.equal(false);
+    });
+
+    it(`should set attribute inert for all layers before backdrop=block`, () => {
+        const wrapper = document.createElement(`div`);
+        const rootLayer = createRoot();
         rootLayer.createLayer({ settings: { backdrop: `block` } });
         const secondLayer = rootLayer.createLayer({
             settings: { backdrop: `hide` },
