@@ -11,7 +11,8 @@
         "clean": "rimraf ./cjs ./esm",
         "build": "ts-build ./src --cjs --esm",
         "test": "node -r @ts-tools/node/r -r tsconfig-paths/register ./test/setup.ts",
-        "prepack": "yarn build"
+        "prepack": "yarn build",
+        "demo": "webpack-dev-server"
     },
     "dependencies": {
         "@zeejs/browser": "^0.0.1",
