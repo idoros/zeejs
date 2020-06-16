@@ -1,6 +1,6 @@
 {
     "name": "@zeejs/browser",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "HTML layering",
     "author": "Ido Rosenthal",
     "main": "./cjs/index.js",
@@ -14,7 +14,7 @@
     },
     "dependencies": {
         "@popperjs/core": "^2.4.0",
-        "@zeejs/core": "^0.0.1",
+        "@zeejs/core": "^0.1.0",
         "tabbable": "^4.0.0"
     },
     "files": [

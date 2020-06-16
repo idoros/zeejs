@@ -1,6 +1,6 @@
 {
     "name": "@zeejs/site",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "Documentation site",
     "author": "Ido Rosenthal",
     "private": true,
