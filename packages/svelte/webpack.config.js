@@ -1,13 +1,12 @@
 const { join } = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebPackPlugin = require('html-webpack-plugin');
 const mode = process.env.NODE_ENV || 'development';
 const prod = mode === 'production';
 
 module.exports = {
-    entry: {
-        bundle: ['./src/main.js'],
-    },
+    entry: { demo: `./demo/index.ts` },
     resolve: {
         extensions: ['.mjs', '.js', '.svelte', '.ts', '.tsx', '.json'],
         mainFields: ['svelte', 'browser', 'module', 'main'],
@@ -56,6 +55,11 @@ module.exports = {
         // new MiniCssExtractPlugin({
         // 	filename: '[name].css'
         // })
+        new HtmlWebPackPlugin({
+            template: './demo/index.html',
+            filename: './index.html',
+            chunks: ['main'],
+        }),
     ],
     devtool: prod ? false : 'source-map',
 };

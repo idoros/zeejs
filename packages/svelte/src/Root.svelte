@@ -16,7 +16,7 @@
             return;
         }
         rootLayer.element = rootLayerElement;
-        updateLayers(wrapper, rootLayer, backdrop);
+        updateLayers(wrapper, rootLayer, backdrop, true);
     };
     const rootLayer = createRoot({ onChange });
 
