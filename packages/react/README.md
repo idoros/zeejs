@@ -71,8 +71,8 @@ The component will generate a new zeejs layer above layer it is rendered in.
 
 | name             | type                        | default  | required | description                                                                                                  |
 | ---------------- | --------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------ |
-| `backdrop`       | 'none' \| 'block' \| 'hide'` | 'none'   | false    | background behavior; [see docs](http://www.github.com/idoros/zeejs/docs.documentation.md#backdrop)           |
-| `overlap`        | 'window' \| HTMLElement    | 'window' | false    | layer bounds reference                                                                                       |
+| `backdrop`       | "none" \| "block" \| "hide" | "none"   | false    | background behavior; [see docs](http://www.github.com/idoros/zeejs/docs.documentation.md#backdrop)           |
+| `overlap`        | "window" \| HTMLElement    | "window" | false    | layer bounds reference                                                                                       |
 | `onClickOutside` | () => void                |          | false    | invoked on click outside; [see docs](http://www.github.com/idoros/zeejs/docs.documentation.md#click-outside) |
 
 **code example:**
