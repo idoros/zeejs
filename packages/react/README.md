@@ -36,8 +36,8 @@ At the base of the application or website place the `<Root>` component. The Root
 
 | name        | type                  | default | required | description                                                          |
 | ----------- | --------------------- | ------- | -------- | -------------------------------------------------------------------- |
-| `className` | `string`              | ""      | false    | CSS class name to be placed on the wrapper element around all layers |
-| `style`     | `React.CSSProperties` | {}      | false    | CSS styles to be placed on the wrapper element around all layers     |
+| `className` | string              | ""      | false    | CSS class name to be placed on the wrapper element around all layers |
+| `style`     | React.CSSProperties | {}      | false    | CSS styles to be placed on the wrapper element around all layers     |
 
 **code example:**
 
@@ -71,9 +71,9 @@ The component will generate a new zeejs layer above layer it is rendered in.
 
 | name             | type                        | default  | required | description                                                                                                  |
 | ---------------- | --------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------ |
-| `backdrop`       | `'none' | 'block' | 'hide'` | 'none'   | false    | background behavior; [see docs](http://www.github.com/idoros/zeejs/docs.documentation.md#backdrop)           |
-| `overlap`        | `'window' | HTMLElement`    | 'window' | false    | layer bounds reference                                                                                       |
-| `onClickOutside` | `() => void`                |          | false    | invoked on click outside; [see docs](http://www.github.com/idoros/zeejs/docs.documentation.md#click-outside) |
+| `backdrop`       | 'none' \| 'block' \| 'hide'` | 'none'   | false    | background behavior; [see docs](http://www.github.com/idoros/zeejs/docs.documentation.md#backdrop)           |
+| `overlap`        | 'window' \| HTMLElement    | 'window' | false    | layer bounds reference                                                                                       |
+| `onClickOutside` | () => void                |          | false    | invoked on click outside; [see docs](http://www.github.com/idoros/zeejs/docs.documentation.md#click-outside) |
 
 **code example:**
 
