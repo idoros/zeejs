@@ -1,6 +1,6 @@
 <p align="center">
 
-![zeejs](https://github.com/idoros/zeejs/packages/site/media/logo.svg)
+![zeejs](https://raw.githubusercontent.com/idoros/zeejs/master/packages/site/media/logo.svg)
 
 ![test status](https://github.com/idoros/zeejs/workflows/test/badge.svg)
 
