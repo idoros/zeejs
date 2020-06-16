@@ -1,6 +1,6 @@
 {
     "name": "@zeejs/svelte",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "Svelte layering",
     "author": "Ido Rosenthal",
     "main": "./cjs/index.js",
@@ -15,8 +15,8 @@
         "demo": "webpack-dev-server"
     },
     "dependencies": {
-        "@zeejs/browser": "^0.0.1",
-        "@zeejs/core": "^0.0.1"
+        "@zeejs/browser": "^0.1.0",
+        "@zeejs/core": "^0.1.0"
     },
     "devDependencies": {
         "svelte": "^3.23.0",

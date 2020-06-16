@@ -1,6 +1,6 @@
 {
     "name": "@zeejs/react",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "React layering",
     "author": "Ido Rosenthal",
     "main": "./cjs/index.js",
@@ -14,8 +14,14 @@
         "demo": "webpack-dev-server"
     },
     "dependencies": {
-        "@zeejs/browser": "^0.0.1",
-        "@zeejs/core": "^0.0.1",
+        "@zeejs/browser": "^0.1.0",
+        "@zeejs/core": "^0.1.0"
+    },
+    "peerDependencies": {
+        "react": ">=16",
+        "react-dom": ">=16"
+    },
+    "devDependencies": {
         "react": "^16.13.1",
         "react-dom": "^16.13.1"
     },
