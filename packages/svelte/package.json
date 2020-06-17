@@ -1,6 +1,6 @@
 {
     "name": "@zeejs/svelte",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Svelte layering",
     "author": "Ido Rosenthal",
     "main": "./cjs/index.js",
@@ -9,7 +9,7 @@
     "svelte": "esm/index.js",
     "scripts": {
         "clean": "rimraf ./cjs ./esm",
-        "build": "ts-build ./src --cjs --esm",
+        "build": "ts-build ./src --cjs --esm && node build-svelte.js",
         "test": "node -r @ts-tools/node/r -r tsconfig-paths/register ./test/setup.ts",
         "prepack": "yarn build",
         "demo": "webpack-dev-server"
