@@ -2,7 +2,7 @@
 
 **zeejs** is built as a pure javascript, html & css library with published wrappers for specific rendering libraries / frameworks. This document describes the general behavior and terminology under the hood.
 
-> APIs for supported wrappers are located in their package README: [React](https://www.github.com/idoros/zeejs/packages/react), [Svelte](https://www.github.com/idoros/zeejs/packages/svelte)
+> APIs for supported wrappers are located in their package README: [React](https://github.com/idoros/zeejs/tree/master/packages/react), [Svelte](https://github.com/idoros/zeejs/tree/master/packages/svelte)
 
 ## layers
 
