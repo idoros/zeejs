@@ -5,8 +5,8 @@
 **zeejs React** - simple API to create multi layered UI
 
 ![test status](https://github.com/idoros/zeejs/workflows/test/badge.svg)
-[![npm version](https://badgen.net/npm/v/@zeejs/react?label=@zeejs/react)](https://www.npmjs.com/package/@zeejs/react)
-[![npm bundle size](https://badgen.net/bundlephobia/minzip/@zeejs/react?label=minzip)](https://bundlephobia.com/result?p=@zeejs/react)
+[![npm version](https://badgen.net/npm/v/@zeejs/react?label=@zeejs/react&cache=300)](https://www.npmjs.com/package/@zeejs/react)
+[![npm bundle size](https://badgen.net/bundlephobia/minzip/@zeejs/react?label=minzip&cache=300)](https://bundlephobia.com/result?p=@zeejs/react)
 </p>
 
 ## what's in the box

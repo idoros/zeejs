@@ -5,8 +5,8 @@
 **zeejs Svelte** - simple API to create multi layered UI
 
 ![test status](https://github.com/idoros/zeejs/workflows/test/badge.svg)
-[![npm version](https://badgen.net/npm/v/@zeejs/svelte?label=@zeejs/svelte)](https://www.npmjs.com/package/@zeejs/svelte)
-[![npm bundle size](https://badgen.net/bundlephobia/minzip/@zeejs/svelte?label=minzip)](https://bundlephobia.com/result?p=@zeejs/svelte)
+[![npm version](https://badgen.net/npm/v/@zeejs/svelte?label=@zeejs/svelte&cache=300)](https://www.npmjs.com/package/@zeejs/svelte)
+[![npm bundle size](https://badgen.net/bundlephobia/minzip/@zeejs/svelte?label=minzip&cache=300)](https://bundlephobia.com/result?p=@zeejs/svelte)
 
 </p>
 
