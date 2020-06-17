@@ -5,8 +5,8 @@
 **zeejs React** - simple API to create multi layered UI
 
 ![test status](https://github.com/idoros/zeejs/workflows/test/badge.svg)
-[![npm version](https://img.shields.io/npm/v/@zeejs/react.svg?label=@zeejs/react)](https://www.npmjs.com/package/@zeejs/react)
-![npm bundle size](https://img.shields.io/bundlephobia/minzip/@zeejs/react?label=minzip)
+[![npm version](https://badgen.net/npm/v/@zeejs/react?label=@zeejs/react)](https://www.npmjs.com/package/@zeejs/react)
+[![npm bundle size](https://badgen.net/bundlephobia/minzip/@zeejs/react?label=minzip)](https://bundlephobia.com/result?p=@zeejs/react)
 </p>
 
 ## what's in the box
@@ -24,7 +24,7 @@
 
 ## how to use
 
-This document describes the zeejs React usage, For a more in depth overview of `zeejs`, please see the general [documentation](http://www.github.com/idoros/zeejs/docs/documentation.md).
+This document describes the zeejs React usage, For a more in depth overview of `zeejs`, please see the general [documentation](https://github.com/idoros/zeejs/blob/master/docs/documentation.md).
 
 ### `<Root>` component
 
@@ -71,9 +71,9 @@ The component will generate a new zeejs layer above layer it is rendered in.
 
 | name             | type                        | default  | required | description                                                                                                  |
 | ---------------- | --------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------ |
-| `backdrop`       | "none" \| "block" \| "hide" | "none"   | false    | background behavior; [see docs](http://www.github.com/idoros/zeejs/docs.documentation.md#backdrop)           |
+| `backdrop`       | "none" \| "block" \| "hide" | "none"   | false    | background behavior; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#backdrop)           |
 | `overlap`        | "window" \| HTMLElement    | "window" | false    | layer bounds reference                                                                                       |
-| `onClickOutside` | () => void                |          | false    | invoked on click outside; [see docs](http://www.github.com/idoros/zeejs/docs.documentation.md#click-outside) |
+| `onClickOutside` | () => void                |          | false    | invoked on click outside; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#click-outside) |
 
 **code example:**
 

@@ -13,9 +13,9 @@
 -   **layers** - automatic ordering of nested layers
 -   **backdrop** - hide / block background **or** keep a layer as part of the flow
 -   **focus**
-    - <kbd>Tab</kbd> between layers
-    - trap focus above backdrop
-    - re-focus when blocking layer close
+    -   <kbd>Tab</kbd> between layers
+    -   trap focus above backdrop
+    -   re-focus when blocking layer close
 -   **click outside** - notification for click outside of logical layer
 -   **server rendering** - single pass nested rendering of layers in the server
 -   **typed** - built with [TypeScript](https://www.typescriptlang.org/)
@@ -27,10 +27,10 @@
 -   [read the docs](./docs/documentation.md)
 -   pick your renderer:
 
-| Package                     | Published                                                                                                                         | Size                                                                                               |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| [React](./packages/react)   | [![npm version](https://img.shields.io/npm/v/@zeejs/react.svg?label=@zeejs/react)](https://www.npmjs.com/package/@zeejs/react)    | ![npm bundle size (scoped)](https://img.shields.io/bundlephobia/minzip/@zeejs/react?label=minzip)  |
-| [Svelte](./packages/svelte) | [![npm version](https://img.shields.io/npm/v/@zeejs/svelte.svg?label=@zeejs/svelte)](https://www.npmjs.com/package/@zeejs/svelte) | ![npm bundle size (scoped)](https://img.shields.io/bundlephobia/minzip/@zeejs/svelte?label=minzip) |
+| Package                     | Published                                                                                                                 | Size                                                                                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| [React](./packages/react)   | [![npm version](https://badgen.net/npm/v/@zeejs/react?label=@zeejs/react)](https://www.npmjs.com/package/@zeejs/react)    | [![npm bundle size](https://badgen.net/bundlephobia/minzip/@zeejs/react?label=minzip)](https://bundlephobia.com/result?p=@zeejs/react)   |
+| [Svelte](./packages/svelte) | [![npm version](https://badgen.net/npm/v/@zeejs/svelte?label=@zeejs/svelte)](https://www.npmjs.com/package/@zeejs/svelte) | [![npm bundle size](https://badgen.net/bundlephobia/minzip/@zeejs/svelte?label=minzip)](https://bundlephobia.com/result?p=@zeejs/svelte) |
 
 ## caveats
 
