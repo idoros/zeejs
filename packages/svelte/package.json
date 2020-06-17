@@ -1,17 +1,18 @@
 {
     "name": "@zeejs/svelte",
-    "version": "0.1.1",
+    "version": "0.1.3",
     "description": "Svelte layering",
     "author": "Ido Rosenthal",
     "main": "./cjs/index.js",
     "module": "esm/index.js",
+    "browser": "dist/index.js",
     "types": "esm/index.d.ts",
     "svelte": "esm/index.js",
     "scripts": {
-        "clean": "rimraf ./cjs ./esm",
+        "clean": "rimraf ./cjs ./esm ./dist",
         "build": "ts-build ./src --cjs --esm && node build-svelte.js",
         "test": "node -r @ts-tools/node/r -r tsconfig-paths/register ./test/setup.ts",
-        "prepack": "yarn build",
+        "prepack": "yarn clean && yarn build",
         "demo": "webpack-dev-server"
     },
     "dependencies": {
@@ -25,6 +26,7 @@
     "files": [
         "cjs",
         "esm",
+        "dist",
         "src"
     ],
     "engines": {

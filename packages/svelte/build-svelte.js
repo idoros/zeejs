@@ -5,9 +5,12 @@ const nodeFs = require(`@file-services/node`).nodeFs;
 
 const cjsOutPath = path.join(__dirname, `./cjs`);
 const esmOutPath = path.join(__dirname, `./esm`);
+const esmBrowserOutPath = path.join(__dirname, `./dist`);
 const srcPath = path.join(__dirname, `./src`);
 
 const sveltePattern = `**/*.svelte`;
+
+nodeFs.copyDirectorySync(esmOutPath, esmBrowserOutPath);
 
 for (const compRelativePath of glob.sync(sveltePattern, { absolute: false, cwd: srcPath })) {
     const compAbsPath = path.join(srcPath, compRelativePath);
@@ -20,10 +23,11 @@ for (const compRelativePath of glob.sync(sveltePattern, { absolute: false, cwd: 
         css: true,
     });
 
+    nodeFs.ensureDirectorySync(path.join(esmBrowserOutPath, path.dirname(compRelativePath)));
     nodeFs.ensureDirectorySync(path.join(esmOutPath, path.dirname(compRelativePath)));
     nodeFs.ensureDirectorySync(path.join(cjsOutPath, path.dirname(compRelativePath)));
 
-    nodeFs.writeFileSync(path.join(esmOutPath, compRelativePath + `.js`), svelteEsm.js.code);
+    nodeFs.writeFileSync(path.join(esmBrowserOutPath, compRelativePath + `.js`), svelteEsm.js.code);
     nodeFs.writeFileSync(path.join(esmOutPath, compRelativePath), compSource);
     nodeFs.writeFileSync(path.join(cjsOutPath, compRelativePath), compSource);
 }
