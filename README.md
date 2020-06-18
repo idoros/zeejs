@@ -1,12 +1,11 @@
-<p align="center">
+<div align="center">
+    <img alt="zeejs" src="https://raw.githubusercontent.com/idoros/zeejs/master/packages/site/media/logo.svg" />
+    <p>Simple API to create multi layered UI</p>
+</div>
 
-![zeejs](https://raw.githubusercontent.com/idoros/zeejs/master/packages/site/media/logo.svg)
+<hr/>
 
-![test status](https://github.com/idoros/zeejs/workflows/test/badge.svg)
-
-**zeejs** provides a simple API to create multi layered UI
-
-</p>
+<img alt="test status" src="https://github.com/idoros/zeejs/workflows/test/badge.svg" />  
 
 ## what's in the box
 
