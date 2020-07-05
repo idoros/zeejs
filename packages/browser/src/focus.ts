@@ -1,3 +1,4 @@
+import { findContainingLayer } from './utils';
 import tabbable from 'tabbable';
 
 export function watchFocus(layersWrapper: HTMLElement) {
@@ -151,15 +152,4 @@ function queryFirstTabbable(
     } else {
         return firstElement;
     }
-}
-
-export function findContainingLayer(element: Element) {
-    let current: Element | null = element;
-    while (current) {
-        if (current.tagName === `ZEEJS-LAYER`) {
-            return current as HTMLElement;
-        }
-        current = current.parentElement;
-    }
-    return null;
 }

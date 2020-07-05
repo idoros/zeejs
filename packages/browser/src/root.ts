@@ -8,12 +8,14 @@ export interface LayerSettings {
     overlap: `window` | HTMLElement;
     backdrop: `none` | `block` | `hide`;
     onClickOutside?: () => void;
+    onMouseIntersection?: () => void;
     generateElement: boolean;
 }
 export interface LayerExtended {
     id: string;
     element: HTMLElement;
     settings: LayerSettings;
+    state: { mouseInside: boolean };
     setElement: (this: DOMLayer, element: HTMLElement) => void;
     [overlapBindConfig]: ReturnType<typeof bindOverlay>;
 }
@@ -58,6 +60,9 @@ export function createRoot({
             }
         },
         init(layer, settings) {
+            layer.state = {
+                mouseInside: false,
+            };
             layer.settings = settings;
             layer.id = `zeejs-layer-${idCounter++}`;
             if (settings.generateElement && isBrowser) {
