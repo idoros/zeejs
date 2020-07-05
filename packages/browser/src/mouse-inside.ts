@@ -14,15 +14,20 @@ export function watchMouseInside(
     const onMouseOut = (event: MouseEvent) => onTargetChange(event.relatedTarget);
     const onMouseOver = (event: MouseEvent) => onTargetChange(event.target);
     const onTargetChange = (nextTarget: EventTarget | null) => {
-        if (nextTarget instanceof Element && nextTarget !== lastTarget) {
-            newTarget = nextTarget;
-            if (!buffer) {
-                buffer = Promise.resolve().then(() => {
-                    if (buffer) {
-                        buffer = null;
-                        updateTarget();
-                    }
-                });
+        if (nextTarget instanceof Element) {
+            if (nextTarget !== lastTarget) {
+                newTarget = nextTarget;
+                if (!buffer) {
+                    buffer = Promise.resolve().then(() => {
+                        if (buffer) {
+                            buffer = null;
+                            updateTarget();
+                        }
+                    });
+                }
+            } else {
+                buffer = null;
+                newTarget = null;
             }
         }
     };
@@ -67,24 +72,14 @@ export function watchMouseInside(
             if (entered.has(current)) {
                 current = null;
             } else {
-                if (current.state.mouseInside) {
-                    current.state.mouseInside = false;
-                    if (current.settings.onMouseIntersection) {
-                        current.settings.onMouseIntersection();
-                    }
-                }
+                updateLayer(current, false);
                 current = current.parentLayer;
             }
         }
         // inform over layers
         current = overLayer;
         while (current) {
-            if (!current.state.mouseInside) {
-                current.state.mouseInside = true;
-                if (current.settings.onMouseIntersection) {
-                    current.settings.onMouseIntersection();
-                }
-            }
+            updateLayer(current, true);
             current = current.parentLayer;
         }
         // update state
@@ -101,4 +96,13 @@ export function watchMouseInside(
             wrapper.removeEventListener(`mouseout`, onMouseOut);
         },
     };
+}
+
+function updateLayer(layer: DOMLayer, isInside: boolean) {
+    if (layer.state.mouseInside !== isInside) {
+        layer.state.mouseInside = isInside;
+        if (layer.settings.onMouseIntersection) {
+            layer.settings.onMouseIntersection();
+        }
+    }
 }
