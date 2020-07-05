@@ -14,13 +14,16 @@ export function watchFocus(layersWrapper: HTMLElement) {
 type Focusable = { focus: () => void };
 
 const onFocus = (event: FocusEvent) => {
-    if (event.target && event.target instanceof HTMLElement) {
-        const layer = findContainingLayer(event.target);
+    const target = event.target;
+    if (target && target instanceof HTMLElement) {
+        const layer = findContainingLayer(target);
         if (!layer || layer.hasAttribute(`inert`)) {
             // ToDo: skip in case focus is invoked by `onKeyDown`
             const availableLayers = Array.from(
                 document.querySelectorAll<HTMLElement>(`zeejs-layer:not([inert])`)
             );
+            target.blur();
+            event.stopPropagation();
             while (availableLayers.length) {
                 const layer = availableLayers.shift()!;
                 const layerId = layer.id;
@@ -33,7 +36,6 @@ const onFocus = (event: FocusEvent) => {
                     }
                 }
             }
-            event.target.blur();
         }
     }
 };

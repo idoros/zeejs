@@ -2,6 +2,7 @@ import { watchFocus } from '../src';
 import { HTMLTestDriver } from './html-test-driver';
 import { getInteractionApi } from '@zeejs/test-browser/browser';
 import { expect } from 'chai';
+import { stub } from 'sinon';
 
 describe(`focus`, () => {
     let testDriver: HTMLTestDriver;
@@ -367,11 +368,12 @@ describe(`focus`, () => {
     });
 
     it(`should catch focus under inert and pass to first focusable element in a non-inert layer`, async () => {
+        const inertFocusHandler = stub();
         const { expectHTMLQuery, container } = testDriver.render(
             () => `
             <div>
                 <zeejs-layer inert>
-                    <input id="bgBeforeInput" />
+                    <input id="firstInertInput" />
                     <zeejs-origin data-origin="layerX" tabIndex="0">
                 </zeejs-layer>
                 <zeejs-layer id="layerX" >
@@ -380,11 +382,15 @@ describe(`focus`, () => {
             </div>
         `
         );
+        const firstInertInput = expectHTMLQuery(`#firstInertInput`);
+        const layerInput = expectHTMLQuery(`#layerInput`);
+        firstInertInput.addEventListener(`focus`, inertFocusHandler);
+
         watchFocus(container);
 
-        const layerInput = expectHTMLQuery(`#layerInput`);
-
         await keyboard.press(`Tab`);
+
         expect(document.activeElement, `focus first non inert input`).to.equal(layerInput);
+        expect(inertFocusHandler, `inert input shouldn't get called`).callCount(0);
     });
 });
