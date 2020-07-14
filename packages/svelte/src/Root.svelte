@@ -23,7 +23,7 @@
     setContext(`zeejs-context`, rootLayer);
 
     onMount(() => {
-        const { stop: stopFocus } = watchFocus(wrapper);
+        const { stop: stopFocus } = watchFocus(wrapper, rootLayer);
         const { stop: stopClickOutside } = watchClickOutside(wrapper, rootLayer, backdrop);
         onChange();
         return () => {

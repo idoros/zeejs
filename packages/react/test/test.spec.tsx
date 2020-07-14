@@ -495,6 +495,27 @@ describe(`react`, () => {
             expect(warnSpy, `no react warning`).to.have.callCount(0);
             expect(errorSpy, `no react error`).to.have.callCount(0);
         });
+
+        it(`should report on focus change`, async () => {
+            const onFocusChange = stub();
+            testDriver.render(() => (
+                <Root>
+                    <input id="root-input" />
+                    <Layer onFocusChange={onFocusChange}>
+                        <input id="layer-input" style={{ margin: `1em` }} />
+                    </Layer>
+                </Root>
+            ));
+
+            await click(`#layer-input`);
+
+            expect(onFocusChange, `focus in layer`).to.have.been.calledOnceWith(true);
+            onFocusChange.reset();
+
+            await click(`#root-input`);
+
+            expect(onFocusChange, `focus out of layer`).to.have.been.calledOnceWith(false);
+        });
     });
 
     describe(`click outside`, () => {

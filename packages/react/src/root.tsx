@@ -52,7 +52,7 @@ export const Root = ({ className, style, children }: RootProps) => {
         const wrapper = rootRef.current!;
         document.head.appendChild(parts.style);
         rootLayer.element = wrapper.firstElementChild! as HTMLElement;
-        const { stop: stopFocus } = watchFocus(wrapper);
+        const { stop: stopFocus } = watchFocus(wrapper, rootLayer);
         const { stop: stopClickOutside } = watchClickOutside(wrapper, rootLayer, parts);
         updateLayers(wrapper, rootLayer, parts);
         () => {

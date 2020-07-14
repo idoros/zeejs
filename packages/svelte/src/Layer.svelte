@@ -4,6 +4,7 @@
     export let overlap = `window`;
     export let backdrop = `none`;
     export let onClickOutside;
+    export let onFocusChange;
 
     let originRoot;
     let element;
@@ -13,7 +14,12 @@
             overlap,
             backdrop,
             onClickOutside,
-            generateElement: false
+            generateElement: false,
+            onFocusChange: () => {
+                if (onFocusChange) {
+                    onFocusChange(layer.state.focusInside);
+                }
+            },
         }
     });
 

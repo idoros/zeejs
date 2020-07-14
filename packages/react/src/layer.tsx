@@ -9,6 +9,7 @@ export interface LayerProps {
     overlap?: `window` | HTMLElement;
     backdrop?: `none` | `block` | `hide`;
     onClickOutside?: () => void;
+    onFocusChange?: (isFocused: boolean) => void;
 }
 
 // ToDo: handle styling on portal root
@@ -17,6 +18,7 @@ export const Layer = ({
     overlap = `window`,
     backdrop = `none`,
     onClickOutside,
+    onFocusChange,
 }: LayerProps) => {
     const parentLayer = useContext(zeejsContext);
     const layer = useMemo(
@@ -26,6 +28,11 @@ export const Layer = ({
                     overlap,
                     backdrop,
                     onClickOutside,
+                    onFocusChange: () => {
+                        if (onFocusChange) {
+                            onFocusChange(layer.state.focusInside);
+                        }
+                    },
                 },
             }),
         []

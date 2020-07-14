@@ -496,6 +496,35 @@ describe(`svelte`, () => {
 
             expect(document.activeElement, `refocus input`).to.equal(bgInput);
         });
+
+        it(`should report on focus change`, async () => {
+            const onFocusChange = stub();
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let onFocusChange;
+                </script>
+                <Root>
+                    <input id="root-input" />
+                    <Layer onFocusChange={onFocusChange}>
+                        <input id="layer-input" style="margin: 1em;" />
+                    </Layer>
+                </Root>
+                         />
+            `,
+                { onFocusChange }
+            );
+
+            await click(`#layer-input`);
+
+            expect(onFocusChange, `focus in layer`).to.have.been.calledOnceWith(true);
+            onFocusChange.reset();
+
+            await click(`#root-input`);
+
+            expect(onFocusChange, `focus out of layer`).to.have.been.calledOnceWith(false);
+        });
     });
 
     describe(`click outside`, () => {
