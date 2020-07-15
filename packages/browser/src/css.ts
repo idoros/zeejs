@@ -24,4 +24,8 @@ zeejs-layer > * {
     left: 0;
     right: 0;
     bottom: 0;
-}`;
+}
+.zeejs--notPlaced, .zeejs--notPlaced * {
+    visibility: hidden!important;
+}
+`;
