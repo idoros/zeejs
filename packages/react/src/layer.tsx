@@ -9,6 +9,7 @@ export interface LayerProps {
     overlap?: `window` | HTMLElement;
     backdrop?: `none` | `block` | `hide`;
     onClickOutside?: () => void;
+    onMouseIntersection?: (isInside: boolean) => void;
     onFocusChange?: (isFocused: boolean) => void;
 }
 
@@ -18,6 +19,7 @@ export const Layer = ({
     overlap = `window`,
     backdrop = `none`,
     onClickOutside,
+    onMouseIntersection,
     onFocusChange,
 }: LayerProps) => {
     const parentLayer = useContext(zeejsContext);
@@ -28,6 +30,11 @@ export const Layer = ({
                     overlap,
                     backdrop,
                     onClickOutside,
+                    onMouseIntersection: () => {
+                        if (onMouseIntersection) {
+                            onMouseIntersection(layer.state.mouseInside);
+                        }
+                    },
                     onFocusChange: () => {
                         if (onFocusChange) {
                             onFocusChange(layer.state.focusInside);

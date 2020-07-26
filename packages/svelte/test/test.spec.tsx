@@ -16,7 +16,7 @@ chai.use(domElementMatchers);
 
 describe(`svelte`, () => {
     let testDriver: SvelteTestDriver;
-    const { click, clickIfPossible, keyboard } = getInteractionApi();
+    const { click, clickIfPossible, keyboard, hover } = getInteractionApi();
 
     before('setup test driver', () => {
         testDriver = new SvelteTestDriver({
@@ -581,6 +581,43 @@ describe(`svelte`, () => {
             await click(`#deep-node`);
 
             expect(onClickOutside, `no invocation for nested click`).to.have.callCount(0);
+        });
+    });
+
+    describe(`mouse inside`, () => {
+        it(`should inform layer when mouse enters and leaves`, async () => {
+            const onMouseIntersection = stub();
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let onMouseIntersection;
+                </script>
+                <Root>
+                    <div id="root-node" style="width: 100px; height: 100px; background: green;">
+                        <Layer onMouseIntersection={onMouseIntersection}>
+                            <div id="layer-node" style="width: 50px; height: 50px; background: red;" />
+                        </Layer>
+                    </div>
+                </Root>
+            `,
+                { onMouseIntersection }
+            );
+
+            await hover(`#layer-node`);
+
+            await waitFor(() => {
+                expect(onMouseIntersection, `catch mouse inside layer`).to.have.callCount(1);
+                expect(onMouseIntersection, `called with true`).to.have.been.calledWith(true);
+            });
+            onMouseIntersection.reset();
+
+            await hover(`#root-node`);
+
+            await waitFor(() => {
+                expect(onMouseIntersection, `catch mouse outside layer`).to.have.callCount(1);
+                expect(onMouseIntersection, `called with false`).to.have.been.calledWith(false);
+            });
         });
     });
 

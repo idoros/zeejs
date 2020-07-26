@@ -5,6 +5,7 @@
     export let backdrop = `none`;
     export let onClickOutside;
     export let onFocusChange;
+    export let onMouseIntersection;
 
     let originRoot;
     let element;
@@ -15,6 +16,11 @@
             backdrop,
             onClickOutside,
             generateElement: false,
+            onMouseIntersection: () => {
+                if (onMouseIntersection) {
+                    onMouseIntersection(layer.state.mouseInside);
+                }
+            },
             onFocusChange: () => {
                 if (onFocusChange) {
                     onFocusChange(layer.state.focusInside);
