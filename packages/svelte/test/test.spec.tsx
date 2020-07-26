@@ -8,6 +8,7 @@ import {
     getInteractionApi,
     expectServerFixture,
 } from '@zeejs/test-browser/browser';
+import { waitFor } from 'promise-assist';
 import chai, { expect } from 'chai';
 import sinon, { stub, spy } from 'sinon';
 import sinonChai from 'sinon-chai';
