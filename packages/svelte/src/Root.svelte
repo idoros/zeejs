@@ -72,6 +72,9 @@
         right: 0;
         bottom: 0;
     }
+    :global(.zeejs--notPlaced), :global(.zeejs--notPlaced) * {
+        visibility: hidden!important;
+    }
 </style>
 
 <div bind:this={wrapper}>

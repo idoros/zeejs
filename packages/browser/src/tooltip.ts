@@ -150,5 +150,11 @@ export const tooltip = ({
         flagOverlayFocus,
         setOverlay,
         initialOverlayCSSClass: NOT_PLACED,
+        stop() {
+            unsetAnchor();
+            window.removeEventListener(`mousemove`, onMouseMove);
+            cancelAnimationFrame(blurBuffer);
+            clearTimeout(buffer);
+        },
     };
 };

@@ -1,0 +1,45 @@
+<script>
+    import Layer from './Layer.svelte';
+    import { tooltip, isContainedBy } from '@zeejs/browser';
+    import { onMount, afterUpdate } from 'svelte';
+
+    export let mouseDelay;
+
+    let placeholderRef;
+    let overlayRef;
+    let isOpen = false;
+    const tooltipLogic = tooltip({
+        onToggle() {
+            isOpen = !isOpen;
+        },
+        mouseDelay,
+        isInOverlay: isContainedBy,
+    });
+
+    onMount(() => {
+        const anchor = placeholderRef.parentElement;
+        if (!anchor) {
+            return;
+        }
+        tooltipLogic.setAnchor(anchor);
+        return () => tooltipLogic.stop();
+    });
+    afterUpdate(() => {
+        tooltipLogic.setOverlay(overlayRef);
+    });
+</script>
+
+<span bind:this={placeholderRef}>
+    {#if isOpen}
+        <Layer
+            onFocusChange={tooltipLogic.flagOverlayFocus}
+            onMouseIntersection={tooltipLogic.flagMouseOverOverlay}
+            onClickOutside={() => tooltipLogic.flagOverlayFocus(false)}
+        >
+            <div bind:this={overlayRef} className={tooltipLogic.initialOverlayCSSClass}>
+                <slot />
+            </div>
+        </Layer>
+    {/if}
+</span>
+

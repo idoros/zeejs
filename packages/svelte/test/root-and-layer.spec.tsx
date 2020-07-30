@@ -1,43 +1,52 @@
-import { Root, Layer } from '../src';
+import * as zeejsSvelte from '../src';
 import { domElementMatchers } from './chai-dom-element';
-import { ReactTestDriver } from './react-test-driver';
+import RenderRootServerFixture from './server-fixtures/RenderRoot.svelte';
+import RenderLayerServerFixture from './server-fixtures/RenderLayer.svelte';
+import { SvelteTestDriver } from './svelte-test-driver';
 import {
     expectImageSnapshot,
     getInteractionApi,
     expectServerFixture,
 } from '@zeejs/test-browser/browser';
-import React from 'react';
-import ReactDOM from 'react-dom';
 import { waitFor } from 'promise-assist';
 import chai, { expect } from 'chai';
 import sinon, { stub, spy } from 'sinon';
 import sinonChai from 'sinon-chai';
-import { act } from 'react-dom/test-utils';
 chai.use(sinonChai);
 chai.use(domElementMatchers);
 
-describe(`react`, () => {
-    let testDriver: ReactTestDriver;
+describe(`svelte`, () => {
+    let testDriver: SvelteTestDriver;
     const { click, clickIfPossible, keyboard, hover } = getInteractionApi();
 
-    before('setup test driver', () => (testDriver = new ReactTestDriver()));
+    before('setup test driver', () => {
+        testDriver = new SvelteTestDriver({
+            '@zeejs/svelte': zeejsSvelte,
+        });
+    });
     afterEach('clear test driver', () => {
         testDriver.clean();
         sinon.restore();
     });
 
     it(`should render main layer`, () => {
-        const { container } = testDriver.render(() => (
+        const { container } = testDriver.render(`
+            <script>
+                import {Root} from '@zeejs/svelte';
+            </script>
             <Root>
                 <div>content</div>
             </Root>
-        ));
+        `);
 
         expect(container.textContent).to.equal(`content`);
     });
 
     it(`should position layer after main layer in DOM`, () => {
-        const { expectQuery } = testDriver.render(() => (
+        const { expectQuery } = testDriver.render(`
+            <script>
+                import {Root, Layer} from '@zeejs/svelte';
+            </script>
             <Root>
                 <div id="root-node">
                     <Layer>
@@ -45,7 +54,7 @@ describe(`react`, () => {
                     </Layer>
                 </div>
             </Root>
-        ));
+        `);
 
         const rootNode = expectQuery(`#root-node`);
         const layerNode = expectQuery(`#layer-node`);
@@ -53,84 +62,81 @@ describe(`react`, () => {
         expect(rootNode, `layer after root`).domElement().preceding(layerNode);
     });
 
-    it(`should render layer after initial render`, () => {
-        const { expectQuery, query, setData } = testDriver.render<boolean>(
-            (renderLayer) => (
-                <Root>
-                    <div id="root-node">
-                        {renderLayer ? (
-                            <Layer>
-                                <div id="layer-node" />
-                            </Layer>
-                        ) : null}
-                    </div>
-                </Root>
-            ),
-            {
-                initialData: false,
-            }
-        );
+    it(`should render layer after initial render`, async () => {
+        const { expectQuery, query, updateProps } = testDriver.render(`
+            <script>
+                import {Root, Layer} from '@zeejs/svelte';
+                export let renderLayer = false;
+            </script>
+            <Root>
+                <div id="root-node">
+                    {#if renderLayer}
+                        <Layer>
+                            <div id="layer-node" />
+                        </Layer>
+                    {/if}
+                </div>
+            </Root>
+        `);
 
         expect(query(`#layer-node`), `before layer render`).to.not.be.domElement();
 
-        setData(true);
+        await updateProps({ renderLayer: true });
 
         const rootNode = expectQuery(`#root-node`);
         const layerNode = expectQuery(`#layer-node`);
         expect(rootNode).domElement().preceding(layerNode);
     });
 
-    it(`should remove layer`, () => {
-        const { container } = testDriver.render(() => (
+    it(`should remove layer`, async () => {
+        const { container, updateProps } = testDriver.render(`
+            <script>
+                import {Root, Layer} from '@zeejs/svelte';
+                export let renderLayer = true;
+            </script>
             <Root>
                 <div id="root-node">
-                    <Layer>
-                        <div id="layer-node" />
-                    </Layer>
+                    {#if renderLayer}
+                        <Layer>
+                            <div id="layer-node" />
+                        </Layer>
+                    {/if}
                 </div>
             </Root>
-        ));
+        `);
 
-        testDriver.render(
-            () => (
-                <Root>
-                    <div id="root-node" />
-                </Root>
-            ),
-            { container }
-        );
+        await updateProps({ renderLayer: false });
 
         const layerNode = container.querySelector(`#layer-node`);
         expect(layerNode, `layer not rendered`).to.equal(null);
         expect(container.firstElementChild?.childElementCount, `only root content`).to.equal(1);
     });
 
-    it(`should render and remove deep nested layer`, () => {
-        const { expectQuery, query, setData } = testDriver.render<boolean>(
-            (renderLayer) => (
-                <Root>
-                    <div id="main">
-                        <Layer>
-                            <div id="shallow">
-                                {renderLayer ? (
-                                    <Layer>
-                                        <div id="deep" />
-                                    </Layer>
-                                ) : null}
-                            </div>
-                        </Layer>
-                    </div>
-                </Root>
-            ),
-            {
-                initialData: false,
-            }
-        );
+    it(`should render and remove deep nested layer`, async () => {
+        const { updateProps, query, expectQuery } = testDriver.render(`
+            <script>
+                import {Root, Layer} from '@zeejs/svelte';
+                export let renderLayer = false;
+            </script>
+            <Root>
+                <div id="main">
+                    <Layer>
+                        <div id="shallow">
+                            {#if renderLayer}
+                                <Layer>
+                                    <div id="deep" />
+                                </Layer>
+                            {/if}
+                        </div>
+                    </Layer>
+                </div>
+            </Root>
+        `);
 
         expect(query(`#deep`), `not rendered`).to.not.be.domElement();
 
         // render deep layer
-        setData(true);
+        await updateProps({ renderLayer: true });
 
         const mainNode = expectQuery(`#main`);
         const shallowNode = expectQuery(`#shallow`);
@@ -139,28 +145,28 @@ describe(`react`, () => {
         expect(shallowNode, `shallow before deep`).domElement().preceding(deepNode);
 
         // render without deep layer
-        setData(false);
+        await updateProps({ renderLayer: false });
 
         expect(query(`#deep`), `not rendered`).to.not.be.domElement();
     });
 
     it(`should place layer relative to window (default)`, () => {
         const { innerWidth, innerHeight } = window;
-        const { expectQuery } = testDriver.render(() => (
+        const { expectQuery } = testDriver.render(`
+            <script>
+                import {Root, Layer} from '@zeejs/svelte';
+            </script>
             <Root>
                 <div
                     id="root-node"
-                    style={{
-                        height: innerHeight * 2,
-                        width: innerWidth * 2,
-                    }}
+                    style="height: 200vh; width: 200vw;"
                 >
                     <Layer>
-                        <div id="layer-node" style={{ width: `100%`, height: `100%` }} />
+                        <div id="layer-node" style="width: 100%; height: 100%;" />
                     </Layer>
                 </div>
             </Root>
-        ));
+        `);
 
         window.scrollTo(innerWidth, innerHeight);
 
@@ -173,64 +179,47 @@ describe(`react`, () => {
         });
     });
 
-    it(`should place layer relative to element`, () => {
+    it(`should place layer relative to element`, async () => {
         const { innerWidth, innerHeight } = window;
-        const { expectHTMLQuery, container } = testDriver.render(() => (
+        const { expectHTMLQuery } = testDriver.render(`
+            <script>
+                import {Root, Layer} from '@zeejs/svelte';
+                let relativeNode;
+            </script>
             <Root>
                 <div
                     id="root-node"
-                    style={{
-                        height: innerHeight * 2,
-                        width: innerWidth * 2,
-                    }}
+                    style="height: 200vh; width: 200vw;"
                 >
                     <div
+                        bind:this={relativeNode}
                         id="relative-node"
-                        style={{
-                            width: `200px`,
-                            height: `100px`,
-                            margin: `30px`,
-                        }}
+                        style="width: 200px; height: 100px; margin: 30px;"
                     />
+                    {#if relativeNode}
+                        <Layer overlap={relativeNode}>
+                            <div id="layer-node" style="width: 100%; height: 100%;" />
+                        </Layer>
+                    {/if}
                 </div>
             </Root>
-        ));
+        `);
         const relativeNode = expectHTMLQuery(`#relative-node`);
 
-        testDriver.render(
-            () => (
-                <Root>
-                    <div
-                        id="root-node"
-                        style={{
-                            height: innerHeight * 2,
-                            width: innerWidth * 2,
-                        }}
-                    >
-                        <div
-                            id="relative-node"
-                            style={{
-                                width: `200px`,
-                                height: `100px`,
-                                margin: `30px`,
-                            }}
-                        />
-                        <Layer overlap={relativeNode}>
-                            <div id="layer-node" style={{ width: `100%`, height: `100%` }} />
-                        </Layer>
-                    </div>
-                </Root>
-            ),
-            { container }
-        );
         window.scrollTo(innerWidth, innerHeight);
 
         const layerNode = expectHTMLQuery(`#layer-node`);
-        expect(layerNode.getBoundingClientRect()).to.eql(relativeNode.getBoundingClientRect());
+        await waitFor(() => {
+            expect(layerNode.getBoundingClientRect()).to.eql(relativeNode.getBoundingClientRect());
+        });
     });
 
     it(`should hide layer component placeholder inline`, () => {
-        const { expectQuery } = testDriver.render(() => (
+        const { expectQuery } = testDriver.render(`
+            <script>
+                import {Root, Layer} from '@zeejs/svelte';
+                let relativeNode;
+            </script>
             <Root>
                 <div id="root-node">
                     <span id="before">before</span>
@@ -240,7 +229,7 @@ describe(`react`, () => {
                     <span id="after">after</span>
                 </div>
             </Root>
-        ));
+        `);
 
         const before = expectQuery(`#before`);
         const layerPlaceholder = before.nextElementSibling!;
@@ -266,18 +255,25 @@ describe(`react`, () => {
     describe(`backdrop`, () => {
         it(`should click through backdrop by default (backdrop="none")`, async () => {
             const contentClick = stub();
-            testDriver.render(() => (
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let contentClick;
+                </script>
                 <Root>
                     <div
                         id="back-item"
-                        onClick={() => contentClick()}
-                        style={{ width: `400px`, height: `400px` }}
+                        on:click={contentClick}
+                        style="width: 400px; height: 400px;"
                     />
                     <Layer>
                         <span />
                     </Layer>
                 </Root>
-            ));
+            `,
+                { contentClick }
+            );
 
             await click(`#back-item`);
 
@@ -286,18 +282,25 @@ describe(`react`, () => {
 
         it(`should prevent clicks through "block" backdrop`, async () => {
             const contentClick = stub();
-            testDriver.render(() => (
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let contentClick;
+                </script>
                 <Root>
                     <div
                         id="back-item"
-                        onClick={() => contentClick()}
-                        style={{ width: `400px`, height: `400px` }}
+                        on:click={contentClick}
+                        style="width: 400px; height: 400px;"
                     />
                     <Layer backdrop="block">
                         <span />
                     </Layer>
                 </Root>
-            ));
+            `,
+                { contentClick }
+            );
 
             expect(await clickIfPossible(`#back-item`), `not clickable`).to.equal(false);
             expect(contentClick).to.have.callCount(0);
@@ -305,20 +308,27 @@ describe(`react`, () => {
 
         it(`should prevent clicks on other layers through "block" backdrop`, async () => {
             const contentClick = stub();
-            testDriver.render(() => (
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let contentClick;
+                </script>
                 <Root>
                     <Layer backdrop="block">
                         <div
                             id="layer-item"
-                            onClick={() => contentClick()}
-                            style={{ width: `400px`, height: `400px` }}
+                            on:click={contentClick}
+                            style="width: 400px; height: 400px;"
                         />
                     </Layer>
                     <Layer backdrop="block">
                         <span />
                     </Layer>
                 </Root>
-            ));
+            `,
+                { contentClick }
+            );
 
             expect(await clickIfPossible(`#layer-item`), `not clickable`).to.equal(false);
             expect(contentClick).to.have.callCount(0);
@@ -326,20 +336,27 @@ describe(`react`, () => {
 
         it(`should click through to other layers with "none" backdrop (default)`, async () => {
             const contentClick = stub();
-            testDriver.render(() => (
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let contentClick;
+                </script>
                 <Root>
                     <Layer backdrop="block">
                         <div
                             id="layer-item"
-                            onClick={() => contentClick()}
-                            style={{ width: `400px`, height: `400px` }}
+                            on:click={contentClick}
+                            style="width: 400px; height: 400px;"
                         />
                     </Layer>
                     <Layer backdrop="none">
                         <span />
                     </Layer>
                 </Root>
-            ));
+            `,
+                { contentClick }
+            );
 
             await click(`#layer-item`);
 
@@ -348,28 +365,27 @@ describe(`react`, () => {
 
         it(`should hide content behind layer (backdrop="hide")`, async () => {
             const contentClick = stub();
-            testDriver.render(() => (
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let contentClick;
+                </script>
                 <Root>
                     <div
                         id="back-item"
-                        onClick={() => contentClick()}
-                        style={{
-                            width: `400px`,
-                            height: `400px`,
-                            background: `green`,
-                        }}
+                        on:click={contentClick}
+                        style="width: 400px; height: 400px; background: green;"
                     />
                     <Layer backdrop="hide">
                         <div
-                            style={{
-                                width: `200px`,
-                                height: `200px`,
-                                background: `green`,
-                            }}
+                            style="width: 200px; height: 200px; background: green;"
                         />
                     </Layer>
                 </Root>
-            ));
+            `,
+                { contentClick }
+            );
 
             expect(await clickIfPossible(`#back-item`), `not clickable`).to.equal(false);
 
@@ -380,37 +396,26 @@ describe(`react`, () => {
         });
 
         it(`should hide content between layers (backdrop="hide")`, async () => {
-            testDriver.render(() => (
+            testDriver.render(`
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                </script>
                 <Root>
                     <div
-                        style={{
-                            width: `400px`,
-                            height: `400px`,
-                            background: `green`,
-                        }}
+                        style="width: 400px; height: 400px; background: green;"
                     />
                     <Layer backdrop="hide">
                         <div
-                            style={{
-                                width: `200px`,
-                                height: `200px`,
-                                position: `absolute`,
-                                right: 0,
-                                background: `green`,
-                            }}
+                            style="width: 200px; height: 200px; position: absolute; right: 0; background: green;"
                         />
                     </Layer>
                     <Layer backdrop="hide">
                         <div
-                            style={{
-                                width: `100px`,
-                                height: `100px`,
-                                background: `green`,
-                            }}
+                            style="width: 100px; height: 100px; background: green;"
                         />
                     </Layer>
                 </Root>
-            ));
+            `);
 
             await expectImageSnapshot({
                 filePath: `backdrop/should hide content between layer (backdrop=hide)`,
@@ -420,7 +425,10 @@ describe(`react`, () => {
 
     describe(`focus`, () => {
         it(`should keep layer as part of tab order`, async () => {
-            const { expectHTMLQuery } = testDriver.render<boolean>(() => (
+            const { expectHTMLQuery } = testDriver.render(`
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                </script>
                 <Root>
                     <input id="bgBeforeInput" />
                     <Layer>
@@ -428,7 +436,7 @@ describe(`react`, () => {
                     </Layer>
                     <input id="bgAfterInput" />
                 </Root>
-            ));
+            `);
             const bgBeforeInput = expectHTMLQuery(`#bgBeforeInput`);
             const layerInput = expectHTMLQuery(`#layerInput`);
             const bgAfterInput = expectHTMLQuery(`#bgAfterInput`);
@@ -444,7 +452,10 @@ describe(`react`, () => {
         });
 
         it(`should trap focus in blocking layer`, async () => {
-            const { expectHTMLQuery } = testDriver.render<boolean>(() => (
+            const { expectHTMLQuery } = testDriver.render(`
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                </script>
                 <Root>
                     <input id="bgBeforeInput" />
                     <Layer backdrop="block">
@@ -453,7 +464,7 @@ describe(`react`, () => {
                     </Layer>
                     <input id="bgAfterInput" />
                 </Root>
-            ));
+            `);
             const layerFirstInput = expectHTMLQuery(`#layerFirstInput`);
             const layerLastInput = expectHTMLQuery(`#layerLastInput`);
 
@@ -465,47 +476,48 @@ describe(`react`, () => {
         });
 
         it(`should re-focus last element of an un-blocked layer`, async () => {
-            const warnSpy = spy(console, `warn`);
-            const errorSpy = spy(console, `error`);
-            const { expectHTMLQuery, setData } = testDriver.render<boolean>(
-                (renderLayer) => (
-                    <Root>
-                        <input id="bgInput" />
-                        {renderLayer ? <Layer backdrop="block">layer content</Layer> : null}
-                    </Root>
-                ),
-                { initialData: false }
-            );
+            const { expectHTMLQuery, updateProps } = testDriver.render(`
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let renderLayer = false;
+                </script>
+                <Root>
+                    <input id="bgInput" />
+                    {#if renderLayer}
+                        <Layer backdrop="block">layer content</Layer>
+                    {/if}
+                </Root>
+            `);
             const bgInput = expectHTMLQuery(`#bgInput`);
             bgInput.focus();
 
-            setData(true);
+            await updateProps({ renderLayer: true });
 
-            await waitFor(() => {
-                expect(document.activeElement, `blocked input blur`).to.equal(document.body);
-            });
+            expect(document.activeElement, `blocked input blur`).to.equal(document.body);
 
-            setData(false);
+            await updateProps({ renderLayer: false });
 
-            await waitFor(() => {
-                expect(document.activeElement, `refocus input`).to.equal(bgInput);
-            });
-            /* blur/re-focus is delayed because React listens for blur of rendered elements during render.
-            just check that no logs have been called. */
-            expect(warnSpy, `no react warning`).to.have.callCount(0);
-            expect(errorSpy, `no react error`).to.have.callCount(0);
+            expect(document.activeElement, `refocus input`).to.equal(bgInput);
         });
 
         it(`should report on focus change`, async () => {
             const onFocusChange = stub();
-            testDriver.render(() => (
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let onFocusChange;
+                </script>
                 <Root>
                     <input id="root-input" />
                     <Layer onFocusChange={onFocusChange}>
-                        <input id="layer-input" style={{ margin: `1em` }} />
+                        <input id="layer-input" style="margin: 1em;" />
                     </Layer>
                 </Root>
-            ));
+                         />
+            `,
+                { onFocusChange }
+            );
 
             await click(`#layer-input`);
 
@@ -521,21 +533,22 @@ describe(`react`, () => {
     describe(`click outside`, () => {
         it(`should invoke onClickOutside handler for click on root`, async () => {
             const onClickOutside = stub();
-            testDriver.render(() => (
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let onClickOutside;
+                </script>
                 <Root>
-                    <div
-                        id="root-node"
-                        style={{ width: `100px`, height: `100px`, background: `green` }}
-                    >
+                    <div id="root-node" style="width: 100px; height: 100px; background: green;">
                         <Layer onClickOutside={onClickOutside}>
-                            <div
-                                id="layer-node"
-                                style={{ width: `50px`, height: `50px`, background: `red` }}
-                            />
+                            <div id="layer-node" style="width: 50px; height: 50px; background: red;" />
                         </Layer>
                     </div>
                 </Root>
-            ));
+            `,
+                { onClickOutside }
+            );
 
             await click(`#root-node`);
 
@@ -548,27 +561,25 @@ describe(`react`, () => {
 
         it(`should not invoke onClickOutside handler for nested layer click`, async () => {
             const onClickOutside = stub();
-            testDriver.render(() => (
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let onClickOutside;
+                </script>
                 <Root>
-                    <div
-                        id="root-node"
-                        style={{ width: `100px`, height: `100px`, background: `green` }}
-                    >
+                    <div id="root-node" style="width: 100px; height: 100px; background: green;">
                         <Layer onClickOutside={onClickOutside}>
-                            <div
-                                id="shallow-node"
-                                style={{ width: `50px`, height: `50px`, background: `orange` }}
-                            />
+                            <div id="shallow-node" style="width: 50px; height: 50px; background: orange;" />
                             <Layer>
-                                <div
-                                    id="deep-node"
-                                    style={{ width: `25px`, height: `25px`, background: `red` }}
-                                />
+                                <div id="deep-node" style="width: 25px; height: 25px; background: red;" />
                             </Layer>
                         </Layer>
                     </div>
                 </Root>
-            ));
+            `,
+                { onClickOutside }
+            );
 
             await click(`#deep-node`);
 
@@ -579,21 +590,22 @@ describe(`react`, () => {
     describe(`mouse inside`, () => {
         it(`should inform layer when mouse enters and leaves`, async () => {
             const onMouseIntersection = stub();
-            testDriver.render(() => (
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let onMouseIntersection;
+                </script>
                 <Root>
-                    <div
-                        id="root-node"
-                        style={{ width: `100px`, height: `100px`, background: `green` }}
-                    >
+                    <div id="root-node" style="width: 100px; height: 100px; background: green;">
                         <Layer onMouseIntersection={onMouseIntersection}>
-                            <div
-                                id="layer-node"
-                                style={{ width: `50px`, height: `50px`, background: `red` }}
-                            />
+                            <div id="layer-node" style="width: 50px; height: 50px; background: red;" />
                         </Layer>
                     </div>
                 </Root>
-            ));
+            `,
+                { onMouseIntersection }
+            );
 
             await hover(`#layer-node`);
 
@@ -617,20 +629,22 @@ describe(`react`, () => {
             const warnSpy = spy(console, `warn`);
             const errorSpy = spy(console, `error`);
             const container = document.createElement(`div`);
-            document.body.appendChild(container);
 
-            container.innerHTML = await expectServerFixture({
-                fixtureFileName: `render-root.tsx`,
+            // ToDo: test CSS once figured out how best to deliver it...
+            const { html } = await expectServerFixture({
+                fixtureFileName: `server-render.ts`,
+                exportName: `renderRoot`,
+            });
+            container.innerHTML = html;
+
+            new RenderRootServerFixture({
+                target: container,
+                hydrate: true,
             });
 
-            act(() => {
-                ReactDOM.hydrate(<Root>content</Root>, container);
-            });
-
-            expect(container.textContent).to.equal(`content`);
-            expect(warnSpy, `no react warning`).to.have.callCount(0);
-            expect(errorSpy, `no react error`).to.have.callCount(0);
-            document.body.removeChild(container);
+            expect(container.textContent?.trim()).to.equal(`content`);
+            expect(warnSpy, `no svelte warning`).to.have.callCount(0);
+            expect(errorSpy, `no svelte error`).to.have.callCount(0);
         });
 
         it(`should render layers nested and flattened in browser`, async () => {
@@ -639,32 +653,24 @@ describe(`react`, () => {
             const container = document.createElement(`div`);
             document.body.appendChild(container);
 
-            container.innerHTML = await expectServerFixture({
-                fixtureFileName: `render-layer.tsx`,
+            const { html } = await expectServerFixture({
+                fixtureFileName: `server-render.ts`,
+                exportName: `renderLayer`,
             });
+            container.innerHTML = html;
 
-            let rootNode = testDriver.expectHTMLQuery(container, `#root-node`);
-            let layerNode = testDriver.expectHTMLQuery(container, `#layer-node`);
+            const rootNode = testDriver.expectHTMLQuery(container, `#root-node`);
+            const layerNode = testDriver.expectHTMLQuery(container, `#layer-node`);
             expect(rootNode, `root exist in string`).domElement();
             expect(rootNode, `layer inside root before client render`)
                 .domElement()
                 .contains(layerNode);
 
-            act(() => {
-                ReactDOM.hydrate(
-                    <Root>
-                        <div id="root-node">
-                            <Layer>
-                                <div id="layer-node" />
-                            </Layer>
-                        </div>
-                    </Root>,
-                    container
-                );
+            new RenderLayerServerFixture({
+                target: container,
+                hydrate: true,
             });
 
-            rootNode = testDriver.expectHTMLQuery(container, `#root-node`);
-            layerNode = testDriver.expectHTMLQuery(container, `#layer-node`);
             expect(layerNode, `layer exist after client render`).domElement();
             expect(rootNode, `layer after root`).domElement().preceding(layerNode);
             expect(warnSpy, `no react warning`).to.have.callCount(0);
