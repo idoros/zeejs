@@ -334,7 +334,7 @@ describe(`tooltip`, () => {
                     expect(isOpen(), `close on blur`).to.equal(false);
                     expect(onToggle, `close toggle state`).to.have.calledOnceWith(false);
                 },
-                { timeout: 20 }
+                { timeout: 30 }
             );
         });
 
