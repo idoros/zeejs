@@ -4,6 +4,7 @@
         updateLayers,
         watchFocus,
         watchClickOutside,
+        watchMouseInside,
         createBackdropParts
     } from '@zeejs/browser';
     import { setContext, onMount } from 'svelte';
@@ -23,12 +24,14 @@
     setContext(`zeejs-context`, rootLayer);
 
     onMount(() => {
-        const { stop: stopFocus } = watchFocus(wrapper);
+        const { stop: stopFocus } = watchFocus(wrapper, rootLayer);
         const { stop: stopClickOutside } = watchClickOutside(wrapper, rootLayer, backdrop);
+        const { stop: stopMouseInside } = watchMouseInside(wrapper, rootLayer, backdrop);
         onChange();
         return () => {
             stopFocus();
             stopClickOutside();
+            stopMouseInside();
         };
     });
 </script>
@@ -68,6 +71,9 @@
         left: 0;
         right: 0;
         bottom: 0;
+    }
+    :global(.zeejs--notPlaced), :global(.zeejs--notPlaced) * {
+        visibility: hidden!important;
     }
 </style>
 

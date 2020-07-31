@@ -1,6 +1,7 @@
 import {
     watchFocus,
     watchClickOutside,
+    watchMouseInside,
     createRoot,
     DOMLayer,
     updateLayers,
@@ -52,13 +53,16 @@ export const Root = ({ className, style, children }: RootProps) => {
         const wrapper = rootRef.current!;
         document.head.appendChild(parts.style);
         rootLayer.element = wrapper.firstElementChild! as HTMLElement;
-        const { stop: stopFocus } = watchFocus(wrapper);
+        const { stop: stopFocus } = watchFocus(wrapper, rootLayer);
         const { stop: stopClickOutside } = watchClickOutside(wrapper, rootLayer, parts);
+        const { stop: stopMouseInside } = watchMouseInside(wrapper, rootLayer, parts);
         updateLayers(wrapper, rootLayer, parts);
         () => {
+            // ToDo: check why not removed in tests
             document.head.removeChild(parts.style);
             stopFocus();
             stopClickOutside();
+            stopMouseInside();
         };
     }, []);
 

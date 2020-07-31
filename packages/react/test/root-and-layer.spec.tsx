@@ -16,9 +16,9 @@ import { act } from 'react-dom/test-utils';
 chai.use(sinonChai);
 chai.use(domElementMatchers);
 
-describe(`react`, () => {
+describe(`root-and-layer`, () => {
     let testDriver: ReactTestDriver;
-    const { click, clickIfPossible, keyboard } = getInteractionApi();
+    const { click, clickIfPossible, keyboard, hover } = getInteractionApi();
 
     before('setup test driver', () => (testDriver = new ReactTestDriver()));
     afterEach('clear test driver', () => {
@@ -173,7 +173,7 @@ describe(`react`, () => {
         });
     });
 
-    it(`should place layer relative to element`, () => {
+    it(`should place layer relative to element`, async () => {
         const { innerWidth, innerHeight } = window;
         const { expectHTMLQuery, container } = testDriver.render(() => (
             <Root>
@@ -226,7 +226,9 @@ describe(`react`, () => {
         window.scrollTo(innerWidth, innerHeight);
 
         const layerNode = expectHTMLQuery(`#layer-node`);
-        expect(layerNode.getBoundingClientRect()).to.eql(relativeNode.getBoundingClientRect());
+        await waitFor(() => {
+            expect(layerNode.getBoundingClientRect()).to.eql(relativeNode.getBoundingClientRect());
+        });
     });
 
     it(`should hide layer component placeholder inline`, () => {
@@ -495,6 +497,27 @@ describe(`react`, () => {
             expect(warnSpy, `no react warning`).to.have.callCount(0);
             expect(errorSpy, `no react error`).to.have.callCount(0);
         });
+
+        it(`should report on focus change`, async () => {
+            const onFocusChange = stub();
+            testDriver.render(() => (
+                <Root>
+                    <input id="root-input" />
+                    <Layer onFocusChange={onFocusChange}>
+                        <input id="layer-input" style={{ margin: `1em` }} />
+                    </Layer>
+                </Root>
+            ));
+
+            await click(`#layer-input`);
+
+            expect(onFocusChange, `focus in layer`).to.have.been.calledOnceWith(true);
+            onFocusChange.reset();
+
+            await click(`#root-input`);
+
+            expect(onFocusChange, `focus out of layer`).to.have.been.calledOnceWith(false);
+        });
     });
 
     describe(`click outside`, () => {
@@ -552,6 +575,42 @@ describe(`react`, () => {
             await click(`#deep-node`);
 
             expect(onClickOutside, `no invocation for nested click`).to.have.callCount(0);
+        });
+    });
+
+    describe(`mouse inside`, () => {
+        it(`should inform layer when mouse enters and leaves`, async () => {
+            const onMouseIntersection = stub();
+            testDriver.render(() => (
+                <Root>
+                    <div
+                        id="root-node"
+                        style={{ width: `100px`, height: `100px`, background: `green` }}
+                    >
+                        <Layer onMouseIntersection={onMouseIntersection}>
+                            <div
+                                id="layer-node"
+                                style={{ width: `50px`, height: `50px`, background: `red` }}
+                            />
+                        </Layer>
+                    </div>
+                </Root>
+            ));
+
+            await hover(`#layer-node`);
+
+            await waitFor(() => {
+                expect(onMouseIntersection, `catch mouse inside layer`).to.have.callCount(1);
+                expect(onMouseIntersection, `called with true`).to.have.been.calledWith(true);
+            });
+            onMouseIntersection.reset();
+
+            await hover(`#root-node`);
+
+            await waitFor(() => {
+                expect(onMouseIntersection, `catch mouse outside layer`).to.have.callCount(1);
+                expect(onMouseIntersection, `called with false`).to.have.been.calledWith(false);
+            });
         });
     });
 

@@ -1,6 +1,9 @@
+import { DOMLayer } from './root';
+import { findContainingLayer } from './utils';
 import tabbable from 'tabbable';
 
-export function watchFocus(layersWrapper: HTMLElement) {
+export function watchFocus(layersWrapper: HTMLElement, topLayer: DOMLayer) {
+    const onFocus = createOnFocusHandler(topLayer);
     layersWrapper.addEventListener(`focus`, onFocus, { capture: true });
     layersWrapper.addEventListener(`keydown`, onKeyDown, { capture: true });
     return {
@@ -13,30 +16,63 @@ export function watchFocus(layersWrapper: HTMLElement) {
 
 type Focusable = { focus: () => void };
 
-const onFocus = (event: FocusEvent) => {
-    if (event.target && event.target instanceof HTMLElement) {
-        const layer = findContainingLayer(event.target);
-        if (!layer || layer.hasAttribute(`inert`)) {
-            // ToDo: skip in case focus is invoked by `onKeyDown`
-            const availableLayers = Array.from(
-                document.querySelectorAll<HTMLElement>(`zeejs-layer:not([inert])`)
-            );
-            while (availableLayers.length) {
-                const layer = availableLayers.shift()!;
-                const layerId = layer.id;
-                const origin = document.querySelector<HTMLElement>(`[data-origin="${layerId}"]`);
-                if (origin) {
-                    const element = queryFirstTabbable(layer, origin, true);
-                    if (element) {
-                        element.focus();
-                        return;
+const createOnFocusHandler = (topLayer: DOMLayer) => {
+    return (event: FocusEvent) => {
+        const target = event.target;
+        if (target && target instanceof HTMLElement) {
+            const layer = findContainingLayer(target);
+            if (!layer || layer.hasAttribute(`inert`)) {
+                // ToDo: skip in case focus is invoked by `onKeyDown`
+                const availableLayers = Array.from(
+                    document.querySelectorAll<HTMLElement>(`zeejs-layer:not([inert])`)
+                );
+                target.blur();
+                event.stopPropagation();
+                while (availableLayers.length) {
+                    const layer = availableLayers.shift()!;
+                    const layerId = layer.id;
+                    const origin = document.querySelector<HTMLElement>(
+                        `[data-origin="${layerId}"]`
+                    );
+                    if (origin) {
+                        const element = queryFirstTabbable(layer, origin, true);
+                        if (element) {
+                            element.focus();
+                            return;
+                        }
                     }
                 }
             }
-            event.target.blur();
+        }
+        if (topLayer) {
+            const layers = topLayer.generateDisplayList();
+            const activeElement = document.activeElement;
+            const currentLayerElement = activeElement ? findContainingLayer(activeElement) : null;
+            const focusedLayers = new Set<DOMLayer>();
+            for (const layer of layers.reverse()) {
+                if (layer.element === currentLayerElement) {
+                    let focusedLayer: DOMLayer | null = layer;
+                    while (focusedLayer) {
+                        focusedLayers.add(focusedLayer);
+                        updateLayer(focusedLayer, true);
+                        focusedLayer = focusedLayer.parentLayer;
+                    }
+                } else if (!focusedLayers.has(layer)) {
+                    updateLayer(layer, false);
+                }
+            }
+        }
+    };
+};
+
+function updateLayer(layer: DOMLayer, isInside: boolean) {
+    if (layer.state.focusInside !== isInside) {
+        layer.state.focusInside = isInside;
+        if (layer.settings.onFocusChange) {
+            layer.settings.onFocusChange();
         }
     }
-};
+}
 
 const onKeyDown = (event: KeyboardEvent) => {
     if (event.code !== `Tab`) {
@@ -149,15 +185,4 @@ function queryFirstTabbable(
     } else {
         return firstElement;
     }
-}
-
-export function findContainingLayer(element: Element) {
-    let current: Element | null = element;
-    while (current) {
-        if (current.tagName === `ZEEJS-LAYER`) {
-            return current as HTMLElement;
-        }
-        current = current.parentElement;
-    }
-    return null;
 }

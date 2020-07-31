@@ -1,6 +1,7 @@
 import { Root } from '../src';
 import { Box } from './box';
 import { ModalDemo } from './demos/modal-demo';
+import { TooltipDemo } from './demos/tooltip-demo';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -30,7 +31,7 @@ globalCSS.innerHTML = `
         color: inherit;
         font: inherit;
         /* Normalize "line-height". Cannot be changed from "normal" in Firefox 4+. */
-        line-height: normal;    
+        line-height: normal;
         /* Corrects font smoothing for webkit */
         -webkit-font-smoothing: inherit;
         -moz-osx-font-smoothing: inherit;
@@ -40,7 +41,7 @@ globalCSS.innerHTML = `
     .resetButton[disabled] {
         cursor: default;
     }
-    
+
     :focus {
         outline: 5px solid gold;
     }
@@ -126,6 +127,8 @@ const Demos = () => {
                 <ModalDemo>
                     <Demos />
                 </ModalDemo>
+                <hr />
+                <TooltipDemo />
             </div>
         </>
     );

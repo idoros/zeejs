@@ -1,6 +1,5 @@
 import { DOMLayer } from './root';
-import { findContainingLayer } from './focus';
-import { isBrowser } from './utils';
+import { isBrowser, findContainingLayer } from './utils';
 
 export interface BackdropElements {
     hide: HTMLElement;
