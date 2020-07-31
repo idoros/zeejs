@@ -3,7 +3,7 @@ import { join } from 'path';
 
 browserTest({
     files: `./test/**/*.spec.ts?(x)`,
-    dev: true,
+    dev: false,
     pageHook: (page) => {
         hookInteractionApi(page);
         hookImageSnapshot(page, {
