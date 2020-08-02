@@ -10,10 +10,11 @@
         "clean": "rimraf ./cjs ./esm",
         "build": "ts-build ./src --cjs --esm",
         "test": "node -r @ts-tools/node/r ./test/setup.ts",
+        "test:dev": "cross-env DEV=true PWDEBUG=1 node -r @ts-tools/node/r ./test/setup.ts",
         "prepack": "yarn build"
     },
     "dependencies": {
-        "@popperjs/core": "^2.4.0",
+        "@popperjs/core": "^2.4.4",
         "@zeejs/core": "^0.1.0",
         "tabbable": "^4.0.0"
     },

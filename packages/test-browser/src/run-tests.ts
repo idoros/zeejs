@@ -8,17 +8,21 @@ import webpack from 'webpack';
 
 const mochaSetupPath = require.resolve('../static/mocha-setup.js');
 
+type Browser = 'chromium' | 'firefox' | 'webkit';
+
 export interface RunTestsOptions {
     webpackConfig: webpack.Configuration;
     testFiles: string[];
-    keepOpen: boolean;
+    dev: boolean;
+    browserList: Browser[];
     pageHook?: (page: playwright.Page) => Promise<void> | void;
 }
 
 export async function runTests({
     webpackConfig,
     testFiles,
-    keepOpen,
+    dev,
+    browserList,
     pageHook,
 }: RunTestsOptions): Promise<void> {
     const closables: Array<{ close(): unknown | Promise<unknown> }> = [];
@@ -42,7 +46,7 @@ export async function runTests({
             }),
         });
 
-        if (!keepOpen) {
+        if (!dev) {
             // force fake watching on single runs
             compiler.watch = function watch(_watchOptions, handler) {
                 compiler.run(handler);
@@ -80,46 +84,63 @@ export async function runTests({
         closables.push(httpServer);
         console.log(`HTTP server is listening on port ${port}`);
 
-        const browser = await playwright.chromium.launch({
-            headless: true,
-            devtools: false,
-            args: [`--no-sandbox`],
-        });
-        closables.push(browser);
-
-        const context = await browser.newContext({
-            viewport: { width: 800, height: 600 },
-        });
-        const page = await context.newPage();
-
-        if (pageHook) {
-            await pageHook(page);
+        if (!browserList.length) {
+            browserList = ['chromium'];
         }
-        hookPageConsole(page);
+        if (dev) {
+            browserList = [browserList[0]];
+        }
 
-        page.on('dialog', (dialog) => {
-            dialog.dismiss();
-        });
+        console.log(`Testing in ${browserList.join(`/`)}`);
 
-        const failsOnPageError = new Promise((_resolve, reject) => {
-            page.once('pageerror', reject);
-            // page.once('error', () => {reject()})
-        });
+        for (const browserName of browserList) {
+            const browser = await playwright[browserName].launch({
+                headless: !dev,
+                devtools: dev,
+                args: [...browserArgs[browserName]],
+            });
+            closables.push(browser);
 
-        await page.goto(`http://localhost:${port}/mocha.html`);
+            const context = await browser.newContext({
+                viewport: { width: 800, height: 600 },
+            });
+            const page = await context.newPage();
 
-        const failedCount = await Promise.race([waitForTestResults(page), failsOnPageError]);
+            if (pageHook) {
+                await pageHook(page);
+            }
+            hookPageConsole(page, browserName);
 
-        if (failedCount) {
-            throw `${failedCount as number} tests failed!`;
+            page.on('dialog', (dialog) => {
+                dialog.dismiss();
+            });
+
+            const failsOnPageError = new Promise((_resolve, reject) => {
+                page.once('pageerror', reject);
+                // page.once('error', () => {reject()})
+            });
+
+            await page.goto(`http://localhost:${port}/mocha.html`);
+
+            const failedCount = await Promise.race([waitForTestResults(page), failsOnPageError]);
+
+            if (failedCount) {
+                throw `${failedCount as number} tests failed!`;
+            }
         }
     } finally {
-        if (!keepOpen) {
+        if (!dev) {
             await Promise.all(closables.map((closable) => closable.close()));
             closables.length = 0;
         }
     }
 }
+
+const browserArgs = {
+    chromium: [`--no-sandbox`],
+    firefox: [],
+    webkit: [],
+};
 
 async function waitForTestResults(page: playwright.Page): Promise<number> {
     await page.waitForFunction('mochaStatus.finished', { timeout: 0 });

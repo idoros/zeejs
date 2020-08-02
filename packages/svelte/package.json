@@ -12,6 +12,7 @@
         "clean": "rimraf ./cjs ./esm ./dist",
         "build": "ts-build ./src --cjs --esm && node build-svelte.js",
         "test": "node -r @ts-tools/node/r -r tsconfig-paths/register ./test/setup.ts",
+        "test:dev": "cross-env DEV=true PWDEBUG=1 node -r @ts-tools/node/r -r tsconfig-paths/register ./test/setup.ts",
         "prepack": "yarn clean && yarn build",
         "demo": "webpack-dev-server"
     },
@@ -20,7 +21,7 @@
         "@zeejs/core": "^0.1.0"
     },
     "devDependencies": {
-        "svelte": "^3.23.0",
+        "svelte": "^3.24.0",
         "svelte-loader": "2.13.6"
     },
     "files": [

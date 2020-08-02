@@ -18,7 +18,8 @@ describe(`svelte tooltip`, () => {
     });
 
     describe(`open state`, () => {
-        it(`should show tooltip on parent element hover & hide on out (default 0.5s delay)`, async () => {
+        it(`should show tooltip on parent element hover & hide on out (default 0.5s delay)`, async function () {
+            this.timeout(3000);
             const { expectQuery, query } = testDriver.render(`
                 <script>
                     import {Root, Tooltip} from '@zeejs/svelte';
@@ -151,7 +152,7 @@ describe(`svelte tooltip`, () => {
                 expect(parentNode).domElement().preceding(tooltipNode);
             });
 
-            await hover(`#other-node`);
+            hover(`#other-node`);
             await hover(`#tooltip-node`);
 
             await sleep(250);

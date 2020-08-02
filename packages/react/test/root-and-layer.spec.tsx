@@ -16,7 +16,7 @@ import { act } from 'react-dom/test-utils';
 chai.use(sinonChai);
 chai.use(domElementMatchers);
 
-describe(`root-and-layer`, () => {
+describe(`react root-and-layer`, () => {
     let testDriver: ReactTestDriver;
     const { click, clickIfPossible, keyboard, hover } = getInteractionApi();
 
@@ -504,7 +504,7 @@ describe(`root-and-layer`, () => {
                 <Root>
                     <input id="root-input" />
                     <Layer onFocusChange={onFocusChange}>
-                        <input id="layer-input" style={{ margin: `1em` }} />
+                        <input id="layer-input" style={{ margin: `3em` }} />
                     </Layer>
                 </Root>
             ));

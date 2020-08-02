@@ -123,7 +123,7 @@ describe(`tooltip`, () => {
             });
             onToggle.reset();
 
-            await hover(`#other`);
+            hover(`#other`);
             await hover(`#anchor`);
 
             await sleep(250);
@@ -334,7 +334,7 @@ describe(`tooltip`, () => {
                     expect(isOpen(), `close on blur`).to.equal(false);
                     expect(onToggle, `close toggle state`).to.have.calledOnceWith(false);
                 },
-                { timeout: 30 }
+                { timeout: 50 }
             );
         });
 
@@ -419,9 +419,10 @@ describe(`tooltip`, () => {
                 const anchorRect = anchor.getBoundingClientRect();
                 const overlayRect = overlay.getBoundingClientRect();
                 expect(Math.round(overlayRect.bottom), `above`).to.equal(anchorRect.top);
-                expect(Math.round(overlayRect.left + overlayRect.width / 2), `centered`).to.equal(
-                    Math.round(anchorRect.left + anchorRect.width / 2)
-                );
+                expect(
+                    Math.round(overlayRect.left + overlayRect.width / 2),
+                    `centered`
+                ).to.be.approximately(Math.round(anchorRect.left + anchorRect.width / 2), 1);
             });
         });
     });

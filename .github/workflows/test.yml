@@ -16,6 +16,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - uses: microsoft/playwright-github-action@v1
     - run: npm i -g yarn@1
     - run: yarn
     - run: yarn test
