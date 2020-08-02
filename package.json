@@ -13,7 +13,7 @@
         "pretest": "yarn test:types && yarn test:lint",
         "test:types": "tsc --noEmit",
         "test:lint": "eslint . --ext .js,.ts,.tsx -f codeframe",
-        "test": "lerna run test --stream",
+        "test": "lerna run test",
         "prettify": "npx prettier \"packages/**/*.{js,ts,tsx}\" --write"
     },
     "devDependencies": {
