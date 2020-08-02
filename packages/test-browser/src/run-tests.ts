@@ -97,7 +97,7 @@ export async function runTests({
             const browser = await playwright[browserName].launch({
                 headless: !dev,
                 devtools: dev,
-                args: [`--no-sandbox`],
+                args: [...browserArgs[browserName]],
             });
             closables.push(browser);
 
@@ -135,6 +135,12 @@ export async function runTests({
         }
     }
 }
+
+const browserArgs = {
+    chromium: [`--no-sandbox`],
+    firefox: [],
+    webkit: [],
+};
 
 async function waitForTestResults(page: playwright.Page): Promise<number> {
     await page.waitForFunction('mochaStatus.finished', { timeout: 0 });
