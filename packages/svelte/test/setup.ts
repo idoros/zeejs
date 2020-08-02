@@ -9,11 +9,12 @@ const svelteRegister = require('svelte/register');
 
 svelteRegister({ generate: `ssr` });
 
-const { DEV } = process.env;
+const { DEV, BROWSERS } = process.env;
 
 browserTest({
     files: `./test/**/*.spec.ts?(x)`,
     dev: DEV === `true`,
+    browsers: BROWSERS,
     pageHook: (page) => {
         hookInteractionApi(page);
         hookImageSnapshot(page, {

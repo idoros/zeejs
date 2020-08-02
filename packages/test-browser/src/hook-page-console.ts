@@ -5,7 +5,7 @@ import { deferred } from 'promise-assist';
  * Hooks the console of a `playwright.Page` to Node's console,
  * printing anything from the page in Node.
  */
-export function hookPageConsole(page: playwright.Page): void {
+export function hookPageConsole(page: playwright.Page, browserName?: string): void {
     let currentMessage: Promise<void> = Promise.resolve();
     const onConsole = async (msg: playwright.ConsoleMessage) => {
         const consoleFn = messageTypeToConsoleFn[msg.type()];
@@ -21,6 +21,9 @@ export function hookPageConsole(page: playwright.Page): void {
                 msg.args().map((arg) => extractErrorMessage(arg) || arg.jsonValue())
             );
             await previousMessage;
+            if (browserName && msgArgs.length && typeof msgArgs[0] === 'string') {
+                msgArgs[0] = `[${browserName}]\t${msgArgs[0]}`;
+            }
             consoleFn.apply(console, msgArgs);
         } catch (e) {
             console.error(e);

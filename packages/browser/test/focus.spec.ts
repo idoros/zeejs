@@ -370,7 +370,7 @@ describe(`focus`, () => {
         expect(document.activeElement, `Shift+Tab in layer back to last`).to.equal(layerXLastInput);
     });
 
-    it(`should catch focus under inert and pass to first focusable element in a non-inert layer`, async () => {
+    it(`should catch focus under inert and pass to first focusable element in a non-inert layer`, () => {
         const inertFocusHandler = stub();
         const { expectHTMLQuery, container } = testDriver.render(
             () => `
@@ -391,7 +391,7 @@ describe(`focus`, () => {
 
         watchFocus(container, createRoot());
 
-        await keyboard.press(`Tab`);
+        firstInertInput.focus();
 
         expect(document.activeElement, `focus first non inert input`).to.equal(layerInput);
         expect(inertFocusHandler, `inert input shouldn't get called`).callCount(0);

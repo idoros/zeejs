@@ -8,15 +8,19 @@ export { hookImageSnapshot } from './image-snapshot/node';
 export { hookInteractionApi } from './interaction-api/node';
 export { hookServerFixtures } from './server-fixtures/node';
 
+const availableBrowsers = ['chromium', 'firefox', 'webkit'];
+
 export const browserTest = ({
     files,
     dev,
+    browsers = `chromium, firefox, webkit`,
     webpackConfig: webpackConfigPath = findUp.sync('webpack.config.js'),
     pageHook,
     process,
 }: {
     files: string;
     dev: boolean;
+    browsers?: string;
     webpackConfig?: string;
     pageHook?: RunTestsOptions['pageHook'];
     process: NodeJS.Process;
@@ -40,10 +44,18 @@ export const browserTest = ({
         );
     }
 
+    const browserList = browsers
+        .split(',')
+        .map((browser) => browser.trim())
+        .filter(
+            (browser) => !browser || availableBrowsers.includes(browser)
+        ) as RunTestsOptions['browserList'];
+
     runTests({
         webpackConfig,
         testFiles,
         dev,
+        browserList,
         pageHook,
     }).catch(printErrorAndExit);
 

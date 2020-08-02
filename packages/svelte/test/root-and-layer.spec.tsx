@@ -15,7 +15,7 @@ import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 chai.use(domElementMatchers);
 
-describe(`svelte`, () => {
+describe(`svelte root-and-layer`, () => {
     let testDriver: SvelteTestDriver;
     const { click, clickIfPossible, keyboard, hover } = getInteractionApi();
 
@@ -511,7 +511,7 @@ describe(`svelte`, () => {
                 <Root>
                     <input id="root-input" />
                     <Layer onFocusChange={onFocusChange}>
-                        <input id="layer-input" style="margin: 1em;" />
+                        <input id="layer-input" style="margin: 3em;" />
                     </Layer>
                 </Root>
                          />
