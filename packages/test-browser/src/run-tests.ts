@@ -11,14 +11,14 @@ const mochaSetupPath = require.resolve('../static/mocha-setup.js');
 export interface RunTestsOptions {
     webpackConfig: webpack.Configuration;
     testFiles: string[];
-    keepOpen: boolean;
+    dev: boolean,
     pageHook?: (page: playwright.Page) => Promise<void> | void;
 }
 
 export async function runTests({
     webpackConfig,
     testFiles,
-    keepOpen,
+    dev,
     pageHook,
 }: RunTestsOptions): Promise<void> {
     const closables: Array<{ close(): unknown | Promise<unknown> }> = [];
@@ -42,7 +42,7 @@ export async function runTests({
             }),
         });
 
-        if (!keepOpen) {
+        if (!dev) {
             // force fake watching on single runs
             compiler.watch = function watch(_watchOptions, handler) {
                 compiler.run(handler);
@@ -81,8 +81,8 @@ export async function runTests({
         console.log(`HTTP server is listening on port ${port}`);
 
         const browser = await playwright.chromium.launch({
-            headless: true,
-            devtools: false,
+            headless: !dev,
+            devtools: dev,
             args: [`--no-sandbox`],
         });
         closables.push(browser);
@@ -114,7 +114,7 @@ export async function runTests({
             throw `${failedCount as number} tests failed!`;
         }
     } finally {
-        if (!keepOpen) {
+        if (!dev) {
             await Promise.all(closables.map((closable) => closable.close()));
             closables.length = 0;
         }

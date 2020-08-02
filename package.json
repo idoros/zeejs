@@ -36,6 +36,7 @@
         "@zeejs/test-browser": "^0.1.0",
         "chai": "^4.2.0",
         "chai-subset": "^1.6.0",
+        "cross-env": "^7.0.2",
         "css-loader": "^4.2.0",
         "eslint": "^7.6.0",
         "eslint-config-prettier": "^6.11.0",

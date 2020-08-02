@@ -10,6 +10,7 @@
         "clean": "rimraf ./cjs ./esm",
         "build": "ts-build ./src --cjs --esm",
         "test": "node -r @ts-tools/node/r ./test/setup.ts",
+        "test:dev": "cross-env DEV=true PWDEBUG=1 node -r @ts-tools/node/r ./test/setup.ts",
         "prepack": "yarn build"
     },
     "dependencies": {

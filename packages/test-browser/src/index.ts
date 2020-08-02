@@ -43,7 +43,7 @@ export const browserTest = ({
     runTests({
         webpackConfig,
         testFiles,
-        keepOpen: false,
+        dev,
         pageHook,
     }).catch(printErrorAndExit);
 
