@@ -1,6 +1,7 @@
 export type { DOMLayer } from './root';
 export { createRoot } from './root';
 export { bindOverlay } from './bind-overlay';
+export { layoutOverlay, overlayPosition } from './layout-overlay';
 export { watchFocus } from './focus';
 export { watchClickOutside } from './click-outside';
 export { watchMouseInside } from './mouse-inside';

@@ -24,6 +24,8 @@ export const serializedApi = JSON.stringify({
     dblclick: constants.funcPrefix + `dblclick`,
     press: constants.funcPrefix + `press`,
     hover: constants.funcPrefix + `hover`,
+    setViewportSize: constants.funcPrefix + `setViewportSize`,
+    viewportSize: constants.funcPrefix + `viewportSize`,
 });
 export interface InteractionApi {
     mouse: Page['mouse'];
@@ -32,5 +34,7 @@ export interface InteractionApi {
     dblclick: Page['dblclick'];
     press: Page['press'];
     hover: Page['hover'];
+    setViewportSize: Page['setViewportSize'];
+    viewportSize: () => Promise<ReturnType<Page['viewportSize']>>;
     clickIfPossible: (selector: string) => Promise<boolean>;
 }
