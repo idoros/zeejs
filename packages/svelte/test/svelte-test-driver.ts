@@ -23,14 +23,14 @@ export class SvelteTestDriver {
             document.body.appendChild(container);
         }
         const FixtureComp = this.evaluateFixture(fixture);
-        const { $set } = new FixtureComp({
+        const instance = new FixtureComp({
             target: container,
             props,
             // hydrate: true // ?
         });
         return {
             updateProps: async (props: Record<string, any>) => {
-                $set(props);
+                instance.$set(props);
                 await Promise.resolve().then(() => {
                     /**/
                 });
