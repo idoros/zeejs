@@ -34,10 +34,8 @@ export const TooltipDemo = () => {
                 <a href="#">
                     link
                     <Tooltip>
-                        <Box shadow>
-                            <Box shadow style={{ padding: `0.5em` }}>
-                                Tooltip from {`<a />`}
-                            </Box>
+                        <Box shadow style={{ padding: `0.5em` }}>
+                            Tooltip from {`<a />`}
                         </Box>
                     </Tooltip>
                 </a>
@@ -65,12 +63,7 @@ export const TooltipDemo = () => {
                             shadow
                             style={{ padding: `0.5em`, display: `grid`, justifyItems: `start` }}
                         >
-                            <input
-                                value="click or focus into tooltip"
-                                onChange={() => {
-                                    /**/
-                                }}
-                            />
+                            <input value="click or focus into tooltip" onChange={noop} />
                             <a href="#">
                                 nested tooltip
                                 <Tooltip>
@@ -93,4 +86,7 @@ export const TooltipDemo = () => {
             </div>
         </>
     );
+};
+const noop = () => {
+    /**/
 };

@@ -1,4 +1,5 @@
-import { createPopper, Instance as Popper } from '@popperjs/core';
+import { layoutOverlay, overlayPosition } from './layout-overlay';
+import { keepInView } from './keep-in-view';
 
 interface TooltipOptions {
     onToggle?: (isOpen: boolean) => void;
@@ -21,7 +22,7 @@ export const tooltip = ({
     let isMouseIn = false;
     let isMouseInOverlay = false;
     let isOpen = false;
-    let bindPosition: Popper | null = null;
+    let bindPosition: ReturnType<typeof layoutOverlay> | null = null;
     let buffer = 0;
     let blurBuffer = 0;
 
@@ -91,13 +92,17 @@ export const tooltip = ({
         buffer = 0;
         const newOpenState = isMouseIn || isMouseInOverlay || isFocusHold;
         if (newOpenState && !bindPosition && anchor && overlay) {
-            bindPosition = createPopper(anchor, overlay, {
-                placement: `top`,
+            bindPosition = layoutOverlay(anchor, overlay, {
+                x: overlayPosition.center,
+                y: overlayPosition.before,
+                height: false,
+                width: false,
+                onOverflow: keepInView,
             });
             overlay.classList.remove(NOT_PLACED);
         } else if (!newOpenState) {
             if (bindPosition) {
-                bindPosition.destroy();
+                bindPosition.stop();
                 bindPosition = null;
             }
             if (overlay) {

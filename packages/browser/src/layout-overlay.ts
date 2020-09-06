@@ -3,21 +3,27 @@ interface OverlayOptions {
     y: overlayPosition;
     width: boolean;
     height: boolean;
-    onOverflow: (data: {
-        anchorBounds: {
-            x: number;
-            y: number;
-            width: number;
-            height: number;
-        };
-        viewport: {
-            width: number;
-            height: number;
-        };
-        overlay: HTMLElement;
-        anchor: Element;
-        options: OverlayOptions;
-    }) => void;
+    onOverflow: (data: OverflowData) => void;
+}
+export interface OverflowData {
+    anchorBounds: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
+    overlayBounds: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
+    viewport: {
+        width: number;
+        height: number;
+    };
+    overlay: HTMLElement;
+    anchor: Element;
 }
 interface OverlayConfig extends OverlayOptions {
     anchor: Element;
@@ -41,16 +47,17 @@ const anchors = new Map<Element, Set<HTMLElement>>();
 const waitingForPosition = new Set<HTMLElement>();
 let waitForPositionRequest = 0;
 const resizeObserver =
-    typeof ResizeObserver !== `undefined` ? 
-    new ResizeObserver((entries) => {
-        for (const { target } of entries) {
-            if (target instanceof HTMLElement && overlays.has(target)) {
-                waitingForPosition.add(target);
-            }
-            addBoundTargets(target);
-        }
-        scheduleUpdate();
-    }) : null;
+    typeof ResizeObserver !== `undefined`
+        ? new ResizeObserver((entries) => {
+              for (const { target } of entries) {
+                  if (target instanceof HTMLElement && overlays.has(target)) {
+                      waitingForPosition.add(target);
+                  }
+                  addBoundTargets(target);
+              }
+              scheduleUpdate();
+          })
+        : null;
 export const layoutOverlay = (
     anchor: Element,
     overlay: HTMLElement,
@@ -104,7 +111,7 @@ export const layoutOverlay = (
     return {
         stop: () => {
             overlays.delete(overlay);
-            if(resizeObserver) {
+            if (resizeObserver) {
                 resizeObserver.unobserve(anchor); // ToDo: prevent unobserve if another overlay is connected
                 resizeObserver.unobserve(overlay); // ToDo: prevent unobserve if used as anchored for another overlay
             }
@@ -223,12 +230,9 @@ function update(overlay: HTMLElement) {
 
     const viewportWidth = document.documentElement.clientWidth;
     const viewportHeight = document.documentElement.clientHeight;
-    if (
-        yPos < 0 ||
-        xPos < 0 ||
-        yPos + overlayBounds.height > viewportHeight ||
-        xPos + overlayBounds.width > viewportWidth
-    ) {
+    const isXOverflow = xPos < 0 || xPos + overlayBounds.width > viewportWidth;
+    const isYOverflow = yPos < 0 || yPos + overlayBounds.height > viewportHeight;
+    if (isXOverflow || isYOverflow) {
         onOverflow({
             anchorBounds: {
                 x: anchorBounds.x + scrollX - offsetX,
@@ -236,13 +240,18 @@ function update(overlay: HTMLElement) {
                 width: anchorBounds.width,
                 height: anchorBounds.height,
             },
+            overlayBounds: {
+                x: desiredX,
+                y: desiredY,
+                width: overlayBounds.width,
+                height: overlayBounds.height,
+            },
             viewport: {
                 width: viewportWidth,
                 height: viewportHeight,
             },
             overlay,
             anchor,
-            options: overlayConfig,
         });
     }
     waitingForPosition.delete(overlay);

@@ -494,12 +494,11 @@ describe(`layout-overlay`, () => {
                 width: 100,
                 height: 200,
             });
-            expect(overflowData.options, `options`).to.contains({
-                x: overlayPosition.after,
-                y: overlayPosition.after,
-                width: true,
-                height: true,
-                onOverflow,
+            expect(overflowData.overlayBounds, `overlay bounds`).to.eql({
+                x: document.documentElement.clientWidth + 100,
+                y: document.documentElement.clientHeight + 200,
+                width: 100,
+                height: 200,
             });
 
             stop();

@@ -4,7 +4,7 @@ import { stub } from 'sinon';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 
-describe(`core`, () => {
+describe(`layer`, () => {
     describe(`nest layers`, () => {
         it(`should create shallow nested layers`, () => {
             const rootChanges = stub();

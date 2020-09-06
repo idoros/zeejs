@@ -1,6 +1,6 @@
 import { Layer, LayerProps } from '../../src';
 import React from 'react';
-import { createPopper } from '@popperjs/core';
+import { layoutOverlay, overlayPosition, keepInView } from '@zeejs/browser';
 
 export interface DialogProps {
     className?: string;
@@ -27,12 +27,18 @@ export const Dialog = ({
             throw new Error(`missing reference for popup: "${String(relativeTo)}"`);
         }
         const popup = popupRef.current!;
-        const popper = createPopper(reference, popup, {});
+        const overlayBind = layoutOverlay(reference, popup, {
+            x: overlayPosition.center,
+            y: overlayPosition.center,
+            height: false,
+            width: false,
+            onOverflow: keepInView,
+        });
         setIsPositioned(true);
         popup.classList.add(`Dialog--positioned`);
         onPositioned && onPositioned();
         return () => {
-            popper.destroy();
+            overlayBind.stop();
         };
     }, []);
     return (

@@ -1,7 +1,7 @@
 <script>
     import { Layer } from '../../src';
     import { onMount } from 'svelte';
-    import { createPopper } from '@popperjs/core';
+    import { layoutOverlay, overlayPosition, keepInView } from '@zeejs/browser';
 
     export let relativeTo;
     export let onClickOutside;
@@ -18,12 +18,18 @@
         if (!reference) {
             throw new Error(`missing reference for popup: "${String(relativeTo)}"`);
         }
-        const popper = createPopper(reference, popup, {});
+        const overlayBind = layoutOverlay(reference, popup, {
+            x: overlayPosition.center,
+            y: overlayPosition.center,
+            height: false,
+            width: false,
+            onOverflow: keepInView,
+        });
         isPositioned = true;
         popup.classList.add(`Dialog--positioned`);
         onPositioned && onPositioned();
         return () => {
-            popper.destroy();
+            overlayBind.stop();
         };
     });
 </script>
