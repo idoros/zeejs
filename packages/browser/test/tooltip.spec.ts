@@ -484,8 +484,8 @@ describe(`tooltip`, () => {
             await waitFor(() => {
                 const anchorRect = anchor.getBoundingClientRect();
                 const overlayRect = overlay.getBoundingClientRect();
-                expect(overlayRect.bottom, `above`).to.equal(anchorRect.top);
-                expect(overlayRect.right, `left of`).to.equal(anchorRect.left);
+                expect(overlayRect.bottom, `above`).to.be.approximately(anchorRect.top, 0.5);
+                expect(overlayRect.right, `left of`).to.be.approximately(anchorRect.left, 0.5);
             });
         });
     });
