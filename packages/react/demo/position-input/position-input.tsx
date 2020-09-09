@@ -1,7 +1,7 @@
 import { getUniqueId } from '../unique-id';
 import { Dialog } from '../layers/dialog';
 import React from 'react';
-import tabbable from 'tabbable';
+import { tabbable } from 'tabbable';
 
 export enum Position {
     topLeft = `topLeft`,
@@ -62,7 +62,9 @@ export const PositionInputButton = ({
                     onClickOutside={() => setOpen(false)}
                     onPositioned={() => {
                         if (popupRef.current) {
-                            const result = tabbable(popupRef.current, { includeContainer: true });
+                            const result = tabbable(popupRef.current, {
+                                includeContainer: true,
+                            }) as HTMLElement[];
                             if (result.length) {
                                 result[0].focus();
                             }
