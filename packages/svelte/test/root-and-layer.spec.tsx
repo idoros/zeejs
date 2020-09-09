@@ -631,7 +631,7 @@ describe(`svelte root-and-layer`, () => {
             const container = document.createElement(`div`);
 
             // ToDo: test CSS once figured out how best to deliver it...
-            const { html } = await expectServerFixture({
+            const { html } = await expectServerFixture<{ html: string }>({
                 fixtureFileName: `server-render.ts`,
                 exportName: `renderRoot`,
             });
@@ -653,7 +653,7 @@ describe(`svelte root-and-layer`, () => {
             const container = document.createElement(`div`);
             document.body.appendChild(container);
 
-            const { html } = await expectServerFixture({
+            const { html } = await expectServerFixture<{ html: string }>({
                 fixtureFileName: `server-render.ts`,
                 exportName: `renderLayer`,
             });

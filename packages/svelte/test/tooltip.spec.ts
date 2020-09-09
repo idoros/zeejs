@@ -241,7 +241,7 @@ describe(`svelte tooltip`, () => {
     });
 
     describe(`position`, () => {
-        it(`should position relative to parent`, async () => {
+        it(`should position relative to parent (default: above & center)`, async () => {
             const { expectHTMLQuery } = testDriver.render(`
                 <script>
                     import {Root, Tooltip} from '@zeejs/svelte';
@@ -280,6 +280,94 @@ describe(`svelte tooltip`, () => {
                     tooltipBounds.right - tooltipBounds.width / 2,
                     `tooltip x centered`
                 ).to.be.approximately(parentBounds.right - parentBounds.width / 2, 1);
+            });
+        });
+        it(`should position relative to parent (custom: below & right)`, async () => {
+            const { expectHTMLQuery } = testDriver.render(`
+                <script>
+                    import {Root, Tooltip, overlayPosition} from '@zeejs/svelte';
+                </script>
+                <Root>
+                    <div
+                        style="
+                            width: 300px;
+                            height: 300px;
+                            display: grid;
+                            justify-items: center;
+                            align-content: center;
+                        "
+                    >
+                        <div id="parent-node" tabIndex="0" style="width: 100px; height: 40px;">
+                            <Tooltip positionX={overlayPosition.after} positionY={overlayPosition.after}>
+                                <div id="tooltip-node" style="width: 80px; height: 20px;"></div>
+                            </Tooltip>
+                        </div>
+                    </div>
+                </Root>
+            `);
+
+            await hover(`#parent-node`);
+
+            await waitFor(() => {
+                const tooltipNode = expectHTMLQuery(`#tooltip-node`);
+                const parentNode = expectHTMLQuery(`#parent-node`);
+                const tooltipBounds = tooltipNode.getBoundingClientRect();
+                const parentBounds = parentNode.getBoundingClientRect();
+                expect(tooltipBounds.top, `tooltip below`).to.equal(parentBounds.bottom);
+                expect(tooltipBounds.left, `tooltip right of`).to.equal(parentBounds.right);
+            });
+        });
+
+        it(`should update relative position`, async () => {
+            const { expectHTMLQuery, updateProps } = testDriver.render(
+                `
+                <script>
+                    import {Root, Tooltip, overlayPosition} from '@zeejs/svelte';
+                    export let pos;
+                </script>
+                <Root>
+                    <div
+                        style="
+                            width: 300px;
+                            height: 300px;
+                            display: grid;
+                            justify-items: center;
+                            align-content: center;
+                        "
+                    >
+                        <div id="parent-node" tabIndex="0" style="width: 100px; height: 40px;">
+                            <Tooltip positionX={pos} positionY={pos}>
+                                <div id="tooltip-node" style="width: 80px; height: 20px;"></div>
+                            </Tooltip>
+                        </div>
+                    </div>
+                </Root>
+            `,
+                { pos: zeejsSvelte.overlayPosition.after }
+            );
+
+            await hover(`#parent-node`);
+
+            await waitFor(() => {
+                const tooltipNode = expectHTMLQuery(`#tooltip-node`);
+                const parentNode = expectHTMLQuery(`#parent-node`);
+                const tooltipBounds = tooltipNode.getBoundingClientRect();
+                const parentBounds = parentNode.getBoundingClientRect();
+                expect(tooltipBounds.top, `tooltip below`).to.equal(parentBounds.bottom);
+                expect(tooltipBounds.left, `tooltip right of`).to.equal(parentBounds.right);
+            });
+
+            updateProps({
+                pos: zeejsSvelte.overlayPosition.before,
+            });
+
+            await waitFor(() => {
+                const tooltipNode = expectHTMLQuery(`#tooltip-node`);
+                const parentNode = expectHTMLQuery(`#parent-node`);
+                const tooltipBounds = tooltipNode.getBoundingClientRect();
+                const parentBounds = parentNode.getBoundingClientRect();
+                expect(tooltipBounds.bottom, `tooltip above`).to.equal(parentBounds.top);
+                expect(tooltipBounds.right, `tooltip left of`).to.equal(parentBounds.left);
             });
         });
     });

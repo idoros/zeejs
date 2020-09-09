@@ -1,5 +1,5 @@
 import { createLayer, Layer } from '@zeejs/core';
-import { bindOverlay } from './bind-overlay';
+import { layoutOverlay } from './layout-overlay';
 import { isBrowser } from './utils';
 
 export const overlapBindConfig = Symbol(`overlap-bind`);
@@ -18,7 +18,7 @@ export interface LayerExtended {
     settings: LayerSettings;
     state: { mouseInside: boolean; focusInside: boolean };
     setElement: (this: DOMLayer, element: HTMLElement) => void;
-    [overlapBindConfig]: ReturnType<typeof bindOverlay>;
+    [overlapBindConfig]: ReturnType<typeof layoutOverlay>;
 }
 export type DOMLayer = Layer<LayerExtended, LayerSettings>;
 
@@ -86,7 +86,7 @@ export function createRoot({
                 element.classList.add(`zeejs--overlapWindow`);
             } else if (settings.overlap instanceof HTMLElement) {
                 element.classList.add(`zeejs--overlapElement`);
-                layer[overlapBindConfig] = bindOverlay(settings.overlap, element);
+                layer[overlapBindConfig] = layoutOverlay(settings.overlap, element);
             }
         }
     }

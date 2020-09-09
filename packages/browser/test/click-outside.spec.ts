@@ -12,8 +12,8 @@ describe(`click-outside`, () => {
 
     before('setup test driver', () => (testDriver = new HTMLTestDriver()));
     afterEach('clear test driver', () => testDriver.clean());
-
-    it(`should inform layer on root click`, async () => {
+    it(`should inform layer on root click`, async function () {
+        this.timeout(3000);
         const onClickOutside = stub();
         const backdrop = createBackdropParts();
         const { container, expectQuery } = testDriver.render(
