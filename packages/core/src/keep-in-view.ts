@@ -16,7 +16,8 @@ interface Data {
 
 export function keepInView(
     dir: `x` | `y`,
-    { overlayBounds, anchorBounds, viewport }: Data
+    { overlayBounds, anchorBounds, viewport }: Data,
+    avoidAnchor = false
 ): number {
     const sizeField = dir === `x` ? `width` : `height`;
     const posField = dir === `x` ? `x` : `y`;
@@ -34,7 +35,7 @@ export function keepInView(
     const dirOverlap = isAxleOverlap(posField, anchorBounds, overlayBounds);
     const oppositeDirOverlap = isAxleOverlap(oppositePosField, anchorBounds, overlayBounds);
     let inViewPos = overlayBounds[posField];
-    const flip = oppositeDirOverlap && !dirOverlap;
+    const flip = avoidAnchor && oppositeDirOverlap && !dirOverlap;
     if (flip) {
         // flip
         const spaceBefore = anchorPos;

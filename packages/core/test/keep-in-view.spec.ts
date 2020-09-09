@@ -81,17 +81,17 @@ describe(`keep-in-view`, () => {
     });
     describe(`with overlap on other direction`, () => {
         describe(`overflow start`, () => {
-            it(`should flip to other side of anchor`, () => {
-                //       o|ooaaa     |   ->    |  aaaooo  |
+            it(`should stick in view overlapping anchor`, () => {
+                //       o|ooaaa     |   ->    |oo@aa     |
                 const xData = {
                     anchorBounds: { x: 50, y: 50, width: 50, height: 50 },
-                    overlayBounds: { x: -50, y: 50, width: 100, height: 50 },
+                    overlayBounds: { x: -10, y: 50, width: 60, height: 50 },
                     viewport: { width: 200, height: 200 },
                 };
-                expect(keepInView(`x`, xData), `x`).to.equal(100);
-                expect(keepInView(`y`, xToY(xData)), `y`).to.equal(100);
+                expect(keepInView(`x`, xData), `x`).to.equal(0);
+                expect(keepInView(`y`, xToY(xData)), `y`).to.equal(0);
             });
-            it(`should flip to other side of anchor + stick to anchor`, () => {
+            it(`should stick in view until anchor drag it out`, () => {
                 //    oooaaa |     |   ->    aaao|oo   |
                 const xData = {
                     anchorBounds: { x: -60, y: 50, width: 50, height: 50 },
@@ -101,6 +101,52 @@ describe(`keep-in-view`, () => {
                 expect(keepInView(`x`, xData), `x`).to.equal(-10);
                 expect(keepInView(`y`, xToY(xData)), `y`).to.equal(-10);
             });
+        });
+        describe(`overflow end`, () => {
+            it(`should stick in view overlapping anchor`, () => {
+                //        |    aaaoo|o   ->    |    aa@oo|
+                const xData = {
+                    anchorBounds: { x: 100, y: 50, width: 50, height: 50 },
+                    overlayBounds: { x: 150, y: 50, width: 60, height: 50 },
+                    viewport: { width: 200, height: 200 },
+                };
+                expect(keepInView(`x`, xData), `x`).to.equal(140);
+                expect(keepInView(`y`, xToY(xData)), `y`).to.equal(140);
+            });
+            it(`should stick in view until anchor drag it out`, () => {
+                //    |         | aaaooo   ->    |       oo|oaaa
+                const xData = {
+                    anchorBounds: { x: 210, y: 50, width: 50, height: 50 },
+                    overlayBounds: { x: 320, y: 50, width: 60, height: 50 },
+                    viewport: { width: 200, height: 200 },
+                };
+                expect(keepInView(`x`, xData), `x`).to.equal(150);
+                expect(keepInView(`y`, xToY(xData)), `y`).to.equal(150);
+            });
+        });
+    });
+    describe(`with overlap on other direction using "avoidAnchor" flag`, () => {
+        describe(`overflow start`, () => {
+            it(`should flip to other side of anchor`, () => {
+                //       o|ooaaa     |   ->    |  aaaooo  |
+                const xData = {
+                    anchorBounds: { x: 50, y: 50, width: 50, height: 50 },
+                    overlayBounds: { x: -50, y: 50, width: 100, height: 50 },
+                    viewport: { width: 200, height: 200 },
+                };
+                expect(keepInView(`x`, xData, true), `x`).to.equal(100);
+                expect(keepInView(`y`, xToY(xData), true), `y`).to.equal(100);
+            });
+            it(`should flip to other side of anchor + stick to anchor`, () => {
+                //    oooaaa |     |   ->    aaao|oo   |
+                const xData = {
+                    anchorBounds: { x: -60, y: 50, width: 50, height: 50 },
+                    overlayBounds: { x: -160, y: 50, width: 100, height: 50 },
+                    viewport: { width: 200, height: 200 },
+                };
+                expect(keepInView(`x`, xData, true), `x`).to.equal(-10);
+                expect(keepInView(`y`, xToY(xData), true), `y`).to.equal(-10);
+            });
             it(`should not flip when other side has less space`, () => {
                 //       o|ooaaa |   ->   o|ooaaa |
                 const xData = {
@@ -108,8 +154,8 @@ describe(`keep-in-view`, () => {
                     overlayBounds: { x: -50, y: 50, width: 100, height: 50 },
                     viewport: { width: 200, height: 200 },
                 };
-                expect(keepInView(`x`, xData), `x`).to.be.NaN;
-                expect(keepInView(`y`, xToY(xData)), `y`).to.be.NaN;
+                expect(keepInView(`x`, xData, true), `x`).to.be.NaN;
+                expect(keepInView(`y`, xToY(xData), true), `y`).to.be.NaN;
             });
             it(`should not flip to other side of anchor is outside of viewport`, () => {
                 //    aaao|oo   |   ->    aaao|oo   |
@@ -118,8 +164,8 @@ describe(`keep-in-view`, () => {
                     overlayBounds: { x: -10, y: 50, width: 100, height: 50 },
                     viewport: { width: 200, height: 200 },
                 };
-                expect(keepInView(`x`, xData), `x`).to.be.NaN;
-                expect(keepInView(`y`, xToY(xData)), `y`).to.be.NaN;
+                expect(keepInView(`x`, xData, true), `x`).to.be.NaN;
+                expect(keepInView(`y`, xToY(xData), true), `y`).to.be.NaN;
             });
             it(`should stick in view on top of anchor when overlaps`, () => {
                 //       o|o@aa     |   ->    |o@@a     |
@@ -128,8 +174,8 @@ describe(`keep-in-view`, () => {
                     overlayBounds: { x: -10, y: 50, width: 50, height: 50 },
                     viewport: { width: 200, height: 200 },
                 };
-                expect(keepInView(`x`, xData), `x`).to.equal(0);
-                expect(keepInView(`y`, xToY(xData)), `y`).to.equal(0);
+                expect(keepInView(`x`, xData, true), `x`).to.equal(0);
+                expect(keepInView(`y`, xToY(xData), true), `y`).to.equal(0);
             });
         });
         describe(`overflow end`, () => {
@@ -140,8 +186,8 @@ describe(`keep-in-view`, () => {
                     overlayBounds: { x: 150, y: 50, width: 60, height: 50 },
                     viewport: { width: 200, height: 200 },
                 };
-                expect(keepInView(`x`, xData), `x`).to.equal(40);
-                expect(keepInView(`y`, xToY(xData)), `y`).to.equal(40);
+                expect(keepInView(`x`, xData, true), `x`).to.equal(40);
+                expect(keepInView(`y`, xToY(xData), true), `y`).to.equal(40);
             });
             it(`should flip to other side of anchor + stick to anchor`, () => {
                 //    |         | aaaooo   ->    |       oo|oaaa
@@ -150,8 +196,8 @@ describe(`keep-in-view`, () => {
                     overlayBounds: { x: 320, y: 50, width: 60, height: 50 },
                     viewport: { width: 200, height: 200 },
                 };
-                expect(keepInView(`x`, xData), `x`).to.equal(150);
-                expect(keepInView(`y`, xToY(xData)), `y`).to.equal(150);
+                expect(keepInView(`x`, xData, true), `x`).to.equal(150);
+                expect(keepInView(`y`, xToY(xData), true), `y`).to.equal(150);
             });
             it(`should not flip when other side has less space`, () => {
                 //       | aaaoo|o   ->   | aaaoo|o
@@ -160,8 +206,8 @@ describe(`keep-in-view`, () => {
                     overlayBounds: { x: 150, y: 50, width: 100, height: 50 },
                     viewport: { width: 200, height: 200 },
                 };
-                expect(keepInView(`x`, xData), `x`).to.be.NaN;
-                expect(keepInView(`y`, xToY(xData)), `y`).to.be.NaN;
+                expect(keepInView(`x`, xData, true), `x`).to.be.NaN;
+                expect(keepInView(`y`, xToY(xData), true), `y`).to.be.NaN;
             });
             it(`should not flip to other side of anchor is outside of viewport`, () => {
                 //    |       oo|oaaa   ->    |       oo|oaaa
@@ -170,8 +216,8 @@ describe(`keep-in-view`, () => {
                     overlayBounds: { x: 150, y: 50, width: 60, height: 50 },
                     viewport: { width: 200, height: 200 },
                 };
-                expect(keepInView(`x`, xData), `x`).to.be.NaN;
-                expect(keepInView(`y`, xToY(xData)), `y`).to.be.NaN;
+                expect(keepInView(`x`, xData, true), `x`).to.be.NaN;
+                expect(keepInView(`y`, xToY(xData), true), `y`).to.be.NaN;
             });
             it(`should stick in view on top of anchor when overlaps`, () => {
                 //       |     aa@o|o   ->    |     a@@o|
@@ -180,8 +226,8 @@ describe(`keep-in-view`, () => {
                     overlayBounds: { x: 180, y: 50, width: 50, height: 50 },
                     viewport: { width: 200, height: 200 },
                 };
-                expect(keepInView(`x`, xData), `x`).to.equal(150);
-                expect(keepInView(`y`, xToY(xData)), `y`).to.equal(150);
+                expect(keepInView(`x`, xData, true), `x`).to.equal(150);
+                expect(keepInView(`y`, xToY(xData), true), `y`).to.equal(150);
             });
         });
     });

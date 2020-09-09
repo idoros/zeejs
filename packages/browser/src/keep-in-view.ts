@@ -9,12 +9,12 @@ interface Data {
 }
 
 export function keepInView(data: Data) {
-    const x = keepInViewBase(`x`, data);
+    const x = keepInViewBase(`x`, data, true);
     if (!isNaN(x)) {
         data.overlayBounds.x = x;
         data.overlay.style.left = x + `px`;
     }
-    const y = keepInViewBase(`y`, data);
+    const y = keepInViewBase(`y`, data, true);
     if (!isNaN(y)) {
         data.overlayBounds.y = y;
         data.overlay.style.top = y + `px`;
