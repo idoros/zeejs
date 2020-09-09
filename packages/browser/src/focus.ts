@@ -1,6 +1,6 @@
 import { DOMLayer } from './root';
 import { findContainingLayer } from './utils';
-import tabbable from 'tabbable';
+import { tabbable } from 'tabbable';
 
 export function watchFocus(layersWrapper: HTMLElement, topLayer: DOMLayer) {
     const onFocus = createOnFocusHandler(topLayer);
@@ -15,6 +15,7 @@ export function watchFocus(layersWrapper: HTMLElement, topLayer: DOMLayer) {
 }
 
 type Focusable = { focus: () => void };
+type FocusableElement = HTMLElement | SVGElement;
 
 const createOnFocusHandler = (topLayer: DOMLayer) => {
     return (event: FocusEvent) => {
@@ -80,7 +81,7 @@ const onKeyDown = (event: KeyboardEvent) => {
     }
     const isForward = !event.shiftKey;
     const activeElement = document.activeElement;
-    if (activeElement) {
+    if (activeElement instanceof HTMLElement || activeElement instanceof SVGElement) {
         const layer = findContainingLayer(activeElement);
         if (layer) {
             const nextElement = queryNextTabbable(layer, activeElement, isForward);
@@ -94,17 +95,17 @@ const onKeyDown = (event: KeyboardEvent) => {
 
 function queryNextTabbable(
     layer: HTMLElement,
-    currentElement: Element,
+    currentElement: FocusableElement,
     isForward: boolean
 ): Focusable | null {
-    const list = tabbable(layer);
+    const list = tabbable(layer) as FocusableElement[];
     if (list.length === 0) {
         throw new Error(
             `queryNextTabbable was called with currentElement that is not contained in layer`
         );
     }
     const edgeIndex = isForward ? list.length - 1 : 0;
-    const currentIndex = list.indexOf(currentElement as HTMLElement);
+    const currentIndex = list.indexOf(currentElement);
     if (currentIndex === edgeIndex) {
         const layerId = layer.id;
         if (!layerId) {
@@ -119,7 +120,9 @@ function queryNextTabbable(
             }
         } else {
             // nested layer
-            const originElement = document.querySelector(`[data-origin="${layerId}"]`);
+            const originElement = document.querySelector<FocusableElement>(
+                `[data-origin="${layerId}"]`
+            );
             if (!originElement) {
                 // ToDo: handle missing origin?
                 return null;
@@ -148,7 +151,7 @@ function queryNextTabbable(
     }
 }
 
-function queryTabbableElement(layer: HTMLElement, element: HTMLElement, isForward: boolean) {
+function queryTabbableElement(layer: HTMLElement, element: FocusableElement, isForward: boolean) {
     const isOriginElement = element.tagName === `ZEEJS-ORIGIN`;
     if (isOriginElement) {
         return queryFirstTabbable(layer, element, isForward);
@@ -159,7 +162,7 @@ function queryTabbableElement(layer: HTMLElement, element: HTMLElement, isForwar
 
 function queryFirstTabbable(
     originLayer: HTMLElement,
-    originElement: HTMLElement,
+    originElement: FocusableElement,
     isForward: boolean
 ): Focusable | null {
     const originId = originElement.dataset.origin;
@@ -172,7 +175,7 @@ function queryFirstTabbable(
         // skip missing layer
         return queryNextTabbable(originLayer, originElement, isForward);
     }
-    const list = tabbable(layer);
+    const list = tabbable(layer) as FocusableElement[];
     if (list.length === 0) {
         // empty layer - query next after origin element
         return queryNextTabbable(originLayer, originElement, isForward);

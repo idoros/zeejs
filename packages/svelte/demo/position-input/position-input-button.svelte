@@ -3,7 +3,7 @@
     import { Position, keyArrowMap, symbolMap } from './position';
     import PositionInput from './position-input.svelte';
     import Dialog from '../layers/dialog.svelte';
-    import tabbable from 'tabbable';
+    import { tabbable } from 'tabbable';
 
     export let id = getUniqueId();
     export let value = Position.center;
