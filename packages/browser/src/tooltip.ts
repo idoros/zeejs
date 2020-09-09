@@ -7,6 +7,8 @@ interface TooltipOptions {
     overlay?: HTMLElement | null;
     mouseDelay?: number;
     isInOverlay?: (element: Element, overlay: Element) => boolean;
+    positionX?: overlayPosition;
+    positionY?: overlayPosition;
 }
 
 const NOT_PLACED = `zeejs--notPlaced`;
@@ -17,6 +19,8 @@ export const tooltip = ({
     overlay,
     mouseDelay = 500,
     isInOverlay,
+    positionX = overlayPosition.center,
+    positionY = overlayPosition.before,
 }: TooltipOptions) => {
     let isFocusHold = false;
     let isMouseIn = false;
@@ -93,8 +97,8 @@ export const tooltip = ({
         const newOpenState = isMouseIn || isMouseInOverlay || isFocusHold;
         if (newOpenState && !bindPosition && anchor && overlay) {
             bindPosition = layoutOverlay(anchor, overlay, {
-                x: overlayPosition.center,
-                y: overlayPosition.before,
+                x: positionX,
+                y: positionY,
                 height: false,
                 width: false,
                 onOverflow: keepInView,
@@ -154,12 +158,23 @@ export const tooltip = ({
         flagMouseOverOverlay,
         flagOverlayFocus,
         setOverlay,
+        updatePosition({ x, y }: { x?: overlayPosition; y?: overlayPosition }) {
+            positionX = x || overlayPosition.center;
+            positionY = y || overlayPosition.before;
+            if (bindPosition) {
+                bindPosition.updateOptions({
+                    x: positionX,
+                    y: positionY,
+                });
+            }
+        },
         initialOverlayCSSClass: NOT_PLACED,
         stop() {
             unsetAnchor();
             window.removeEventListener(`mousemove`, onMouseMove);
             cancelAnimationFrame(blurBuffer);
             clearTimeout(buffer);
+            onToggle = undefined;
         },
     };
 };

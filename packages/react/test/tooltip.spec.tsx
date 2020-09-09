@@ -7,6 +7,7 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { waitFor, sleep } from 'promise-assist';
+import { overlayPosition } from '@zeejs/browser/src';
 chai.use(sinonChai);
 chai.use(domElementMatchers);
 
@@ -225,7 +226,7 @@ describe(`react tooltip`, () => {
     });
 
     describe(`position`, () => {
-        it(`should position relative to parent`, async () => {
+        it(`should position relative to parent (default: above & center)`, async () => {
             const { expectHTMLQuery } = testDriver.render(() => (
                 <Root
                     style={{
@@ -266,6 +267,90 @@ describe(`react tooltip`, () => {
                     tooltipBounds.right - tooltipBounds.width / 2,
                     `tooltip x centered`
                 ).to.be.approximately(parentBounds.right - parentBounds.width / 2, 1);
+            });
+        });
+
+        it(`should position relative to parent (custom: below & right)`, async () => {
+            const { expectHTMLQuery } = testDriver.render(() => (
+                <Root
+                    style={{
+                        width: `300px`,
+                        height: `300px`,
+                        display: `grid`,
+                        justifyItems: `center`,
+                        alignContent: `center`,
+                    }}
+                >
+                    <div
+                        id="parent-node"
+                        tabIndex={0}
+                        style={{ width: `100px`, height: `40px`, background: 'red' }}
+                    >
+                        <Tooltip
+                            positionX={overlayPosition.after}
+                            positionY={overlayPosition.after}
+                        >
+                            <div
+                                id="tooltip-node"
+                                style={{ width: `80px`, height: `20px`, background: 'green' }}
+                            ></div>
+                        </Tooltip>
+                    </div>
+                </Root>
+            ));
+
+            await hover(`#parent-node`);
+
+            await waitFor(() => {
+                const tooltipNode = expectHTMLQuery(`#tooltip-node`);
+                const parentNode = expectHTMLQuery(`#parent-node`);
+                const tooltipBounds = tooltipNode.getBoundingClientRect();
+                const parentBounds = parentNode.getBoundingClientRect();
+                expect(tooltipBounds.top, `tooltip below`).to.equal(parentBounds.bottom);
+                expect(tooltipBounds.left, `tooltip right of`).to.equal(parentBounds.right);
+            });
+        });
+
+        it(`should update relative position`, async () => {
+            const { expectHTMLQuery, setData } = testDriver.render<overlayPosition>(
+                (pos) => (
+                    <Root
+                        style={{
+                            width: `300px`,
+                            height: `300px`,
+                            display: `grid`,
+                            justifyItems: `center`,
+                            alignContent: `center`,
+                        }}
+                    >
+                        <div
+                            id="parent-node"
+                            tabIndex={0}
+                            style={{ width: `100px`, height: `40px`, background: 'red' }}
+                        >
+                            <Tooltip positionX={pos} positionY={pos}>
+                                <div
+                                    id="tooltip-node"
+                                    style={{ width: `80px`, height: `20px`, background: 'green' }}
+                                ></div>
+                            </Tooltip>
+                        </div>
+                    </Root>
+                ),
+                { initialData: overlayPosition.after }
+            );
+
+            await hover(`#parent-node`);
+
+            setData(overlayPosition.before);
+
+            await waitFor(() => {
+                const tooltipNode = expectHTMLQuery(`#tooltip-node`);
+                const parentNode = expectHTMLQuery(`#parent-node`);
+                const tooltipBounds = tooltipNode.getBoundingClientRect();
+                const parentBounds = parentNode.getBoundingClientRect();
+                expect(tooltipBounds.bottom, `tooltip above`).to.equal(parentBounds.top);
+                expect(tooltipBounds.right, `tooltip left of`).to.equal(parentBounds.left);
             });
         });
     });

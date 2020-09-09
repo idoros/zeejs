@@ -1,13 +1,15 @@
 import { Layer } from './layer';
-import { tooltip, isContainedBy } from '@zeejs/browser';
+import { tooltip, isContainedBy, overlayPosition } from '@zeejs/browser';
 import React, { ReactNode, useMemo, useEffect, useState, useRef } from 'react';
 
 export interface TooltipProps {
     children: ReactNode;
     mouseDelay?: number;
+    positionX?: overlayPosition;
+    positionY?: overlayPosition;
 }
 
-export const Tooltip = ({ children, mouseDelay }: TooltipProps) => {
+export const Tooltip = ({ children, mouseDelay, positionX, positionY }: TooltipProps) => {
     const [isOpen, onToggle] = useState(false);
     const tooltipLogic = useMemo(
         () =>
@@ -15,6 +17,8 @@ export const Tooltip = ({ children, mouseDelay }: TooltipProps) => {
                 onToggle,
                 mouseDelay,
                 isInOverlay: isContainedBy,
+                positionX,
+                positionY,
             }),
         []
     );
@@ -33,6 +37,13 @@ export const Tooltip = ({ children, mouseDelay }: TooltipProps) => {
     useEffect(() => {
         tooltipLogic.setOverlay(overlayRef.current);
     }, [isOpen, overlayRef.current]);
+
+    useEffect(() => {
+        tooltipLogic.updatePosition({
+            x: positionX,
+            y: positionY,
+        });
+    }, [positionX, positionY]);
 
     return (
         <span ref={placeholderRef}>
