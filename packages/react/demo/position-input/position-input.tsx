@@ -1,5 +1,6 @@
 import { getUniqueId } from '../unique-id';
 import { Dialog } from '../layers/dialog';
+import type { ModalPosition } from '@zeejs/react';
 import React from 'react';
 import { tabbable } from 'tabbable';
 
@@ -19,7 +20,7 @@ interface PositionProps {
     id?: string;
     className?: string;
     style?: React.CSSProperties;
-    value: Position;
+    value: ModalPosition;
     onChange: (changed: Position) => void;
 }
 
@@ -142,53 +143,6 @@ export const PositionInput = React.forwardRef<HTMLDivElement, PositionProps>(
         );
     }
 );
-
-export const getAbsolutePosition = (position: Position) => {
-    const alignStyle: React.CSSProperties = { position: `absolute` };
-    if (position === Position.center) {
-        alignStyle.top = `50%`;
-        alignStyle.left = `50%`;
-        alignStyle.transform = `translate(-50%, -50%)`;
-        return alignStyle;
-    }
-    switch (
-        position // y
-    ) {
-        case Position.right:
-        case Position.left:
-            alignStyle.top = `50%`;
-            alignStyle.transform = `translateY(-50%)`;
-            break;
-        case Position.top:
-        case Position.topRight:
-        case Position.topLeft:
-            alignStyle.top = 0;
-            break;
-        case Position.bottom:
-        case Position.bottomRight:
-        case Position.bottomLeft:
-            alignStyle.bottom = 0;
-    }
-    switch (
-        position // x
-    ) {
-        case Position.top:
-        case Position.bottom:
-            alignStyle.left = `50%`;
-            alignStyle.transform = `translateX(-50%)`;
-            break;
-        case Position.right:
-        case Position.topRight:
-        case Position.bottomRight:
-            alignStyle.right = 0;
-            break;
-        case Position.left:
-        case Position.topLeft:
-        case Position.bottomLeft:
-            alignStyle.left = 0;
-    }
-    return alignStyle;
-};
 
 const symbolMap = {
     [Position.topLeft]: `↖`,

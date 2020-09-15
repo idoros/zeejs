@@ -80,14 +80,14 @@ globalCSS.innerHTML = `
         overflow: auto;
     }
 
-    .Modal__root {
+    .ModalDemo__modal {
         display: grid;
         grid-template-rows: minmax(0, 1fr);
         grid-template-columns: minmax(0, 1fr);
         max-height: 100vh;
         max-width: 100vw;
     }
-    .Modal__root > .Box__root {
+    .ModalDemo__modal > .Box__root {
         padding: 1em;
     }
     .Dialog__root {

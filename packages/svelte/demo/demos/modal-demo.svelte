@@ -1,7 +1,6 @@
 <script>
-    import { Root } from '../../src';
+    import { Root, Modal } from '../../src';
     import { Position } from '../position-input/position';
-    import Modal from '../layers/modal.svelte';
     import Box from '../box.svelte';
     import PositionInputButton from '../position-input/position-input-button.svelte';
     import { getUniqueId } from '../unique-id';
@@ -11,7 +10,7 @@
     let modalData = {
         isOpen: false,
         title: `modal title`,
-        position: Position.center,
+        position: `center`,
         backdrop: `hide`,
         fixedSize: true
     };
@@ -60,6 +59,16 @@
     .modalDemo__shrinkable {
         overflow: auto;
     }
+    :global(.modalDemo__modal) {
+        display: grid;
+        grid-template-rows: minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr);
+        max-height: 100vh;
+        max-width: 100vw;
+    }
+    :global(.modalDemo__modal > .Box__root) {
+        padding: 1em;
+    }
 </style>
 
 <h2>Modal</h2>
@@ -68,7 +77,7 @@
     <span>
         modal "{modalData.title}" is open
         <Modal
-            className="modalDemo__modal {modalData.fixedSize ? `modalDemo--fixedSize` : ``}"
+            class="modalDemo__modal {modalData.fixedSize ? `modalDemo--fixedSize` : ``}"
             position={modalData.position}
             backdrop={modalData.backdrop}>
             <Box shadow className="modalDemo__modalContainer">

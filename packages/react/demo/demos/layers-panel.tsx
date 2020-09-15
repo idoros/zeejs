@@ -1,8 +1,8 @@
 import { Box } from '../box';
 import { getUniqueId } from '../unique-id';
-import { Modal } from '../layers/modal';
 import { Dialog } from '../layers/dialog';
 import { Position, PositionInputButton } from '../position-input/position-input';
+import { Modal } from '@zeejs/react';
 import React, { useState, useCallback } from 'react';
 
 const LayerType = ({ def, itemId }: { def: LayerItem; itemId: string }) => {

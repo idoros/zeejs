@@ -1,15 +1,18 @@
 import { getUniqueId } from '../unique-id';
 import { Box } from '../box';
-import { Modal, ModalProps } from '../layers/modal';
-import { Position, PositionInputButton } from '../position-input/position-input';
+import { PositionInputButton } from '../position-input/position-input';
+import { Modal } from '@zeejs/react';
+import type { ModalPosition } from '@zeejs/react';
 import React from 'react';
+
+type ModalProps = Parameters<typeof Modal>[0];
 
 export const ModalDemo = ({ children }: { children: React.ReactNode }) => {
     const id = React.useMemo(() => getUniqueId(), []);
     const [modalData, updateLayer] = React.useState({
         isOpen: false,
         title: `modal title`,
-        position: Position.center,
+        position: `center` as ModalPosition,
         backdrop: `hide` as ModalProps['backdrop'],
         fixedSize: true,
     });
@@ -44,7 +47,9 @@ export const ModalDemo = ({ children }: { children: React.ReactNode }) => {
                     <Modal
                         position={modalData.position}
                         backdrop={modalData.backdrop}
-                        className={modalData.fixedSize ? `ModalDemo--fixedSize` : ``}
+                        className={
+                            `ModalDemo__modal ` + modalData.fixedSize ? `ModalDemo--fixedSize` : ``
+                        }
                     >
                         <Box shadow className="ModalDemo__modalContainer">
                             <h2>{modalData.title}</h2>
