@@ -19,7 +19,7 @@ export function getInteractionApi(): InteractionApi {
 
     api.clickIfPossible = async (selector: string) => {
         try {
-            await api.click(selector, { timeout: 10 });
+            await api.click(selector, { timeout: 500 });
         } catch (e) {
             return false;
         }

@@ -41,7 +41,7 @@ export async function runTests({
             plugins: createPluginsConfig(webpackConfig.plugins, {
                 ui: `bdd`,
                 colors,
-                timeout: 2000,
+                timeout: 4000,
                 reporter: `spec`,
             }),
         });

@@ -40,9 +40,6 @@
     :global(:focus) {
         outline: 5px solid gold;
     }
-    :global(.Modal__root > .Box__root) {
-        padding: 1em;
-    }
     .backgroundText {
         color: grey;
         user-select: none;
