@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import sinon, { stub } from 'sinon';
 import { waitFor } from 'promise-assist';
 
-describe.only(`react modal`, () => {
+describe(`svelte modal`, () => {
     let testDriver: SvelteTestDriver;
     const { clickIfPossible, click, hover } = getInteractionApi();
 
