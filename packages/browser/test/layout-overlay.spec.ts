@@ -199,6 +199,32 @@ describe(`layout-overlay`, () => {
             stopA();
             stopB();
         });
+        it(`should restore size when stopped`, () => {
+            const { expectQuery, expectHTMLQuery } = testDriver.render(
+                () => `
+                    <div id="anchor" style="background: red;width: 100px; height: 200px; margin: 30px"></div>
+                    <div id="overlay" style="background:green;"/>
+                `
+            );
+            const anchor = expectQuery(`#anchor`);
+            const overlay = expectHTMLQuery(`#overlay`);
+            let { stop } = layoutOverlay(anchor, overlay);
+
+            stop();
+
+            expect(overlay.style.width, `unset width`).to.equal(``);
+            expect(overlay.style.height, `unset height`).to.equal(``);
+
+            overlay.style.width = `300px`;
+            overlay.style.height = `400px`;
+
+            ({ stop } = layoutOverlay(anchor, overlay));
+
+            stop();
+
+            expect(overlay.style.width, `initial width`).to.equal(`300px`);
+            expect(overlay.style.height, `initial height`).to.equal(`400px`);
+        });
         describe(`document scroll`, () => {
             it(`should update overlay position relative to body`, async () => {
                 const { expectQuery, expectHTMLQuery } = testDriver.render(
