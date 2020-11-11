@@ -162,6 +162,8 @@ export const layoutOverlay = (
     };
 };
 
+layoutOverlay.NOT_PLACED = `zeejs--notPlaced`;
+
 function onScroll({ target }: Event) {
     const eventTarget = target instanceof Document ? target.body : target;
     if (eventTarget instanceof Element) {
