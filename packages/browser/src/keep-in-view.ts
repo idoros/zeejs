@@ -8,13 +8,17 @@ interface Data {
     overlay: OverflowData['overlay'];
 }
 
-export function keepInView(data: Data) {
-    const x = keepInViewBase(`x`, data, true);
+export interface KeepInViewOptions {
+    avoidAnchor: boolean
+}
+
+export function keepInView({avoidAnchor}: KeepInViewOptions, data: Data) {
+    const x = keepInViewBase(`x`, data, avoidAnchor);
     if (!isNaN(x)) {
         data.overlayBounds.x = x;
         data.overlay.style.left = x + `px`;
     }
-    const y = keepInViewBase(`y`, data, true);
+    const y = keepInViewBase(`y`, data, avoidAnchor);
     if (!isNaN(y)) {
         data.overlayBounds.y = y;
         data.overlay.style.top = y + `px`;

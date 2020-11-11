@@ -101,7 +101,7 @@ export const tooltip = ({
                 y: positionY,
                 height: false,
                 width: false,
-                onOverflow: keepInView,
+                onOverflow: keepInView.bind(null, { avoidAnchor: true }),
             });
             overlay.classList.remove(NOT_PLACED);
         } else if (!newOpenState) {

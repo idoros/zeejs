@@ -2,6 +2,7 @@ export type { DOMLayer } from './root';
 export { createRoot } from './root';
 export { layoutOverlay, overlayPosition } from './layout-overlay';
 export { keepInView } from './keep-in-view';
+export type { KeepInViewOptions } from './keep-in-view';
 export { watchFocus } from './focus';
 export { watchClickOutside } from './click-outside';
 export { watchMouseInside } from './mouse-inside';
