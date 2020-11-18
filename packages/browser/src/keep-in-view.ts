@@ -9,10 +9,10 @@ interface Data {
 }
 
 export interface KeepInViewOptions {
-    avoidAnchor: boolean
+    avoidAnchor: boolean;
 }
 
-export function keepInView({avoidAnchor}: KeepInViewOptions, data: Data) {
+export function keepInView({ avoidAnchor }: KeepInViewOptions, data: Data) {
     const x = keepInViewBase(`x`, data, avoidAnchor);
     if (!isNaN(x)) {
         data.overlayBounds.x = x;

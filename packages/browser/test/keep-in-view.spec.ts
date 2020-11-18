@@ -40,12 +40,15 @@ describe(`keep-in-view`, () => {
         const anchor = expectHTMLQuery(`#anchor`);
         const overlay = expectHTMLQuery(`#overlay`);
 
-        keepInView({avoidAnchor: true}, {
-            anchorBounds: getBounds(anchor),
-            overlayBounds: getBounds(overlay),
-            overlay,
-            viewport: getViewportSize(),
-        });
+        keepInView(
+            { avoidAnchor: true },
+            {
+                anchorBounds: getBounds(anchor),
+                overlayBounds: getBounds(overlay),
+                overlay,
+                viewport: getViewportSize(),
+            }
+        );
 
         expect(overlay.style.left, 'left untouched').to.equal(``);
         expect(overlay.style.top, 'top untouched').to.equal(``);
