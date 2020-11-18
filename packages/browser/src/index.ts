@@ -9,6 +9,7 @@ export { watchMouseInside } from './mouse-inside';
 export { updateLayers, createBackdropParts } from './update-layers';
 export { isBrowser, isContainedBy } from './utils';
 export { tooltip } from './tooltip';
+export { popover } from './popover';
 export { modalAbsolutePosition, modalAbsolutePositionAsString } from './modal-position';
 export type { ModalPosition } from './modal-position';
 export { css } from './css';
