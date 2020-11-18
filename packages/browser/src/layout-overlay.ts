@@ -27,9 +27,12 @@ export interface OverflowData {
 }
 interface OverlayConfig extends OverlayOptions {
     anchor: Element;
-    initSize: {
+    init: {
         width: string;
         height: string;
+        overflowX: string;
+        overflowY: string;
+        overflow: string;
     };
 }
 export enum overlayPosition {
@@ -40,7 +43,7 @@ export enum overlayPosition {
     after = `AFTER`,
 }
 
-const UNSET_POS = `zeejs-unset`;
+const UNSET = `zeejs-unset`;
 const affectedOverlays = new Map<Element, Set<HTMLElement>>();
 const overlays = new Map<HTMLElement, OverlayConfig>();
 const anchors = new Map<Element, Set<HTMLElement>>();
@@ -78,7 +81,13 @@ export const layoutOverlay = (
         y: options.y || overlayPosition.center,
         width: options.width ?? true,
         height: options.height ?? true,
-        initSize: { width: UNSET_POS, height: UNSET_POS },
+        init: {
+            width: UNSET,
+            height: UNSET,
+            overflowX: UNSET,
+            overflowY: UNSET,
+            overflow: overlay.style.overflow,
+        },
         onOverflow:
             options.onOverflow ||
             (() => {
@@ -112,6 +121,12 @@ export const layoutOverlay = (
         stop: () => {
             const overlayConfig = overlays.get(overlay);
             if (overlayConfig) {
+                // restore shorthand overflow first, because browser merges overflow-x/y together
+                if (overlayConfig.init.overflow) {
+                    overlay.style.overflow = overlayConfig.init.overflow;
+                } else {
+                    overlay.style.removeProperty(`overflow`);
+                }
                 restoreSize(`width`, overlayConfig, overlay);
                 restoreSize(`height`, overlayConfig, overlay);
             }
@@ -270,25 +285,35 @@ function updateSize(
     overlayConfig: OverlayConfig,
     overlay: HTMLElement
 ) {
-    const { [dir]: bindDir, initSize } = overlayConfig;
+    const { [dir]: bindDir, init } = overlayConfig;
     if (bindDir) {
-        if (initSize[dir] === UNSET_POS) {
-            initSize[dir] = overlay.style[dir];
+        const overflow = dir === `width` ? `overflowX` : `overflowY`;
+        if (init[dir] === UNSET) {
+            init[dir] = overlay.style[dir];
+            init[overflow] = overlay.style[overflow];
         }
+        overlay.style[overflow] = `auto`;
         overlay.style[dir] = refRect[dir] + `px`;
     } else {
         restoreSize(dir, overlayConfig, overlay);
     }
 }
 function restoreSize(dir: `width` | `height`, overlayConfig: OverlayConfig, overlay: HTMLElement) {
-    const { initSize } = overlayConfig;
-    if (initSize[dir] !== UNSET_POS) {
-        if (initSize[dir]) {
-            overlay.style[dir] = initSize[dir];
+    const { init } = overlayConfig;
+    if (init[dir] !== UNSET) {
+        const overflow = dir === `width` ? `overflowX` : `overflowY`;
+        if (init[dir]) {
+            overlay.style[dir] = init[dir];
         } else {
             overlay.style.removeProperty(dir);
         }
-        initSize[dir] = UNSET_POS;
+        if (init[overflow]) {
+            overlay.style[overflow] = init[overflow];
+        } else {
+            overlay.style.removeProperty(overflow);
+        }
+        init[dir] = UNSET;
+        init[overflow] = UNSET;
     }
 }
 function getPosition(pos: overlayPosition, dir: `x` | `y`, refRect: DOMRect, overlayRect: DOMRect) {
