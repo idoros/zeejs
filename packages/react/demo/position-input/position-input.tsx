@@ -1,5 +1,5 @@
 import { getUniqueId } from '../unique-id';
-import { Dialog } from '../layers/dialog';
+import { Popover } from '@zeejs/react';
 import type { ModalPosition } from '@zeejs/react';
 import React from 'react';
 import { tabbable } from 'tabbable';
@@ -46,6 +46,18 @@ export const PositionInputButton = ({
         setOpen(false);
         onChange(selectedValue);
     }, []);
+    React.useEffect(() => {
+        if (isOpen) {
+            if (popupRef.current) {
+                const result = tabbable(popupRef.current, {
+                    includeContainer: true,
+                }) as HTMLElement[];
+                if (result.length) {
+                    result[0].focus();
+                }
+            }
+        }
+    }, [isOpen]);
 
     return (
         <button
@@ -57,23 +69,14 @@ export const PositionInputButton = ({
         >
             {symbolMap[value]}
             {isOpen ? (
-                <Dialog
-                    relativeTo={id}
+                <Popover
                     backdrop="block"
+                    positionX="center"
+                    positionY="center"
                     onClickOutside={() => setOpen(false)}
-                    onPositioned={() => {
-                        if (popupRef.current) {
-                            const result = tabbable(popupRef.current, {
-                                includeContainer: true,
-                            }) as HTMLElement[];
-                            if (result.length) {
-                                result[0].focus();
-                            }
-                        }
-                    }}
                 >
                     <PositionInput ref={popupRef} value={value} onChange={onSelect} />
-                </Dialog>
+                </Popover>
             ) : null}
         </button>
     );

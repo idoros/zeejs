@@ -2,6 +2,7 @@ import { Root } from '../src';
 import { Box } from './box';
 import { ModalDemo } from './demos/modal-demo';
 import { TooltipDemo } from './demos/tooltip-demo';
+import { PopoverDemo } from './demos/popover-demo';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -79,7 +80,6 @@ globalCSS.innerHTML = `
     .ModalDemo__shrinkable {
         overflow: auto;
     }
-
     .ModalDemo__modal {
         display: grid;
         grid-template-rows: minmax(0, 1fr);
@@ -90,14 +90,15 @@ globalCSS.innerHTML = `
     .ModalDemo__modal > .Box__root {
         padding: 1em;
     }
-    .Dialog__root {
-        display: inline-block;
+
+    .PopoverDemo__popoverContainer {
+        display: grid;
+        height: 100%;
+        max-height: 50vh;
+        grid-template-rows: 1fr auto;
     }
-    .Dialog__root {
-        box-shadow: var(--layerShadow);
-    }
-    .Dialog__root:not(.Dialog--positioned), .Dialog__root:not(.Dialog--positioned) * {
-        visibility: hidden!important;
+    .PopoverDemo__shrinkable {
+        overflow: auto;
     }
     .Box--shadow {
         box-shadow: var(--layerShadow);
@@ -129,6 +130,10 @@ const Demos = () => {
                 </ModalDemo>
                 <hr />
                 <TooltipDemo />
+                <hr />
+                <PopoverDemo>
+                    <Demos />
+                </PopoverDemo>
             </div>
         </>
     );
