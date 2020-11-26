@@ -11,7 +11,7 @@ interface PopoverOptions {
 
 const defaultOptions = {
     positionX: `center`,
-    positionY: `before`,
+    positionY: `after`,
     matchWidth: false,
     matchHeight: false,
     avoidAnchor: false,

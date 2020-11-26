@@ -1,4 +1,4 @@
-import { popover, css, layoutOverlay, overlayPosition } from '../src';
+import { popover, css } from '../src';
 import { HTMLTestDriver } from './html-test-driver';
 import { expect } from 'chai';
 import { waitFor } from 'promise-assist';
@@ -141,7 +141,7 @@ describe(`popover`, () => {
             await waitFor(() => {
                 const anchorRect = anchor.getBoundingClientRect();
                 const overlayRect = overlay.getBoundingClientRect();
-                expect(Math.round(overlayRect.bottom), `above`).to.equal(anchorRect.top);
+                expect(Math.round(overlayRect.top), `below`).to.equal(anchorRect.bottom);
                 expect(
                     Math.round(overlayRect.left + overlayRect.width / 2),
                     `centered`
