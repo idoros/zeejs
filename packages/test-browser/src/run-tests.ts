@@ -46,9 +46,11 @@ export async function runTests({
                 timeout: 4000,
                 reporter: `spec`,
             }),
+            stats: `errors-warnings`
         });
 
-        const devMiddleware = webpackDevMiddleware(compiler);//, { logLevel: 'warn', publicPath: '/' }
+        const devMiddleware = webpackDevMiddleware(compiler);
+        
         closables.push(devMiddleware);
 
         const webpackStats = await new Promise<webpack.Stats>((resolve) => {
