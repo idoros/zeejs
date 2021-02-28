@@ -2,7 +2,9 @@ import { safeListeningHttpServer } from 'create-listening-server';
 import express from 'express';
 import playwright from 'playwright';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import webpackDevMiddleware from 'webpack-dev-middleware';
+const webpackDevMiddleware = require('webpack-dev-middleware') as (
+    compiler: webpack.Compiler
+  ) => express.Handler & { close(): unknown };
 import { hookPageConsole } from './hook-page-console';
 import webpack from 'webpack';
 
@@ -46,22 +48,7 @@ export async function runTests({
             }),
         });
 
-        if (!dev) {
-            // force fake watching on single runs
-            compiler.watch = function watch(_watchOptions, handler) {
-                compiler.run(handler);
-                return {
-                    close(cb) {
-                        if (cb) {
-                            cb();
-                        }
-                    },
-                    invalidate: () => undefined,
-                };
-            };
-        }
-
-        const devMiddleware = webpackDevMiddleware(compiler, { logLevel: 'warn', publicPath: '/' });
+        const devMiddleware = webpackDevMiddleware(compiler);//, { logLevel: 'warn', publicPath: '/' }
         closables.push(devMiddleware);
 
         const webpackStats = await new Promise<webpack.Stats>((resolve) => {
@@ -154,9 +141,9 @@ interface MochaOptions {
     colors: boolean;
 }
 function createPluginsConfig(
-    existingPlugins: webpack.Plugin[] = [],
+    existingPlugins: webpack.WebpackPluginInstance[] = [],
     options: MochaOptions
-): webpack.Plugin[] {
+): webpack.WebpackPluginInstance[] {
     return [
         ...(existingPlugins as any),
 

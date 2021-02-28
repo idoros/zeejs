@@ -12,7 +12,7 @@
         "test": "node -r @ts-tools/node/r -r tsconfig-paths/register ./test/setup.ts",
         "test:dev": "cross-env DEV=true PWDEBUG=1 node -r @ts-tools/node/r -r tsconfig-paths/register ./test/setup.ts",
         "prepack": "yarn build",
-        "demo": "webpack-dev-server"
+        "demo": "webpack serve"
     },
     "dependencies": {
         "@zeejs/browser": "^0.1.0",
@@ -23,8 +23,8 @@
         "react-dom": ">=16"
     },
     "devDependencies": {
-        "react": "^16.13.1",
-        "react-dom": "^16.13.1"
+        "react": "^17.0.1",
+        "react-dom": "^17.0.1"
     },
     "files": [
         "cjs",

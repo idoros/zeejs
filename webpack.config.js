@@ -11,6 +11,9 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.tsx', '.mjs', '.js', '.json'],
         plugins: [new TsconfigPathsPlugin({ configFile: join(__dirname, 'tsconfig.json') })],
+        fallback: {
+            util: require.resolve("util/")
+        }
     },
 
     module: {

@@ -23,14 +23,24 @@ module.exports = {
         rules: [
             {
                 test: /\.svelte$/,
+                exclude: /node_modules/,
                 use: {
                     loader: 'svelte-loader',
                     options: {
                         emitCss: true,
                         hotReload: true,
-                        generate: `dom`,
-                        hydratable: true,
+                        compilerOptions: {
+                            generate: `dom`,
+                            hydratable: true,
+                        },
                     },
+                },
+            },
+            {
+                // required to prevent errors from Svelte on Webpack 5+
+                test: /node_modules\/svelte\/.*\.mjs$/,
+                resolve: {
+                    fullySpecified: false,
                 },
             },
             {

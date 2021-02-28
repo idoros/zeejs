@@ -14,15 +14,15 @@
         "test": "node -r @ts-tools/node/r -r tsconfig-paths/register ./test/setup.ts",
         "test:dev": "cross-env DEV=true PWDEBUG=1 node -r @ts-tools/node/r -r tsconfig-paths/register ./test/setup.ts",
         "prepack": "yarn clean && yarn build",
-        "demo": "webpack-dev-server"
+        "demo": "webpack serve"
     },
     "dependencies": {
         "@zeejs/browser": "^0.1.0",
         "@zeejs/core": "^0.1.0"
     },
     "devDependencies": {
-        "svelte": "^3.24.1",
-        "svelte-loader": "2.13.6"
+        "svelte": "^3.34.0",
+        "svelte-loader": "3.0.0"
     },
     "files": [
         "cjs",

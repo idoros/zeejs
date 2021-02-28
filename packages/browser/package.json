@@ -1,33 +1,33 @@
 {
-    "name": "@zeejs/browser",
-    "version": "0.1.0",
-    "description": "HTML layering",
-    "author": "Ido Rosenthal",
-    "main": "./cjs/index.js",
-    "module": "esm/index.js",
-    "types": "esm/index.d.ts",
-    "scripts": {
-        "clean": "rimraf ./cjs ./esm",
-        "build": "ts-build ./src --cjs --esm",
-        "test": "node -r @ts-tools/node/r ./test/setup.ts",
-        "test:dev": "cross-env DEV=true PWDEBUG=1 node -r @ts-tools/node/r ./test/setup.ts",
-        "prepack": "yarn build"
-    },
-    "dependencies": {
-        "@zeejs/core": "^0.1.0",
-        "tabbable": "^5.0.0"
-    },
-    "files": [
-        "cjs",
-        "esm",
-        "src"
-    ],
-    "engines": {
-        "node": ">=10"
-    },
-    "publishConfig": {
-        "access": "public"
-    },
-    "license": "MIT",
-    "repository": "https://github.com/idoros/zeejs/tree/master/packages/browser"
+  "name": "@zeejs/browser",
+  "version": "0.1.0",
+  "description": "HTML layering",
+  "author": "Ido Rosenthal",
+  "main": "./cjs/index.js",
+  "module": "esm/index.js",
+  "types": "esm/index.d.ts",
+  "scripts": {
+    "clean": "rimraf ./cjs ./esm",
+    "build": "ts-build ./src --cjs --esm",
+    "test": "node -r @ts-tools/node/r ./test/setup.ts",
+    "test:dev": "cross-env DEV=true PWDEBUG=1 node -r @ts-tools/node/r ./test/setup.ts",
+    "prepack": "yarn build"
+  },
+  "dependencies": {
+    "@zeejs/core": "^0.1.0",
+    "tabbable": "^5.1.6"
+  },
+  "files": [
+    "cjs",
+    "esm",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/idoros/zeejs/tree/master/packages/browser"
 }
