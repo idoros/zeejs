@@ -1,6 +1,6 @@
 import { compile } from 'svelte/compiler';
 import * as svelteInternal from 'svelte/internal';
-import { SvelteComponent } from 'svelte';
+import type { SvelteComponent } from 'svelte';
 
 export class SvelteTestDriver {
     private stages: HTMLElement[] = [];

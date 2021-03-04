@@ -1,4 +1,4 @@
-import { DOMLayer } from './root';
+import type { DOMLayer } from './root';
 import { findContainingLayer } from './utils';
 import { tabbable } from 'tabbable';
 
@@ -98,7 +98,7 @@ function queryNextTabbable(
     currentElement: FocusableElement,
     isForward: boolean
 ): Focusable | null {
-    const list = tabbable(layer) as FocusableElement[];
+    const list = tabbable(layer);
     if (list.length === 0) {
         throw new Error(
             `queryNextTabbable was called with currentElement that is not contained in layer`
@@ -175,7 +175,7 @@ function queryFirstTabbable(
         // skip missing layer
         return queryNextTabbable(originLayer, originElement, isForward);
     }
-    const list = tabbable(layer) as FocusableElement[];
+    const list = tabbable(layer);
     if (list.length === 0) {
         // empty layer - query next after origin element
         return queryNextTabbable(originLayer, originElement, isForward);
