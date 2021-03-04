@@ -4,7 +4,7 @@ import playwright from 'playwright';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 const webpackDevMiddleware = require('webpack-dev-middleware') as (
     compiler: webpack.Compiler
-  ) => express.Handler & { close(): unknown };
+) => express.Handler & { close(): unknown };
 import { hookPageConsole } from './hook-page-console';
 import webpack from 'webpack';
 
@@ -46,11 +46,11 @@ export async function runTests({
                 timeout: 4000,
                 reporter: `spec`,
             }),
-            stats: `errors-warnings`
+            stats: `errors-warnings`,
         });
 
         const devMiddleware = webpackDevMiddleware(compiler);
-        
+
         closables.push(devMiddleware);
 
         const webpackStats = await new Promise<webpack.Stats>((resolve) => {
@@ -102,6 +102,9 @@ export async function runTests({
 
             page.on('dialog', (dialog) => {
                 dialog.dismiss();
+            });
+            page.on('load', () => {
+                page.addStyleTag({ content: `x-pw-glass {display: none!important;}` });
             });
 
             const failsOnPageError = new Promise((_resolve, reject) => {
