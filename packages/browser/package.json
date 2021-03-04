@@ -3,24 +3,20 @@
   "version": "0.1.0",
   "description": "HTML layering",
   "author": "Ido Rosenthal",
-  "main": "./cjs/index.js",
-  "module": "esm/index.js",
-  "types": "esm/index.d.ts",
+  "main": "./dist/index.js",
   "scripts": {
-    "clean": "rimraf ./cjs ./esm",
-    "build": "ts-build ./src --cjs --esm",
     "test": "node -r @ts-tools/node/r ./test/setup.ts",
-    "test:dev": "cross-env DEV=true PWDEBUG=1 node -r @ts-tools/node/r ./test/setup.ts",
-    "prepack": "yarn build"
+    "test:dev": "cross-env DEV=true PWDEBUG=1 node -r @ts-tools/node/r ./test/setup.ts"
   },
   "dependencies": {
     "@zeejs/core": "^0.1.0",
     "tabbable": "^5.1.6"
   },
   "files": [
-    "cjs",
-    "esm",
-    "src"
+    "dist",
+    "!dist/test",
+    "src",
+    "!*/tsconfig.{json,tsbuildinfo}"
   ],
   "engines": {
     "node": ">=10"

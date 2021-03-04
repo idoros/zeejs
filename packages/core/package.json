@@ -1,28 +1,24 @@
 {
-  "name": "@zeejs/core",
-  "version": "0.1.0",
-  "description": "Layers state machine",
-  "author": "Ido Rosenthal",
-  "main": "./cjs/index.js",
-  "module": "esm/index.js",
-  "types": "esm/index.d.ts",
-  "scripts": {
-    "clean": "rimraf ./cjs ./esm",
-    "build": "ts-build ./src --cjs --esm",
-    "test": "mocha \"./test/**/*.spec.ts\"",
-    "prepack": "yarn build"
-  },
-  "files": [
-    "cjs",
-    "esm",
-    "src"
-  ],
-  "engines": {
-    "node": ">=10"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "license": "MIT",
-  "repository": "https://github.com/idoros/zeejs/tree/master/packages/core"
+    "name": "@zeejs/core",
+    "version": "0.1.0",
+    "description": "Layers state machine",
+    "author": "Ido Rosenthal",
+    "main": "./dist/index.js",
+    "scripts": {
+        "test": "mocha \"./dist/test/**/*.spec.js\""
+    },
+    "files": [
+        "dist",
+        "!dist/test",
+        "src",
+        "!*/tsconfig.{json,tsbuildinfo}"
+    ],
+    "engines": {
+        "node": ">=10"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "license": "MIT",
+    "repository": "https://github.com/idoros/zeejs/tree/master/packages/core"
 }

@@ -1,6 +1,6 @@
-const { join } = require('path');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const { ProvidePlugin } = require('webpack');
 
+/** @type {import('webpack').Configuration} */
 module.exports = {
     // root of the monorepo, so that paths in output will be clickable
     context: __dirname,
@@ -10,17 +10,18 @@ module.exports = {
 
     resolve: {
         extensions: ['.ts', '.tsx', '.mjs', '.js', '.json'],
-        plugins: [new TsconfigPathsPlugin({ configFile: join(__dirname, 'tsconfig.json') })],
         fallback: {
-            util: require.resolve("util/")
-        }
+            util: require.resolve('util/'),
+            path: false,
+            fs: false,
+        },
     },
-
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
-                loader: '@ts-tools/webpack-loader',
+                test: /\.js$/,
+                enforce: 'pre',
+                loader: 'source-map-loader',
             },
         ],
     },

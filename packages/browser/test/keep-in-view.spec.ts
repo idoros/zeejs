@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { keepInView } from '../src';
+import { keepInView } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
 
 describe(`keep-in-view`, () => {

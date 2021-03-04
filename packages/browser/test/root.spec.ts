@@ -1,4 +1,4 @@
-import { createRoot } from '../src';
+import { createRoot } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
 import chai, { expect } from 'chai';
 import { stub } from 'sinon';

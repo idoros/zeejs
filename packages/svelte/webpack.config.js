@@ -1,5 +1,3 @@
-const { join } = require('path');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const mode = process.env.NODE_ENV || 'development';
@@ -10,9 +8,6 @@ module.exports = {
     resolve: {
         extensions: ['.mjs', '.js', '.svelte', '.ts', '.tsx', '.json'],
         mainFields: ['svelte', 'browser', 'module', 'main'],
-        plugins: [
-            new TsconfigPathsPlugin({ configFile: join(__dirname, `..`, `..`, 'tsconfig.json') }),
-        ],
     },
     output: {
         path: __dirname + '/public',

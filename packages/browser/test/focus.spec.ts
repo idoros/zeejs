@@ -1,6 +1,6 @@
-import { watchFocus, createRoot, createBackdropParts, updateLayers } from '../src';
+import { watchFocus, createRoot, createBackdropParts, updateLayers } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
-import { getInteractionApi } from '@zeejs/test-browser/browser';
+import { getInteractionApi } from '@zeejs/test-browser-bridge';
 import { expect } from 'chai';
 import { stub } from 'sinon';
 

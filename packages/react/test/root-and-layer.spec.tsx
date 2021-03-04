@@ -1,11 +1,11 @@
-import { Root, Layer } from '../src';
+import { Root, Layer } from '@zeejs/react';
 import { domElementMatchers } from './chai-dom-element';
 import { ReactTestDriver } from './react-test-driver';
 import {
     expectImageSnapshot,
     getInteractionApi,
     expectServerFixture,
-} from '@zeejs/test-browser/browser';
+} from '@zeejs/test-browser-bridge';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { waitFor } from 'promise-assist';
@@ -622,7 +622,7 @@ describe(`react root-and-layer`, () => {
             document.body.appendChild(container);
 
             container.innerHTML = await expectServerFixture({
-                fixtureFileName: `render-root.tsx`,
+                fixtureFileName: `render-root`,
             });
 
             act(() => {
@@ -642,7 +642,7 @@ describe(`react root-and-layer`, () => {
             document.body.appendChild(container);
 
             container.innerHTML = await expectServerFixture({
-                fixtureFileName: `render-layer.tsx`,
+                fixtureFileName: `render-layer`,
             });
 
             let rootNode = testDriver.expectHTMLQuery(container, `#root-node`);

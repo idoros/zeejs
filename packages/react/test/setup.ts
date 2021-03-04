@@ -8,8 +8,10 @@ import { join } from 'path';
 
 const { DEV, BROWSERS } = process.env;
 
+const testDistPath = join(__dirname, `..`, `dist`, `test`);
+
 browserTest({
-    files: `./test/**/*.spec.ts?(x)`,
+    files: `./dist/test/**/*.spec.js?(x)`,
     dev: DEV === `true`,
     browsers: BROWSERS,
     pageHook: (page) => {
@@ -18,7 +20,7 @@ browserTest({
             rootPath: join(__dirname, `__snapshots__`),
         });
         hookServerFixtures(page, {
-            rootPath: join(__dirname, `server-fixtures`),
+            rootPath: join(testDistPath, `server-fixtures`),
         });
     },
     process,

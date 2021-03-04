@@ -7,7 +7,7 @@ import {
     expectImageSnapshot,
     getInteractionApi,
     expectServerFixture,
-} from '@zeejs/test-browser/browser';
+} from '@zeejs/test-browser-bridge';
 import { waitFor } from 'promise-assist';
 import chai, { expect } from 'chai';
 import sinon, { stub, spy } from 'sinon';

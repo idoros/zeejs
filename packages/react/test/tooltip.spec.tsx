@@ -1,13 +1,13 @@
-import { Root, Tooltip } from '../src';
+import { Root, Tooltip } from '@zeejs/react';
 import { domElementMatchers } from './chai-dom-element';
 import { ReactTestDriver } from './react-test-driver';
-import { getInteractionApi } from '@zeejs/test-browser/browser';
+import { getInteractionApi } from '@zeejs/test-browser-bridge';
 import React from 'react';
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { waitFor, sleep } from 'promise-assist';
-import { overlayPosition } from '@zeejs/browser/src';
+import { overlayPosition } from '@zeejs/browser';
 chai.use(sinonChai);
 chai.use(domElementMatchers);
 

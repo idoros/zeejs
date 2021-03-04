@@ -1,6 +1,6 @@
-import { watchClickOutside, createRoot, updateLayers, createBackdropParts, css } from '../src';
+import { watchClickOutside, createRoot, updateLayers, createBackdropParts, css } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
-import { getInteractionApi } from '@zeejs/test-browser/browser';
+import { getInteractionApi } from '@zeejs/test-browser-bridge';
 import chai, { expect } from 'chai';
 import { stub } from 'sinon';
 import sinonChai from 'sinon-chai';
