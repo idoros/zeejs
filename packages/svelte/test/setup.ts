@@ -16,7 +16,7 @@ const testPath = join(__dirname);
 browserTest({
     files: join(testPath, `**`, `*.spec.ts?(x)`),
     dev: DEV === `true`,
-    browsers: BROWSERS,
+    browsers: BROWSERS || `chromium, firefox`,
     pageHook: (page) => {
         hookInteractionApi(page);
         hookImageSnapshot(page, {
