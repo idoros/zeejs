@@ -329,13 +329,10 @@ describe(`tooltip`, () => {
 
             anchor.blur();
 
-            await waitFor(
-                () => {
-                    expect(isOpen(), `close on blur`).to.equal(false);
-                    expect(onToggle, `close toggle state`).to.have.calledOnceWith(false);
-                },
-                { timeout: 50 }
-            );
+            await waitFor(() => {
+                expect(isOpen(), `close on blur`).to.equal(false);
+                expect(onToggle, `close toggle state`).to.have.calledOnceWith(false);
+            });
         });
 
         it.skip(`should be negative on escape press`, () => {
