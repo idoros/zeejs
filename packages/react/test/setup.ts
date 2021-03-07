@@ -13,7 +13,7 @@ const testDistPath = join(__dirname, `..`, `dist`, `test`);
 browserTest({
     files: `./dist/test/**/*.spec.js?(x)`,
     dev: DEV === `true`,
-    browsers: BROWSERS || `chromium, firefox`,
+    browsers: BROWSERS,
     pageHook: (page) => {
         hookInteractionApi(page);
         hookImageSnapshot(page, {
