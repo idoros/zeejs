@@ -7,6 +7,7 @@ import {
     expectImageSnapshot,
     getInteractionApi,
     expectServerFixture,
+    getTestEnv,
 } from '@zeejs/test-browser-bridge';
 import { waitFor } from 'promise-assist';
 import chai, { expect } from 'chai';
@@ -14,6 +15,8 @@ import sinon, { stub, spy } from 'sinon';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 chai.use(domElementMatchers);
+
+const { browserName } = getTestEnv();
 
 describe(`svelte root-and-layer`, () => {
     let testDriver: SvelteTestDriver;
@@ -424,7 +427,8 @@ describe(`svelte root-and-layer`, () => {
     });
 
     describe(`focus`, () => {
-        it(`should keep layer as part of tab order`, async () => {
+        const itSkipOnWebkit = browserName === `webkit` ? it.skip : it;
+        itSkipOnWebkit(`should keep layer as part of tab order`, async () => {
             const { expectHTMLQuery } = testDriver.render(`
                 <script>
                     import {Root, Layer} from '@zeejs/svelte';
@@ -447,19 +451,13 @@ describe(`svelte root-and-layer`, () => {
                 .equal(bgBeforeInput);
 
             await keyboard.press(`Tab`);
-            await waitFor(() => {
-                expect(document.activeElement, `focus inside layer`).domElement().equal(layerInput);
-            }, {timeout: 3000});
+            expect(document.activeElement, `focus inside layer`).domElement().equal(layerInput);
 
             await keyboard.press(`Tab`);
-            await waitFor(() => {
-                expect(document.activeElement, `focus after layer`)
-                    .domElement()
-                    .equal(bgAfterInput);
-            }, {timeout: 3000});
+            expect(document.activeElement, `focus after layer`).domElement().equal(bgAfterInput);
         });
 
-        it(`should trap focus in blocking layer`, async () => {
+        itSkipOnWebkit(`should trap focus in blocking layer`, async () => {
             const { expectHTMLQuery } = testDriver.render(`
                 <script>
                     import {Root, Layer} from '@zeejs/svelte';
@@ -482,11 +480,9 @@ describe(`svelte root-and-layer`, () => {
                 .equal(layerLastInput);
 
             await keyboard.press(`Tab`);
-            await waitFor(() => {
-                expect(document.activeElement, `ignore blocked parent`)
-                    .domElement()
-                    .equal(layerFirstInput);
-            }, {timeout: 3000});
+            expect(document.activeElement, `ignore blocked parent`)
+                .domElement()
+                .equal(layerFirstInput);
         });
 
         it(`should re-focus last element of an un-blocked layer`, async () => {

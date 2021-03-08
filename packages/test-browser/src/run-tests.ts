@@ -99,14 +99,13 @@ export async function runTests({
                 await pageHook(page);
             }
             hookPageConsole(page, browserName);
-
+            page.addInitScript(`_testEnv = {browserName: "${browserName}"}`);
             page.on('dialog', (dialog) => {
                 dialog.dismiss();
             });
-            page.on('load', () => {
+            page.on('framenavigated', () => {
                 page.addStyleTag({ content: `x-pw-glass {display: none!important;}` });
             });
-
             const failsOnPageError = new Promise((_resolve, reject) => {
                 page.once('pageerror', reject);
                 // page.once('error', () => {reject()})
