@@ -449,14 +449,14 @@ describe(`svelte root-and-layer`, () => {
             await keyboard.press(`Tab`);
             await waitFor(() => {
                 expect(document.activeElement, `focus inside layer`).domElement().equal(layerInput);
-            });
+            }, {timeout: 3000});
 
             await keyboard.press(`Tab`);
             await waitFor(() => {
                 expect(document.activeElement, `focus after layer`)
                     .domElement()
                     .equal(bgAfterInput);
-            });
+            }, {timeout: 3000});
         });
 
         it(`should trap focus in blocking layer`, async () => {
@@ -486,7 +486,7 @@ describe(`svelte root-and-layer`, () => {
                 expect(document.activeElement, `ignore blocked parent`)
                     .domElement()
                     .equal(layerFirstInput);
-            });
+            }, {timeout: 3000});
         });
 
         it(`should re-focus last element of an un-blocked layer`, async () => {

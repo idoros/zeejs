@@ -443,12 +443,12 @@ describe(`react root-and-layer`, () => {
             await keyboard.press(`Tab`);
             await waitFor(() => {
                 expect(document.activeElement, `focus inside layer`).domElement().equal(layerInput); // bgBeforeInput
-            });
+            }, {timeout: 3000});
 
             await keyboard.press(`Tab`);
             await waitFor(() => {
                 expect(document.activeElement, `focus after layer`).domElement().equal(bgAfterInput);
-            });
+            }, {timeout: 3000});
         });
 
         it(`should trap focus in blocking layer`, async () => {
@@ -475,7 +475,7 @@ describe(`react root-and-layer`, () => {
                 expect(document.activeElement, `ignore blocked parent`)
                     .domElement()
                     .equal(layerFirstInput);
-            });
+            }, {timeout: 3000});
         });
 
         it(`should re-focus last element of an un-blocked layer`, async () => {
@@ -499,13 +499,13 @@ describe(`react root-and-layer`, () => {
                 expect(document.activeElement, `blocked input blur`)
                     .domElement()
                     .equal(document.body);
-            });
+            }, {timeout: 3000});
 
             setData(false);
 
             await waitFor(() => {
                 expect(document.activeElement, `refocus input`).domElement().equal(bgInput);
-            });
+            }, {timeout: 3000});
             /* blur/re-focus is delayed because React listens for blur of rendered elements during render.
             just check that no logs have been called. */
             expect(warnSpy, `no react warning`).to.have.callCount(0);
