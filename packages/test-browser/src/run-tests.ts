@@ -64,7 +64,7 @@ export async function runTests({
         }
 
         console.log(`Done bundling.`);
-
+        
         const app = express();
         app.use(devMiddleware);
         app.use(express.static(compiler.options.context || process.cwd()));
@@ -99,7 +99,7 @@ export async function runTests({
                 await pageHook(page);
             }
             hookPageConsole(page, browserName);
-            page.addInitScript(`_testEnv = {browserName: "${browserName}"}`);
+            await page.addInitScript(`_testEnv = {browserName: "${browserName}"}`);
             page.on('dialog', (dialog) => {
                 dialog.dismiss();
             });
