@@ -1,36 +1,36 @@
 {
-    "name": "@zeejs/svelte",
-    "version": "0.1.3",
-    "description": "Svelte layering",
-    "author": "Ido Rosenthal",
-    "main": "./dist/index.js",
-    "scripts": {
-        "build:after": "node build-svelte.js",
-        "test": "node -r @ts-tools/node/r ./test/setup.ts",
-        "test:dev": "cross-env DEV=true PWDEBUG=1 node -r @ts-tools/node/r ./test/setup.ts",
-        "demo": "webpack serve"
-    },
-    "dependencies": {
-        "@zeejs/browser": "^0.1.0",
-        "@zeejs/core": "^0.1.0"
-    },
-    "devDependencies": {
-        "svelte": "^3.34.0",
-        "svelte-loader": "3.0.0"
-    },
-    "files": [
-        "dist",
-        "!dist/test",
-        "!dist/demo",
-        "src",
-        "!*/tsconfig.{json,tsbuildinfo}"
-    ],
-    "engines": {
-        "node": ">=10"
-    },
-    "publishConfig": {
-        "access": "public"
-    },
-    "license": "MIT",
-    "repository": "https://github.com/idoros/zeejs/tree/master/packages/svelte"
+  "name": "@zeejs/svelte",
+  "version": "0.1.3",
+  "description": "Svelte layering",
+  "author": "Ido Rosenthal",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build:after": "node build-svelte.js",
+    "test": "node -r @ts-tools/node/r ./test/setup.ts",
+    "test:dev": "cross-env DEV=true PWDEBUG=1 node -r @ts-tools/node/r ./test/setup.ts",
+    "demo": "webpack serve"
+  },
+  "dependencies": {
+    "@zeejs/browser": "^0.1.0",
+    "@zeejs/core": "^0.1.0"
+  },
+  "devDependencies": {
+    "svelte": "^3.35.0",
+    "svelte-loader": "^3.0.0"
+  },
+  "files": [
+    "dist",
+    "!dist/test",
+    "!dist/demo",
+    "src",
+    "!*/tsconfig.{json,tsbuildinfo}"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/idoros/zeejs/tree/master/packages/svelte"
 }
