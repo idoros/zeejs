@@ -1,4 +1,4 @@
-import { createLayer, Layer } from '../src';
+import { createLayer, Layer } from '@zeejs/core';
 import chai, { expect } from 'chai';
 import { stub } from 'sinon';
 import sinonChai from 'sinon-chai';

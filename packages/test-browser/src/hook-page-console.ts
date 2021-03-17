@@ -1,4 +1,4 @@
-import playwright from 'playwright';
+import type playwright from 'playwright';
 import { deferred } from 'promise-assist';
 
 /**

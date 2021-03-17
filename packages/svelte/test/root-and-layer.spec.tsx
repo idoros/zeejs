@@ -7,13 +7,16 @@ import {
     expectImageSnapshot,
     getInteractionApi,
     expectServerFixture,
-} from '@zeejs/test-browser/browser';
+    getTestEnv,
+} from '@zeejs/test-browser-bridge';
 import { waitFor } from 'promise-assist';
 import chai, { expect } from 'chai';
 import sinon, { stub, spy } from 'sinon';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 chai.use(domElementMatchers);
+
+const { browserName } = getTestEnv();
 
 describe(`svelte root-and-layer`, () => {
     let testDriver: SvelteTestDriver;
@@ -424,7 +427,8 @@ describe(`svelte root-and-layer`, () => {
     });
 
     describe(`focus`, () => {
-        it(`should keep layer as part of tab order`, async () => {
+        const itSkipOnWebkit = browserName === `webkit` ? it.skip : it;
+        itSkipOnWebkit(`should keep layer as part of tab order`, async () => {
             const { expectHTMLQuery } = testDriver.render(`
                 <script>
                     import {Root, Layer} from '@zeejs/svelte';
@@ -442,16 +446,18 @@ describe(`svelte root-and-layer`, () => {
             const bgAfterInput = expectHTMLQuery(`#bgAfterInput`);
 
             bgBeforeInput.focus();
-            expect(document.activeElement, `start focus before layer`).to.equal(bgBeforeInput);
+            expect(document.activeElement, `start focus before layer`)
+                .domElement()
+                .equal(bgBeforeInput);
 
             await keyboard.press(`Tab`);
-            expect(document.activeElement, `focus inside layer`).to.equal(layerInput);
+            expect(document.activeElement, `focus inside layer`).domElement().equal(layerInput);
 
             await keyboard.press(`Tab`);
-            expect(document.activeElement, `focus after layer`).to.equal(bgAfterInput);
+            expect(document.activeElement, `focus after layer`).domElement().equal(bgAfterInput);
         });
 
-        it(`should trap focus in blocking layer`, async () => {
+        itSkipOnWebkit(`should trap focus in blocking layer`, async () => {
             const { expectHTMLQuery } = testDriver.render(`
                 <script>
                     import {Root, Layer} from '@zeejs/svelte';
@@ -469,10 +475,14 @@ describe(`svelte root-and-layer`, () => {
             const layerLastInput = expectHTMLQuery(`#layerLastInput`);
 
             layerLastInput.focus();
-            expect(document.activeElement, `start focus in layer`).to.equal(layerLastInput);
+            expect(document.activeElement, `start focus in layer`)
+                .domElement()
+                .equal(layerLastInput);
 
             await keyboard.press(`Tab`);
-            expect(document.activeElement, `ignore blocked parent`).to.equal(layerFirstInput);
+            expect(document.activeElement, `ignore blocked parent`)
+                .domElement()
+                .equal(layerFirstInput);
         });
 
         it(`should re-focus last element of an un-blocked layer`, async () => {
@@ -493,11 +503,11 @@ describe(`svelte root-and-layer`, () => {
 
             await updateProps({ renderLayer: true });
 
-            expect(document.activeElement, `blocked input blur`).to.equal(document.body);
+            expect(document.activeElement, `blocked input blur`).domElement().equal(document.body);
 
             await updateProps({ renderLayer: false });
 
-            expect(document.activeElement, `refocus input`).to.equal(bgInput);
+            expect(document.activeElement, `refocus input`).domElement().equal(bgInput);
         });
 
         it(`should report on focus change`, async () => {

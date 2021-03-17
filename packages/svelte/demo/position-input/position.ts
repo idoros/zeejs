@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react';
+
 export enum Position {
     topLeft = `topLeft`,
     top = `top`,
@@ -11,7 +13,7 @@ export enum Position {
 }
 
 export const getAbsolutePosition = (position: Position) => {
-    const alignStyle: React.CSSProperties = { position: `absolute` };
+    const alignStyle: CSSProperties = { position: `absolute` };
     if (position === Position.center) {
         alignStyle.top = `50%`;
         alignStyle.left = `50%`;

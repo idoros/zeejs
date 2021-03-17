@@ -1,4 +1,4 @@
-import { DOMLayer } from './root';
+import type { DOMLayer } from './root';
 import { isBrowser, findContainingLayer } from './utils';
 
 export interface BackdropElements {

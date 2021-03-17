@@ -3,16 +3,11 @@
     "version": "0.1.1",
     "description": "React layering",
     "author": "Ido Rosenthal",
-    "main": "./cjs/index.js",
-    "module": "esm/index.js",
-    "types": "esm/index.d.ts",
+    "main": "./dist/index.js",
     "scripts": {
-        "clean": "rimraf ./cjs ./esm",
-        "build": "ts-build ./src --cjs --esm",
-        "test": "node -r @ts-tools/node/r -r tsconfig-paths/register ./test/setup.ts",
-        "test:dev": "cross-env DEV=true PWDEBUG=1 node -r @ts-tools/node/r -r tsconfig-paths/register ./test/setup.ts",
-        "prepack": "yarn build",
-        "demo": "webpack-dev-server"
+        "test": "node -r @ts-tools/node/r ./test/setup.ts",
+        "test:dev": "cross-env DEV=true PWDEBUG=1 node -r @ts-tools/node/r ./test/setup.ts",
+        "demo": "webpack serve"
     },
     "dependencies": {
         "@zeejs/browser": "^0.1.0",
@@ -23,13 +18,15 @@
         "react-dom": ">=16"
     },
     "devDependencies": {
-        "react": "^16.13.1",
-        "react-dom": "^16.13.1"
+        "react": "^17.0.1",
+        "react-dom": "^17.0.1"
     },
     "files": [
-        "cjs",
-        "esm",
-        "src"
+        "dist",
+        "!dist/test",
+        "!dist/demo",
+        "src",
+        "!*/tsconfig.{json,tsbuildinfo}"
     ],
     "engines": {
         "node": ">=10"

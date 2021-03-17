@@ -1,4 +1,4 @@
-import { Layer, LayerProps } from '../../src';
+import { Layer, LayerProps } from '@zeejs/react';
 import React from 'react';
 import { layoutOverlay, overlayPosition, keepInView } from '@zeejs/browser';
 

@@ -1,4 +1,6 @@
-import { constants, InteractionApi, serializedApi } from './shared';
+import { interactionApiShared } from '@zeejs/test-browser';
+import type { InteractionApi } from '@zeejs/test-browser';
+const { constants, serializedApi } = interactionApiShared;
 
 export function getInteractionApi(): InteractionApi {
     const callServer = (window as any)[constants.browserPageHook];

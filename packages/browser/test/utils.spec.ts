@@ -1,4 +1,4 @@
-import { isContainedBy } from '../src';
+import { isContainedBy } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
 import { expect } from 'chai';
 

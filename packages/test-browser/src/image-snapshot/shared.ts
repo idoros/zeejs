@@ -5,7 +5,7 @@ export const constants = {
 export interface ImageSnapshotOptions {
     filePath: string;
 }
-export interface HookMessage {
+export interface ImageSnapshotHookMessage {
     type: `success` | `error` | `warning`;
     msg: string;
 }

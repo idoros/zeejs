@@ -1,4 +1,4 @@
-import { keepInView } from '../src';
+import { keepInView } from '@zeejs/core';
 import { expect } from 'chai';
 
 describe(`keep-in-view`, () => {

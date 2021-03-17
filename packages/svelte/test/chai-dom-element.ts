@@ -12,7 +12,32 @@ export const domElementMatchers: Chai.ChaiPlugin = (chai, util) => {
         return domElementAssertions(actual as Element, this);
     });
 };
+const onlyOuterHTML = (element: Element): string => {
+    const inner = element.innerHTML;
+    const outer = element.outerHTML;
+    return inner ? outer.replace(inner, ``) : outer;
+};
 const domElementAssertions = (element: Element, assertion: Chai.AssertionStatic) => ({
+    equal(expected: Element) {
+        if (expected instanceof Element === false) {
+            throw new Error(`element equal can only be checked on a DOM element`);
+        }
+        const isEqual = element === expected;
+        const actualStr = onlyOuterHTML(element);
+        const expectedStr = onlyOuterHTML(expected);
+        assertion.assert(
+            isEqual,
+            `Expected element
+"${actualStr}"
+to equal element
+"${expectedStr}"`,
+            `Expected actual element
+"${actualStr}"
+to not equal element
+"${expectedStr}"`,
+            ``
+        );
+    },
     contains(relative: Element) {
         if (element instanceof Element === false) {
             throw new Error(`contains can only be checked on a DOM element`);

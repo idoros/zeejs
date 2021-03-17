@@ -11,8 +11,10 @@ svelteRegister({ generate: `ssr` });
 
 const { DEV, BROWSERS } = process.env;
 
+const testPath = join(__dirname);
+
 browserTest({
-    files: `./test/**/*.spec.ts?(x)`,
+    files: join(testPath, `**`, `*.spec.ts?(x)`),
     dev: DEV === `true`,
     browsers: BROWSERS,
     pageHook: (page) => {
@@ -21,7 +23,7 @@ browserTest({
             rootPath: join(__dirname, `__snapshots__`),
         });
         hookServerFixtures(page, {
-            rootPath: join(__dirname, `server-fixtures`),
+            rootPath: join(testPath, `server-fixtures`),
         });
     },
     process,

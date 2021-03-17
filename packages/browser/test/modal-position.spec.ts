@@ -1,4 +1,4 @@
-import { modalAbsolutePositionAsString } from '../src';
+import { modalAbsolutePositionAsString } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
 import { expect } from 'chai';
 

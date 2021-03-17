@@ -1,6 +1,6 @@
-import { tooltip, css, overlayPosition } from '../src';
+import { tooltip, css, overlayPosition } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
-import { getInteractionApi } from '@zeejs/test-browser/browser';
+import { getInteractionApi } from '@zeejs/test-browser-bridge';
 import chai, { expect } from 'chai';
 import { stub } from 'sinon';
 import { waitFor, sleep } from 'promise-assist';
@@ -329,13 +329,10 @@ describe(`tooltip`, () => {
 
             anchor.blur();
 
-            await waitFor(
-                () => {
-                    expect(isOpen(), `close on blur`).to.equal(false);
-                    expect(onToggle, `close toggle state`).to.have.calledOnceWith(false);
-                },
-                { timeout: 50 }
-            );
+            await waitFor(() => {
+                expect(isOpen(), `close on blur`).to.equal(false);
+                expect(onToggle, `close toggle state`).to.have.calledOnceWith(false);
+            });
         });
 
         it.skip(`should be negative on escape press`, () => {

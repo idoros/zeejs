@@ -1,6 +1,6 @@
 import * as zeejsSvelte from '../src';
 import { SvelteTestDriver } from './svelte-test-driver';
-import { getInteractionApi } from '@zeejs/test-browser/browser';
+import { getInteractionApi } from '@zeejs/test-browser-bridge';
 import { expect } from 'chai';
 import sinon, { stub } from 'sinon';
 import { waitFor } from 'promise-assist';
