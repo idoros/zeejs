@@ -3,7 +3,9 @@ import type { ServerFixturesOptions, ServerFixtureHookMessage } from '@zeejs/tes
 const { constants } = serverFixturesShared;
 
 export async function expectServerFixture<T = string>(options: ServerFixturesOptions): Promise<T> {
-    const result: ServerFixtureHookMessage<T> = await (window as any)[constants.serverFixturesHook](options);
+    const result: ServerFixtureHookMessage<T> = await (window as any)[constants.serverFixturesHook](
+        options
+    );
     if (result.type === `error`) {
         throw new Error(result.msg);
     }

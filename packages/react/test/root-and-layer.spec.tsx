@@ -5,7 +5,7 @@ import {
     expectImageSnapshot,
     getInteractionApi,
     expectServerFixture,
-    getTestEnv
+    getTestEnv,
 } from '@zeejs/test-browser-bridge';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -17,7 +17,7 @@ import { act } from 'react-dom/test-utils';
 chai.use(sinonChai);
 chai.use(domElementMatchers);
 
-const {browserName} = getTestEnv();
+const { browserName } = getTestEnv();
 
 describe(`react root-and-layer`, () => {
     let testDriver: ReactTestDriver;
