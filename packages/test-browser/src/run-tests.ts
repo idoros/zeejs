@@ -64,7 +64,7 @@ export async function runTests({
         }
 
         console.log(`Done bundling.`);
-        
+
         const app = express();
         app.use(devMiddleware);
         app.use(express.static(compiler.options.context || process.cwd()));
