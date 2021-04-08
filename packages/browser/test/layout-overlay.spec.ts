@@ -1,6 +1,6 @@
-import { layoutOverlay, overlayPosition } from '../src';
+import { layoutOverlay, overlayPosition } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
-import { getInteractionApi } from '@zeejs/test-browser/browser';
+import { getInteractionApi } from '@zeejs/test-browser-bridge';
 import chai, { expect } from 'chai';
 import { stub } from 'sinon';
 import sinonChai from 'sinon-chai';

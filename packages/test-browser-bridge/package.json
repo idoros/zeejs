@@ -1,0 +1,26 @@
+{
+    "name": "@zeejs/test-browser-bridge",
+    "version": "0.1.0",
+    "description": "access to playwright API running in test-browser",
+    "author": "Ido Rosenthal",
+    "main": "./dist/index.js",
+    "private": true,
+    "scripts": {},
+    "dependencies": {
+        "@zeejs/test-browser": "^0.1.0"
+    },
+    "files": [
+        "cjs",
+        "esm",
+        "src",
+        "static"
+    ],
+    "engines": {
+        "node": ">=10"
+    },
+    "publishConfig": {
+        "access": "restricted"
+    },
+    "license": "MIT",
+    "repository": "https://github.com/idoros/zeejs/tree/master/packages/test-browser-bridge"
+}

@@ -1,26 +1,17 @@
-const { join } = require('path');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 
-const monorepoRoot = join(__dirname, '..', '..');
+const mode = process.env.NODE_ENV || 'development';
 
+/** @type {import('webpack').Configuration} */
 module.exports = {
-    entry: { demo: `./demo/index.tsx` },
+    entry: { demo: `./dist/demo/index.js` },
 
     devtool: 'source-map',
 
-    resolve: {
-        extensions: ['.ts', '.tsx', '.mjs', '.js', '.json'],
-        plugins: [new TsconfigPathsPlugin({ configFile: join(monorepoRoot, 'tsconfig.json') })],
-    },
+    mode,
 
-    module: {
-        rules: [
-            {
-                test: /\.tsx?$/,
-                loader: '@ts-tools/webpack-loader',
-            },
-        ],
+    resolve: {
+        extensions: ['.mjs', '.js', '.json'],
     },
 
     plugins: [

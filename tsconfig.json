@@ -1,31 +1,18 @@
 {
-    "compilerOptions": {
-        "target": "es2019",
-        "module": "esnext",
-        "lib": [
-            "dom",
-            "es2019"
-        ],
-        "moduleResolution": "node",
-        "baseUrl": "./",
-        "paths": {
-            "@zeejs/*": [
-                "packages/*/src"
-            ]
-        },
-        "jsx": "react",
-        "declaration": true,
-        "declarationMap": true,
-        "sourceMap": true,
-        "downlevelIteration": true,
-        "esModuleInterop": true,
-        "newLine": "LF",
-        "strict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "forceConsistentCasingInFileNames": true,
-        "skipLibCheck": true
-    }
+    "files": [],
+    "references": [
+        { "path": "./packages/core/src" },
+        { "path": "./packages/core/test" },
+        { "path": "./packages/browser/src" },
+        { "path": "./packages/browser/test" },
+        { "path": "./packages/react/src" },
+        { "path": "./packages/react/test" },
+        { "path": "./packages/react/demo" },
+        { "path": "./packages/svelte/src" },
+        { "path": "./packages/svelte/test" },
+        { "path": "./packages/svelte/demo" },
+        { "path": "./packages/test-browser/src" },
+        { "path": "./packages/test-browser-bridge/src" },
+        { "path": "./packages/site" }
+    ]
 }

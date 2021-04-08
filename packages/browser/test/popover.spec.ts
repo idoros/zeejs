@@ -1,4 +1,4 @@
-import { popover, css } from '../src';
+import { popover, css } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
 import { expect } from 'chai';
 import { waitFor } from 'promise-assist';

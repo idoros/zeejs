@@ -2,7 +2,9 @@ import { safeListeningHttpServer } from 'create-listening-server';
 import express from 'express';
 import playwright from 'playwright';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import webpackDevMiddleware from 'webpack-dev-middleware';
+const webpackDevMiddleware = require('webpack-dev-middleware') as (
+    compiler: webpack.Compiler
+) => express.Handler & { close(): unknown };
 import { hookPageConsole } from './hook-page-console';
 import webpack from 'webpack';
 
@@ -41,27 +43,14 @@ export async function runTests({
             plugins: createPluginsConfig(webpackConfig.plugins, {
                 ui: `bdd`,
                 colors,
-                timeout: 4000,
+                timeout: 8000,
                 reporter: `spec`,
             }),
+            stats: `errors-warnings`,
         });
 
-        if (!dev) {
-            // force fake watching on single runs
-            compiler.watch = function watch(_watchOptions, handler) {
-                compiler.run(handler);
-                return {
-                    close(cb) {
-                        if (cb) {
-                            cb();
-                        }
-                    },
-                    invalidate: () => undefined,
-                };
-            };
-        }
+        const devMiddleware = webpackDevMiddleware(compiler);
 
-        const devMiddleware = webpackDevMiddleware(compiler, { logLevel: 'warn', publicPath: '/' });
         closables.push(devMiddleware);
 
         const webpackStats = await new Promise<webpack.Stats>((resolve) => {
@@ -110,11 +99,13 @@ export async function runTests({
                 await pageHook(page);
             }
             hookPageConsole(page, browserName);
-
+            await page.addInitScript(`_testEnv = {browserName: "${browserName}"}`);
             page.on('dialog', (dialog) => {
                 dialog.dismiss();
             });
-
+            page.on('framenavigated', () => {
+                page.addStyleTag({ content: `x-pw-glass {display: none!important;}` });
+            });
             const failsOnPageError = new Promise((_resolve, reject) => {
                 page.once('pageerror', reject);
                 // page.once('error', () => {reject()})
@@ -154,9 +145,9 @@ interface MochaOptions {
     colors: boolean;
 }
 function createPluginsConfig(
-    existingPlugins: webpack.Plugin[] = [],
+    existingPlugins: webpack.WebpackPluginInstance[] = [],
     options: MochaOptions
-): webpack.Plugin[] {
+): webpack.WebpackPluginInstance[] {
     return [
         ...(existingPlugins as any),
 

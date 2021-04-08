@@ -1,11 +1,12 @@
-import { Root, Layer } from '../src';
+import { Root, Layer } from '@zeejs/react';
 import { domElementMatchers } from './chai-dom-element';
 import { ReactTestDriver } from './react-test-driver';
 import {
     expectImageSnapshot,
     getInteractionApi,
     expectServerFixture,
-} from '@zeejs/test-browser/browser';
+    getTestEnv,
+} from '@zeejs/test-browser-bridge';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { waitFor } from 'promise-assist';
@@ -15,6 +16,8 @@ import sinonChai from 'sinon-chai';
 import { act } from 'react-dom/test-utils';
 chai.use(sinonChai);
 chai.use(domElementMatchers);
+
+const { browserName } = getTestEnv();
 
 describe(`react root-and-layer`, () => {
     let testDriver: ReactTestDriver;
@@ -421,7 +424,8 @@ describe(`react root-and-layer`, () => {
     });
 
     describe(`focus`, () => {
-        it(`should keep layer as part of tab order`, async () => {
+        const itSkipOnWebkit = browserName === `webkit` ? it.skip : it;
+        itSkipOnWebkit(`should keep layer as part of tab order`, async () => {
             const { expectHTMLQuery } = testDriver.render<boolean>(() => (
                 <Root>
                     <input id="bgBeforeInput" />
@@ -436,16 +440,18 @@ describe(`react root-and-layer`, () => {
             const bgAfterInput = expectHTMLQuery(`#bgAfterInput`);
 
             bgBeforeInput.focus();
-            expect(document.activeElement, `start focus before layer`).to.equal(bgBeforeInput);
+            expect(document.activeElement, `start focus before layer`)
+                .domElement()
+                .equal(bgBeforeInput);
 
             await keyboard.press(`Tab`);
-            expect(document.activeElement, `focus inside layer`).to.equal(layerInput);
+            expect(document.activeElement, `focus inside layer`).domElement().equal(layerInput); // bgBeforeInput
 
             await keyboard.press(`Tab`);
-            expect(document.activeElement, `focus after layer`).to.equal(bgAfterInput);
+            expect(document.activeElement, `focus after layer`).domElement().equal(bgAfterInput);
         });
 
-        it(`should trap focus in blocking layer`, async () => {
+        itSkipOnWebkit(`should trap focus in blocking layer`, async () => {
             const { expectHTMLQuery } = testDriver.render<boolean>(() => (
                 <Root>
                     <input id="bgBeforeInput" />
@@ -460,10 +466,14 @@ describe(`react root-and-layer`, () => {
             const layerLastInput = expectHTMLQuery(`#layerLastInput`);
 
             layerLastInput.focus();
-            expect(document.activeElement, `start focus in layer`).to.equal(layerLastInput);
+            expect(document.activeElement, `start focus in layer`)
+                .domElement()
+                .equal(layerLastInput);
 
             await keyboard.press(`Tab`);
-            expect(document.activeElement, `ignore blocked parent`).to.equal(layerFirstInput);
+            expect(document.activeElement, `ignore blocked parent`)
+                .domElement()
+                .equal(layerFirstInput);
         });
 
         it(`should re-focus last element of an un-blocked layer`, async () => {
@@ -484,13 +494,15 @@ describe(`react root-and-layer`, () => {
             setData(true);
 
             await waitFor(() => {
-                expect(document.activeElement, `blocked input blur`).to.equal(document.body);
+                expect(document.activeElement, `blocked input blur`)
+                    .domElement()
+                    .equal(document.body);
             });
 
             setData(false);
 
             await waitFor(() => {
-                expect(document.activeElement, `refocus input`).to.equal(bgInput);
+                expect(document.activeElement, `refocus input`).domElement().equal(bgInput);
             });
             /* blur/re-focus is delayed because React listens for blur of rendered elements during render.
             just check that no logs have been called. */
@@ -622,7 +634,7 @@ describe(`react root-and-layer`, () => {
             document.body.appendChild(container);
 
             container.innerHTML = await expectServerFixture({
-                fixtureFileName: `render-root.tsx`,
+                fixtureFileName: `render-root`,
             });
 
             act(() => {
@@ -642,7 +654,7 @@ describe(`react root-and-layer`, () => {
             document.body.appendChild(container);
 
             container.innerHTML = await expectServerFixture({
-                fixtureFileName: `render-layer.tsx`,
+                fixtureFileName: `render-layer`,
             });
 
             let rootNode = testDriver.expectHTMLQuery(container, `#root-node`);

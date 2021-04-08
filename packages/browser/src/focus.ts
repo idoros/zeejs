@@ -1,4 +1,4 @@
-import { DOMLayer } from './root';
+import type { DOMLayer } from './root';
 import { findContainingLayer } from './utils';
 import { tabbable } from 'tabbable';
 

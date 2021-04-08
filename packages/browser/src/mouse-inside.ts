@@ -1,5 +1,5 @@
-import { DOMLayer } from './root';
-import { BackdropElements } from './update-layers';
+import type { DOMLayer } from './root';
+import type { BackdropElements } from './update-layers';
 import { findContainingLayer } from './utils';
 
 export function watchMouseInside(

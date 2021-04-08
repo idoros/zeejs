@@ -1,5 +1,5 @@
 import { constants } from './shared';
-import { Page } from 'playwright';
+import type { Page } from 'playwright';
 
 export function hookInteractionApi(page: Page): void {
     page.exposeFunction(constants.browserPageHook, async (path: string, ...args: any) => {

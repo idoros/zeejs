@@ -3,31 +3,29 @@ const glob = require(`glob`);
 const path = require(`path`);
 const nodeFs = require(`@file-services/node`).nodeFs;
 
-const cjsOutPath = path.join(__dirname, `./cjs`);
-const esmOutPath = path.join(__dirname, `./esm`);
-const esmBrowserOutPath = path.join(__dirname, `./dist`);
-const srcPath = path.join(__dirname, `./src`);
+const cjsDistOutPath = path.join(__dirname, `dist`);
+const srcPath = path.join(__dirname, `src`);
 
 const sveltePattern = `**/*.svelte`;
 
-nodeFs.copyDirectorySync(esmOutPath, esmBrowserOutPath);
+copySvelteFiles(srcPath, `.`);
 
-for (const compRelativePath of glob.sync(sveltePattern, { absolute: false, cwd: srcPath })) {
-    const compAbsPath = path.join(srcPath, compRelativePath);
-    const compSource = nodeFs.readFileSync(compAbsPath, `utf8`);
+function copySvelteFiles(copyFrom, copyTo) {
+    for (const compRelativePath of glob.sync(sveltePattern, { absolute: false, cwd: copyFrom })) {
+        const compAbsPath = path.join(copyFrom, compRelativePath);
+        const compSource = nodeFs.readFileSync(compAbsPath, `utf8`);
 
-    const svelteEsm = svelteCompiler.compile(compSource, {
-        format: `esm`,
-        generate: `dom`,
-        hydratable: true,
-        css: true,
-    });
+        // const svelteEsm = svelteCompiler.compile(compSource, {
+        //     format: `cjs`,
+        //     generate: `dom`,
+        //     hydratable: true,
+        //     css: true,
+        // });
 
-    nodeFs.ensureDirectorySync(path.join(esmBrowserOutPath, path.dirname(compRelativePath)));
-    nodeFs.ensureDirectorySync(path.join(esmOutPath, path.dirname(compRelativePath)));
-    nodeFs.ensureDirectorySync(path.join(cjsOutPath, path.dirname(compRelativePath)));
+        nodeFs.ensureDirectorySync(
+            path.join(cjsDistOutPath, copyTo, path.dirname(compRelativePath))
+        );
 
-    nodeFs.writeFileSync(path.join(esmBrowserOutPath, compRelativePath + `.js`), svelteEsm.js.code);
-    nodeFs.writeFileSync(path.join(esmOutPath, compRelativePath), compSource);
-    nodeFs.writeFileSync(path.join(cjsOutPath, compRelativePath), compSource);
+        nodeFs.writeFileSync(path.join(cjsDistOutPath, copyTo, compRelativePath), compSource);
+    }
 }

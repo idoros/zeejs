@@ -1,12 +1,13 @@
 import glob from 'glob';
 import findUp from 'find-up';
-import webpack from 'webpack';
+import type webpack from 'webpack';
 import path from 'path';
 import { runTests, RunTestsOptions } from './run-tests';
 
 export { hookImageSnapshot } from './image-snapshot/node';
 export { hookInteractionApi } from './interaction-api/node';
 export { hookServerFixtures } from './server-fixtures/node';
+export * from './browser';
 
 const availableBrowsers = ['chromium', 'firefox', 'webkit'];
 

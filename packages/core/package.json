@@ -3,19 +3,15 @@
     "version": "0.1.0",
     "description": "Layers state machine",
     "author": "Ido Rosenthal",
-    "main": "./cjs/index.js",
-    "module": "esm/index.js",
-    "types": "esm/index.d.ts",
+    "main": "./dist/index.js",
     "scripts": {
-        "clean": "rimraf ./cjs ./esm",
-        "build": "ts-build ./src --cjs --esm",
-        "test": "mocha \"./test/**/*.spec.ts\"",
-        "prepack": "yarn build"
+        "test": "mocha \"./dist/test/**/*.spec.js\""
     },
     "files": [
-        "cjs",
-        "esm",
-        "src"
+        "dist",
+        "!dist/test",
+        "src",
+        "!*/tsconfig.{json,tsbuildinfo}"
     ],
     "engines": {
         "node": ">=10"

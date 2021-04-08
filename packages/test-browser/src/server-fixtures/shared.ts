@@ -5,7 +5,7 @@ export interface ServerFixturesOptions {
     fixtureFileName: string;
     exportName?: string;
 }
-export interface HookMessage<T = string> {
+export interface ServerFixtureHookMessage<T = string> {
     type: `success` | `error`;
     msg: string;
     value: T;

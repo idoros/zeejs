@@ -1,6 +1,6 @@
-import { updateLayers, createRoot, createBackdropParts, css } from '../src';
+import { updateLayers, createRoot, createBackdropParts, css } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
-import { expectImageSnapshot } from '@zeejs/test-browser/browser';
+import { expectImageSnapshot } from '@zeejs/test-browser-bridge';
 import { expect } from 'chai';
 
 describe(`update-layers`, () => {

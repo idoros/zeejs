@@ -1,4 +1,4 @@
-import { Root } from '../src';
+import { Root } from '@zeejs/react';
 import { Box } from './box';
 import { ModalDemo } from './demos/modal-demo';
 import { TooltipDemo } from './demos/tooltip-demo';

@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        /* Project Options */
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
+        "jsx": "react",
+        "lib": ["dom", "es2019"],
+        "module": "commonjs",
+        "sourceMap": true,
+        "target": "es2019",
+        /* Strict Checks */
+        "strict": true,
+        /* Module Resolution */
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "typeRoots": ["node_modules/@types"],
+        "types": ["node", "svelte", "mocha"],
+        /* Linter Checks */
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        /* Advanced */
+        "importsNotUsedAsValues": "error",
+        "forceConsistentCasingInFileNames": true,
+        "newLine": "LF",
+        "skipLibCheck": true
+    }
+}

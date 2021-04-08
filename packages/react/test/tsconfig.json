@@ -1,0 +1,11 @@
+{
+    "extends": "../../../tsconfig.base.json",
+    "compilerOptions": {
+        "outDir": "../dist/test"
+    },
+    "references": [
+        { "path": "../src" },
+        { "path": "../../test-browser/src" },
+        { "path": "../../test-browser-bridge/src" }
+    ]
+}

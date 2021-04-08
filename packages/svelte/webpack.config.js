@@ -1,5 +1,3 @@
-const { join } = require('path');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const mode = process.env.NODE_ENV || 'development';
@@ -10,9 +8,6 @@ module.exports = {
     resolve: {
         extensions: ['.mjs', '.js', '.svelte', '.ts', '.tsx', '.json'],
         mainFields: ['svelte', 'browser', 'module', 'main'],
-        plugins: [
-            new TsconfigPathsPlugin({ configFile: join(__dirname, `..`, `..`, 'tsconfig.json') }),
-        ],
     },
     output: {
         path: __dirname + '/public',
@@ -23,14 +18,24 @@ module.exports = {
         rules: [
             {
                 test: /\.svelte$/,
+                exclude: /node_modules/,
                 use: {
                     loader: 'svelte-loader',
                     options: {
                         emitCss: true,
                         hotReload: true,
-                        generate: `dom`,
-                        hydratable: true,
+                        compilerOptions: {
+                            generate: `dom`,
+                            hydratable: true,
+                        },
                     },
+                },
+            },
+            {
+                // required to prevent errors from Svelte on Webpack 5+
+                test: /node_modules\/svelte\/.*\.mjs$/,
+                resolve: {
+                    fullySpecified: false,
                 },
             },
             {

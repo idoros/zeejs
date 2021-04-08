@@ -1,8 +1,8 @@
 {
-    "name": "@zeejs/site",
-    "version": "0.1.0",
-    "description": "Documentation site",
-    "author": "Ido Rosenthal",
-    "private": true,
-    "license": "MIT"
+  "name": "@zeejs/site",
+  "version": "0.1.0",
+  "description": "Documentation site",
+  "author": "Ido Rosenthal",
+  "private": true,
+  "license": "MIT"
 }

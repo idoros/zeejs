@@ -1,5 +1,5 @@
-import { constants, ImageSnapshotOptions, HookMessage } from './shared';
-import { Page } from 'playwright';
+import { constants, ImageSnapshotOptions, ImageSnapshotHookMessage } from './shared';
+import type { Page } from 'playwright';
 import { nodeFs } from '@file-services/node';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
@@ -17,7 +17,7 @@ export function hookImageSnapshot(
 ) {
     page.exposeFunction(
         constants.imgSnapshotHook,
-        async ({ filePath }: ImageSnapshotOptions): Promise<HookMessage> => {
+        async ({ filePath }: ImageSnapshotOptions): Promise<ImageSnapshotHookMessage> => {
             const pathSplit = filePath.split(`/`);
             const file = pathSplit.pop()!;
             const folder = nodeFs.join(rootPath, pathSplit.join(`/`));

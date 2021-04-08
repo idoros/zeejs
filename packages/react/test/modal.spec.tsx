@@ -1,7 +1,7 @@
-import { Root, Modal } from '../src';
+import { Root, Modal } from '@zeejs/react';
 import { domElementMatchers } from './chai-dom-element';
 import { ReactTestDriver } from './react-test-driver';
-import { getInteractionApi } from '@zeejs/test-browser/browser';
+import { getInteractionApi } from '@zeejs/test-browser-bridge';
 import React from 'react';
 import chai, { expect } from 'chai';
 import sinon, { stub } from 'sinon';

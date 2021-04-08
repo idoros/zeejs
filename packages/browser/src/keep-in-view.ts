@@ -1,4 +1,4 @@
-import { OverflowData } from './layout-overlay';
+import type { OverflowData } from './layout-overlay';
 import { keepInView as keepInViewBase } from '@zeejs/core';
 
 interface Data {
