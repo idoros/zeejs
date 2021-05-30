@@ -11,8 +11,6 @@ interface TooltipOptions {
     positionY?: overlayPosition;
 }
 
-const NOT_PLACED = `zeejs--notPlaced`;
-
 export const tooltip = ({
     onToggle,
     anchor,
@@ -101,16 +99,16 @@ export const tooltip = ({
                 y: positionY,
                 height: false,
                 width: false,
-                onOverflow: keepInView,
+                onOverflow: keepInView.bind(null, { avoidAnchor: true }),
             });
-            overlay.classList.remove(NOT_PLACED);
+            overlay.classList.remove(layoutOverlay.NOT_PLACED);
         } else if (!newOpenState) {
             if (bindPosition) {
                 bindPosition.stop();
                 bindPosition = null;
             }
             if (overlay) {
-                overlay.classList.add(NOT_PLACED);
+                overlay.classList.add(layoutOverlay.NOT_PLACED);
             }
         }
         if (newOpenState !== isOpen) {
@@ -168,7 +166,7 @@ export const tooltip = ({
                 });
             }
         },
-        initialOverlayCSSClass: NOT_PLACED,
+        initialOverlayCSSClass: layoutOverlay.NOT_PLACED,
         stop() {
             unsetAnchor();
             window.removeEventListener(`mousemove`, onMouseMove);

@@ -48,7 +48,8 @@ export const ModalDemo = ({ children }: { children: React.ReactNode }) => {
                         position={modalData.position}
                         backdrop={modalData.backdrop}
                         className={
-                            `ModalDemo__modal ` + modalData.fixedSize ? `ModalDemo--fixedSize` : ``
+                            `ModalDemo__modal ` +
+                            (modalData.fixedSize ? `ModalDemo--fixedSize` : ``)
                         }
                     >
                         <Box shadow className="ModalDemo__modalContainer">

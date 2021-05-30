@@ -2,7 +2,7 @@
     import { Position, keyArrowMap, symbolMap } from './position';
     export let value = Position.center;
     export let onChange;
-    let root;
+    export let root;
 
     function onClick({ target }) {
         if (target instanceof HTMLButtonElement) {
