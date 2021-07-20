@@ -1,6 +1,6 @@
 import { watchFocus, createRoot, createBackdropParts, updateLayers } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
-import { getInteractionApi } from '@zeejs/test-browser-bridge';
+import { getInteractionApi, waitForBrowser } from '@zeejs/test-browser-bridge';
 import { expect } from 'chai';
 import { stub } from 'sinon';
 
@@ -34,6 +34,7 @@ describe(`focus`, () => {
 
         bgBeforeInput.focus();
         expect(document.activeElement, `start focus before layer`).to.equal(bgBeforeInput);
+        await waitForBrowser(/webkit/);
 
         await keyboard.press(`Tab`);
         expect(document.activeElement, `focus inside layer`).to.equal(layerInput);
@@ -71,6 +72,7 @@ describe(`focus`, () => {
 
         bgAfterInput.focus();
         expect(document.activeElement, `start focus after layer`).to.equal(bgAfterInput);
+        await waitForBrowser(/webkit/);
 
         await keyboard.press(`Shift+Tab`);
         expect(document.activeElement, `focus inside layer`).to.equal(layerInput);
@@ -111,6 +113,7 @@ describe(`focus`, () => {
 
         bgBeforeInput.focus();
         expect(document.activeElement, `start focus before layer`).to.equal(bgBeforeInput);
+        await waitForBrowser(/webkit/);
 
         await keyboard.press(`Tab`);
         expect(document.activeElement, `first focus inside layer`).to.equal(layerInputA);
@@ -145,6 +148,7 @@ describe(`focus`, () => {
 
         bgAfterInput.focus();
         expect(document.activeElement, `start focus after layer`).to.equal(bgAfterInput);
+        await waitForBrowser(/webkit/);
 
         await keyboard.press(`Shift+Tab`);
         expect(document.activeElement, `second focus inside layer`).to.equal(layerInputB);
@@ -182,6 +186,7 @@ describe(`focus`, () => {
 
         bgBeforeInput.focus();
         expect(document.activeElement, `start focus before layer`).to.equal(bgBeforeInput);
+        await waitForBrowser(/webkit/);
 
         await keyboard.press(`Tab`);
         expect(document.activeElement, `focus inside deep layer`).to.equal(layerDeepInput);
@@ -212,6 +217,7 @@ describe(`focus`, () => {
 
         bgBeforeInput.focus();
         expect(document.activeElement, `start focus before layer`).to.equal(bgBeforeInput);
+        await waitForBrowser(/webkit/);
 
         await keyboard.press(`Tab`);
         expect(document.activeElement, `focus after layer`).to.equal(bgAfterInput);
@@ -236,6 +242,7 @@ describe(`focus`, () => {
 
         bgBeforeInput.focus();
         expect(document.activeElement, `start focus before layer`).to.equal(bgBeforeInput);
+        await waitForBrowser(/webkit/);
 
         await keyboard.press(`Tab`);
         expect(document.activeElement, `focus after layer`).to.equal(bgAfterInput);
@@ -265,6 +272,7 @@ describe(`focus`, () => {
 
         lastLayerInput.focus();
         expect(document.activeElement, `start in last layer input`).to.equal(lastLayerInput);
+        await waitForBrowser(/webkit/);
 
         await keyboard.press(`Tab`);
         expect(document.activeElement, `focus first layer input`).to.equal(firstLayerInput);
@@ -317,6 +325,7 @@ describe(`focus`, () => {
 
         layerFirstInput.focus();
         expect(document.activeElement, `start focus in layer`).to.equal(layerFirstInput);
+        await waitForBrowser(/webkit/);
 
         await keyboard.press(`Tab`);
         expect(document.activeElement, `move to another element in layer`).to.equal(layerLastInput);
@@ -356,6 +365,7 @@ describe(`focus`, () => {
 
         layerXFirstInput.focus();
         expect(document.activeElement, `start focus in layer`).to.equal(layerXFirstInput);
+        await waitForBrowser(/webkit/);
 
         await keyboard.press(`Tab`);
         expect(document.activeElement, `move into nested layer`).to.equal(layerYInput);
