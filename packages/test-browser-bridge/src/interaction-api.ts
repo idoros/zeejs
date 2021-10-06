@@ -10,7 +10,7 @@ export function getInteractionApi(): InteractionApi {
             return async (...args: any[]) => {
                 const response = await callServer(path, ...args);
                 if (window._testEnv.browserName === `webkit`) {
-                    await new Promise(e => setTimeout(e, 10));
+                    await new Promise((e) => setTimeout(e, 10));
                 }
                 if (response.type === `success`) {
                     return response.value;
