@@ -14,7 +14,7 @@ const availableBrowsers = ['chromium', 'firefox', 'webkit'];
 export const browserTest = ({
     files,
     dev,
-    browsers = `chromium, firefox, webkit`,
+    browsers = `chromium, firefox`,
     webpackConfig: webpackConfigPath = findUp.sync('webpack.config.js'),
     pageHook,
     process,

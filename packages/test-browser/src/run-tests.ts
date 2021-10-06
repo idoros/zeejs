@@ -107,14 +107,16 @@ export async function runTests({
                 page.addStyleTag({ content: `x-pw-glass {display: none!important;}` });
             });
             const failsOnPageError = new Promise((_resolve, reject) => {
-                page.once('pageerror', reject);
-                // page.once('error', () => {reject()})
+                page.once('pageerror', (e) => {
+                    reject(e);
+                });
+                page.on(`crash`, () => {
+                    reject(`${browserName} page crash`);
+                });
             });
-
             await page.goto(`http://localhost:${port}/mocha.html`);
 
             const failedCount = await Promise.race([waitForTestResults(page), failsOnPageError]);
-
             if (failedCount) {
                 throw `${failedCount as number} tests failed!`;
             }

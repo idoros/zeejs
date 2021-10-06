@@ -32,9 +32,9 @@ export function hookServerFixtures(page: Page, { rootPath }: ServerFixturesHookO
             } catch (e) {
                 return {
                     type: `error`,
-                    msg: `evaluation error in: "${path}" - ${String(e.message ?? e)}\n${String(
-                        e ? e.stack : ``
-                    )}`,
+                    msg: `evaluation error in: "${path}" - ${String(
+                        (e as Error)?.message ?? e
+                    )}\n${String((e as Error)?.stack ?? ``)}`,
                 };
             }
             if (typeof fixtureModule[exportName] !== `function`) {
@@ -47,9 +47,9 @@ export function hookServerFixtures(page: Page, { rootPath }: ServerFixturesHookO
             } catch (e) {
                 return {
                     type: `error`,
-                    msg: `execution error in: "${path}" - ${String(e.message ?? e)}\n${String(
-                        e ? e.stack : ``
-                    )}`,
+                    msg: `execution error in: "${path}" - ${String(
+                        (e as Error)?.message ?? e
+                    )}\n${String((e as Error)?.stack ?? ``)}`,
                 };
             }
             // return results

@@ -10,7 +10,7 @@
     },
     "dependencies": {
         "@zeejs/core": "^0.1.0",
-        "tabbable": "^5.2.0"
+        "tabbable": "^5.2.1"
     },
     "files": [
         "dist",
