@@ -1,4 +1,4 @@
-import { Root, Tooltip } from '@zeejs/react';
+import { Root, Tooltip, OverlayPosition } from '@zeejs/react';
 import { domElementMatchers } from './chai-dom-element';
 import { ReactTestDriver } from './react-test-driver';
 import { getInteractionApi } from '@zeejs/test-browser-bridge';
@@ -7,7 +7,6 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { waitFor, sleep } from 'promise-assist';
-import { overlayPosition } from '@zeejs/browser';
 chai.use(sinonChai);
 chai.use(domElementMatchers);
 
@@ -287,8 +286,8 @@ describe(`react tooltip`, () => {
                         style={{ width: `100px`, height: `40px`, background: 'red' }}
                     >
                         <Tooltip
-                            positionX={overlayPosition.after}
-                            positionY={overlayPosition.after}
+                            positionX="after"
+                            positionY="after"
                         >
                             <div
                                 id="tooltip-node"
@@ -312,7 +311,7 @@ describe(`react tooltip`, () => {
         });
 
         it(`should update relative position`, async () => {
-            const { expectHTMLQuery, setData } = testDriver.render<overlayPosition>(
+            const { expectHTMLQuery, setData } = testDriver.render<OverlayPosition>(
                 (pos) => (
                     <Root
                         style={{
@@ -337,12 +336,12 @@ describe(`react tooltip`, () => {
                         </div>
                     </Root>
                 ),
-                { initialData: overlayPosition.after }
+                { initialData: `after` }
             );
 
             await hover(`#parent-node`);
 
-            setData(overlayPosition.before);
+            setData(`before`);
 
             await waitFor(() => {
                 const tooltipNode = expectHTMLQuery(`#tooltip-node`);

@@ -1,14 +1,14 @@
 import { getUniqueId } from '../unique-id';
 import { Box } from '../box';
-import { Tooltip, overlayPosition } from '@zeejs/react';
+import { Tooltip, OverlayPosition } from '@zeejs/react';
 import React from 'react';
 
 export const TooltipDemo = () => {
     const id = React.useMemo(() => getUniqueId(), []);
     const [tooltipOptions, updateOptions] = React.useState({
         // mouseDelay: 500,
-        positionX: overlayPosition.center,
-        positionY: overlayPosition.before,
+        positionX: `center` as OverlayPosition,
+        positionY: `before` as OverlayPosition,
     });
 
     return (
@@ -22,15 +22,15 @@ export const TooltipDemo = () => {
                     onChange={({ target }) =>
                         updateOptions((data) => ({
                             ...data,
-                            positionX: target.value as overlayPosition,
+                            positionX: target.value as OverlayPosition,
                         }))
                     }
                 >
-                    <option value={overlayPosition.before} label="before" />
-                    <option value={overlayPosition.start} label="start" />
-                    <option value={overlayPosition.center} label="center" />
-                    <option value={overlayPosition.end} label="end" />
-                    <option value={overlayPosition.after} label="after" />
+                    <option value="before" label="before" />
+                    <option value="start" label="start" />
+                    <option value="center" label="center" />
+                    <option value="end" label="end" />
+                    <option value="after" label="after" />
                 </select>
                 <label htmlFor={id + `-positionY`}>position Y</label>
                 <select
@@ -39,15 +39,15 @@ export const TooltipDemo = () => {
                     onChange={({ target }) =>
                         updateOptions((data) => ({
                             ...data,
-                            positionY: target.value as overlayPosition,
+                            positionY: target.value as OverlayPosition,
                         }))
                     }
                 >
-                    <option value={overlayPosition.before} label="before" />
-                    <option value={overlayPosition.start} label="start" />
-                    <option value={overlayPosition.center} label="center" />
-                    <option value={overlayPosition.end} label="end" />
-                    <option value={overlayPosition.after} label="after" />
+                    <option value="before" label="before" />
+                    <option value="start" label="start" />
+                    <option value="center" label="center" />
+                    <option value="end" label="end" />
+                    <option value="after" label="after" />
                 </select>
             </form>
             <div

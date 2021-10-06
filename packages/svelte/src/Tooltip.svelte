@@ -1,6 +1,6 @@
 <script>
     import Layer from './Layer.svelte';
-    import { tooltip, isContainedBy, overlayPosition } from '@zeejs/browser';
+    import { tooltip, isContainedBy } from '@zeejs/browser';
     import { onMount, afterUpdate } from 'svelte';
 
     export let mouseDelay;

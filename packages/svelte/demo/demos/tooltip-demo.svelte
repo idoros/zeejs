@@ -1,5 +1,5 @@
 <script>
-    import { Tooltip, overlayPosition } from '../../src';
+    import { Tooltip } from '../../src';
     import { getUniqueId } from '../unique-id';
     import Box from '../box.svelte';
 
@@ -7,8 +7,8 @@
 
     let tooltipOptions = {
         // mouseDelay: 500,
-        positionX: overlayPosition.center,
-        positionY: overlayPosition.before,
+        positionX: `center`,
+        positionY: `before`,
     };
 
     function formChange(event) {
@@ -30,11 +30,11 @@
         name="positionX"
         value={tooltipOptions.positionX}
     >
-        <option value={overlayPosition.before} label="before" />
-        <option value={overlayPosition.start} label="start" />
-        <option value={overlayPosition.center} label="center" />
-        <option value={overlayPosition.end} label="end" />
-        <option value={overlayPosition.after} label="after" />
+        <option value="before" label="before" />
+        <option value="start" label="start" />
+        <option value="center" label="center" />
+        <option value="end" label="end" />
+        <option value="after" label="after" />
     </select>
     <label for={id + `-positionY`}>position Y</label>
     <select
@@ -42,11 +42,11 @@
         name="positionY"
         value={tooltipOptions.positionY}
     >
-        <option value={overlayPosition.before} label="before" />
-        <option value={overlayPosition.start} label="start" />
-        <option value={overlayPosition.center} label="center" />
-        <option value={overlayPosition.end} label="end" />
-        <option value={overlayPosition.after} label="after" />
+        <option value="before" label="before" />
+        <option value="start" label="start" />
+        <option value="center" label="center" />
+        <option value="end" label="end" />
+        <option value="after" label="after" />
     </select>
 </form>
 <div

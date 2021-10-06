@@ -1,4 +1,4 @@
-import { tooltip, css, overlayPosition } from '@zeejs/browser';
+import { tooltip, css } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
 import { getInteractionApi } from '@zeejs/test-browser-bridge';
 import chai, { expect } from 'chai';
@@ -438,8 +438,8 @@ describe(`tooltip`, () => {
             tooltip({
                 anchor,
                 overlay,
-                positionX: overlayPosition.after,
-                positionY: overlayPosition.after,
+                positionX: `after`,
+                positionY: `after`,
             });
 
             anchor.focus();
@@ -467,15 +467,15 @@ describe(`tooltip`, () => {
             const { updatePosition } = tooltip({
                 anchor,
                 overlay,
-                positionX: overlayPosition.after,
-                positionY: overlayPosition.after,
+                positionX: `after`,
+                positionY: `after`,
             });
 
             anchor.focus();
 
             updatePosition({
-                x: overlayPosition.before,
-                y: overlayPosition.before,
+                x: `before`,
+                y: `before`,
             });
 
             await waitFor(() => {
