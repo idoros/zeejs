@@ -1,12 +1,12 @@
 import { Layer } from './layer';
-import { tooltip, isContainedBy, overlayPosition } from '@zeejs/browser';
+import { tooltip, isContainedBy, OverlayPosition } from '@zeejs/browser';
 import React, { ReactNode, useMemo, useEffect, useState, useRef } from 'react';
 
 export interface TooltipProps {
     children: ReactNode;
     mouseDelay?: number;
-    positionX?: overlayPosition;
-    positionY?: overlayPosition;
+    positionX?: OverlayPosition;
+    positionY?: OverlayPosition;
 }
 
 export const Tooltip = ({ children, mouseDelay, positionX, positionY }: TooltipProps) => {

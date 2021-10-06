@@ -1,7 +1,7 @@
 <script>
     import { Layer } from '../../src';
     import { onMount } from 'svelte';
-    import { layoutOverlay, overlayPosition, keepInView } from '@zeejs/browser';
+    import { layoutOverlay, keepInView } from '@zeejs/browser';
 
     export let relativeTo;
     export let onClickOutside;
@@ -19,8 +19,8 @@
             throw new Error(`missing reference for popup: "${String(relativeTo)}"`);
         }
         const overlayBind = layoutOverlay(reference, popup, {
-            x: overlayPosition.center,
-            y: overlayPosition.center,
+            x: `center`,
+            y: `center`,
             height: false,
             width: false,
             onOverflow: keepInView,

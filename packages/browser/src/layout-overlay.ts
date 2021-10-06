@@ -1,10 +1,11 @@
 interface OverlayOptions {
-    x: overlayPosition;
-    y: overlayPosition;
+    x: OverlayPosition;
+    y: OverlayPosition;
     width: boolean;
     height: boolean;
     onOverflow: (data: OverflowData) => void;
 }
+export type OverlayPosition = `before` | `start` | `center` | `end` | `after`;
 export interface OverflowData {
     anchorBounds: {
         x: number;
@@ -31,13 +32,6 @@ interface OverlayConfig extends OverlayOptions {
         width: string;
         height: string;
     };
-}
-export enum overlayPosition {
-    before = `BEFORE`,
-    start = `START`,
-    center = `CENTER`,
-    end = `END`,
-    after = `AFTER`,
 }
 
 const UNSET_POS = `zeejs-unset`;
@@ -74,8 +68,8 @@ export const layoutOverlay = (
     // save overlay configuration
     overlays.set(overlay, {
         anchor,
-        x: options.x || overlayPosition.center,
-        y: options.y || overlayPosition.center,
+        x: options.x || `center`,
+        y: options.y || `center`,
         width: options.width ?? true,
         height: options.height ?? true,
         initSize: { width: UNSET_POS, height: UNSET_POS },
@@ -278,21 +272,21 @@ function updateSize(
         initSize[dir] = UNSET_POS;
     }
 }
-function getPosition(pos: overlayPosition, dir: `x` | `y`, refRect: DOMRect, overlayRect: DOMRect) {
+function getPosition(pos: OverlayPosition, dir: `x` | `y`, refRect: DOMRect, overlayRect: DOMRect) {
     const sizeField = dir === `x` ? `width` : `height`;
     const refPos = refRect[dir];
     const refSize = refRect[sizeField];
     const overlaySize = overlayRect[sizeField];
     switch (pos) {
-        case overlayPosition.before:
+        case `before`:
             return refPos - overlaySize;
-        case overlayPosition.start:
+        case `start`:
             return refPos;
-        case overlayPosition.center:
+        case `center`:
             return refPos + refSize / 2 - overlaySize / 2;
-        case overlayPosition.end:
+        case `end`:
             return refPos + refSize - overlaySize;
-        case overlayPosition.after:
+        case `after`:
             return refPos + refSize;
     }
 }

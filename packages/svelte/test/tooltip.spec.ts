@@ -285,7 +285,7 @@ describe(`svelte tooltip`, () => {
         it(`should position relative to parent (custom: below & right)`, async () => {
             const { expectHTMLQuery } = testDriver.render(`
                 <script>
-                    import {Root, Tooltip, overlayPosition} from '@zeejs/svelte';
+                    import {Root, Tooltip} from '@zeejs/svelte';
                 </script>
                 <Root>
                     <div
@@ -298,7 +298,7 @@ describe(`svelte tooltip`, () => {
                         "
                     >
                         <div id="parent-node" tabIndex="0" style="width: 100px; height: 40px;">
-                            <Tooltip positionX={overlayPosition.after} positionY={overlayPosition.after}>
+                            <Tooltip positionX="after" positionY="after">
                                 <div id="tooltip-node" style="width: 80px; height: 20px;"></div>
                             </Tooltip>
                         </div>
@@ -317,12 +317,11 @@ describe(`svelte tooltip`, () => {
                 expect(tooltipBounds.left, `tooltip right of`).to.equal(parentBounds.right);
             });
         });
-
         it(`should update relative position`, async () => {
             const { expectHTMLQuery, updateProps } = testDriver.render(
                 `
                 <script>
-                    import {Root, Tooltip, overlayPosition} from '@zeejs/svelte';
+                    import {Root, Tooltip} from '@zeejs/svelte';
                     export let pos;
                 </script>
                 <Root>
@@ -343,7 +342,7 @@ describe(`svelte tooltip`, () => {
                     </div>
                 </Root>
             `,
-                { pos: zeejsSvelte.overlayPosition.after }
+                { pos: `after` }
             );
 
             await hover(`#parent-node`);
@@ -358,7 +357,7 @@ describe(`svelte tooltip`, () => {
             });
 
             updateProps({
-                pos: zeejsSvelte.overlayPosition.before,
+                pos: `before`,
             });
 
             await waitFor(() => {

@@ -1,4 +1,4 @@
-import { layoutOverlay, overlayPosition } from '@zeejs/browser';
+import { layoutOverlay, OverlayPosition } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
 import { getInteractionApi } from '@zeejs/test-browser-bridge';
 import chai, { expect } from 'chai';
@@ -88,8 +88,8 @@ describe(`layout-overlay`, () => {
             const { stop } = layoutOverlay(anchor, overlay, {
                 height: false,
                 width: false,
-                x: overlayPosition.center,
-                y: overlayPosition.center,
+                x: `center`,
+                y: `center`,
             });
             await sleep(10); // wait for initial observe to be called
 
@@ -270,8 +270,8 @@ describe(`layout-overlay`, () => {
             const overlay = expectHTMLQuery(`#overlay`);
 
             const { stop } = layoutOverlay(anchor, overlay, {
-                x: overlayPosition.before,
-                y: overlayPosition.after,
+                x: `before`,
+                y: `after`,
             });
 
             const refRect = anchor.getBoundingClientRect();
@@ -296,11 +296,11 @@ describe(`layout-overlay`, () => {
             const anchor = expectQuery(`#anchor`);
             const overlay = expectHTMLQuery(`#overlay`);
             const { stop, updateOptions } = layoutOverlay(anchor, overlay, {
-                x: overlayPosition.before,
-                y: overlayPosition.after,
+                x: `before`,
+                y: `after`,
             });
 
-            updateOptions({ y: overlayPosition.before });
+            updateOptions({ y: `before` });
 
             await waitFor(() => {
                 const refRect = anchor.getBoundingClientRect();
@@ -343,31 +343,35 @@ describe(`layout-overlay`, () => {
                 ).to.be.approximately(value, 1);
             }
 
-            const cases = new Map([
+            const cases = new Map<
+                { x: OverlayPosition; y: OverlayPosition },
+                { x: number; y: number }
+            >([
                 [
-                    { x: overlayPosition.before, y: overlayPosition.after },
+                    { x: `before`, y: `after` },
                     { x: 150 - 60, y: 300 },
                 ],
                 [
-                    { x: overlayPosition.start, y: overlayPosition.end },
+                    { x: `start`, y: `end` },
                     { x: 150, y: 300 - 40 },
                 ],
                 [
-                    { x: overlayPosition.center, y: overlayPosition.center },
+                    { x: `center`, y: `center` },
                     { x: 200 - 60 / 2, y: 200 - 40 / 2 },
                 ],
                 [
-                    { x: overlayPosition.end, y: overlayPosition.start },
+                    { x: `end`, y: `start` },
                     { x: 250 - 60, y: 100 },
                 ],
                 [
-                    { x: overlayPosition.after, y: overlayPosition.before },
+                    { x: `after`, y: `before` },
                     { x: 250, y: 100 - 40 },
                 ],
             ]);
 
             for (const [options, expectation] of cases) {
                 updateOptions(options);
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 const label = `x: ${options.x}, y: ${options.y}`;
                 await waitFor(() => {
                     const overlayRect = overlay.getBoundingClientRect();
@@ -475,8 +479,8 @@ describe(`layout-overlay`, () => {
             const overlay = expectHTMLQuery(`#overlay`);
 
             const { stop } = layoutOverlay(anchor, overlay, {
-                x: overlayPosition.after,
-                y: overlayPosition.after,
+                x: `after`,
+                y: `after`,
                 onOverflow,
             });
 

@@ -1,6 +1,6 @@
 import { Layer, LayerProps } from '@zeejs/react';
 import React from 'react';
-import { layoutOverlay, overlayPosition, keepInView } from '@zeejs/browser';
+import { layoutOverlay, keepInView } from '@zeejs/browser';
 
 export interface DialogProps {
     className?: string;
@@ -28,8 +28,8 @@ export const Dialog = ({
         }
         const popup = popupRef.current!;
         const overlayBind = layoutOverlay(reference, popup, {
-            x: overlayPosition.center,
-            y: overlayPosition.center,
+            x: `center`,
+            y: `center`,
             height: false,
             width: false,
             onOverflow: keepInView,

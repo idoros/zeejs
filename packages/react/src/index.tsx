@@ -4,4 +4,4 @@ export { Tooltip } from './tooltip';
 export { Modal } from './modal';
 export type { ModalPosition } from './modal';
 export type { LayerProps } from './layer';
-export { overlayPosition } from '@zeejs/browser';
+export type { OverlayPosition } from '@zeejs/browser';
