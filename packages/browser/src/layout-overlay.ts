@@ -104,6 +104,11 @@ export const layoutOverlay = (
     update(overlay);
     return {
         stop: () => {
+            const overlayConfig = overlays.get(overlay);
+            if (overlayConfig) {
+                restoreSize(`width`, overlayConfig, overlay);
+                restoreSize(`height`, overlayConfig, overlay);
+            }
             overlays.delete(overlay);
             if (resizeObserver) {
                 resizeObserver.unobserve(anchor); // ToDo: prevent unobserve if another overlay is connected
@@ -263,13 +268,21 @@ function updateSize(
             initSize[dir] = overlay.style[dir];
         }
         overlay.style[dir] = refRect[dir] + `px`;
-    } else if (initSize[dir] !== UNSET_POS) {
-        if (initSize[dir]) {
-            overlay.style[dir] = initSize[dir];
-        } else {
-            overlay.style.removeProperty(dir);
+    } else {
+        restoreSize(dir, overlayConfig, overlay);
+    }
+}
+function restoreSize(dir: `width` | `height`, overlayConfig: OverlayConfig, overlay: HTMLElement) {
+    const { initSize } = overlayConfig;
+    if (initSize[dir] !== UNSET_POS) {
+        if (initSize[dir] !== UNSET_POS) {
+            if (initSize[dir]) {
+                overlay.style[dir] = initSize[dir];
+            } else {
+                overlay.style.removeProperty(dir);
+            }
+            initSize[dir] = UNSET_POS;
         }
-        initSize[dir] = UNSET_POS;
     }
 }
 function getPosition(pos: OverlayPosition, dir: `x` | `y`, refRect: DOMRect, overlayRect: DOMRect) {
