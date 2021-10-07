@@ -199,6 +199,28 @@ describe(`layout-overlay`, () => {
             stopA();
             stopB();
         });
+        it(`should restrict overlay size when bound to anchor size`, () => {
+            const { expectQuery, expectHTMLQuery } = testDriver.render(
+                () => `
+                    <div id="anchor" style="background: red;width: 100px; height: 200px; margin: 30px"></div>
+                    <div id="overlay" style="background:green; overflow-y: visible;">
+                        <div style="width: 300px; height: 300px;"></div>
+                    </div>
+                `
+            );
+            const anchor = expectQuery(`#anchor`);
+            const overlay = expectHTMLQuery(`#overlay`);
+
+            const { stop } = layoutOverlay(anchor, overlay);
+
+            expect(overlay.style.overflowX, `overflow-x`).to.equal(`auto`);
+            expect(overlay.style.overflowY, `overflow-y`).to.equal(`auto`);
+
+            stop();
+
+            expect(overlay.style.overflowX, `initial overflow-x`).to.equal(``);
+            expect(overlay.style.overflowY, `initial overflow-y`).to.equal(`visible`);
+        });
         it(`should restore size when stopped`, () => {
             const { expectQuery, expectHTMLQuery } = testDriver.render(
                 () => `
