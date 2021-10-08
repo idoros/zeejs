@@ -371,4 +371,69 @@ describe(`svelte popover`, () => {
             expect(contentClick, `click on blocked backdrop`).to.have.callCount(1);
         });
     });
+    describe(`display`, () => {
+        it(`should display popover by default`, () => {
+            const { query } = testDriver.render(
+                `
+                <script>
+                    import {Root, Popover} from '@zeejs/svelte';
+                </script>
+                <Root>
+                    <Popover>
+                        <div id="popoverContent"></div>
+                    </Popover>
+                </Root>
+            `
+            );
+
+            const popoverContent = query(`#popoverContent`);
+            expect(popoverContent, `rendered to DOM`).to.be.instanceOf(HTMLDivElement);
+        });
+        it(`should not render layer with "show=false"`, () => {
+            const { query } = testDriver.render(
+                `
+                <script>
+                    import {Root, Popover} from '@zeejs/svelte';
+                </script>
+                <Root>
+                    <Popover show={false}>
+                        <div id="popoverContent"></div>
+                    </Popover>
+                </Root>
+            `
+            );
+
+            const popoverContent = query(`#popoverContent`);
+            expect(popoverContent, `rendered to DOM`).to.equal(null);
+        });
+        it(`should invoke onDisplayChange when popup is opened/closed`, async () => {
+            const onDisplayChange = stub();
+            const { updateProps } = testDriver.render(
+                `
+                <script>
+                    import {Root, Popover} from '@zeejs/svelte';
+                    export let show;
+                    export let onDisplayChange;
+                </script>
+                <Root>
+                    <Popover onDisplayChange={onDisplayChange} show={show}>
+                        <div id="popoverContent"></div>
+                    </Popover>
+                </Root>
+            `,
+                { show: true, onDisplayChange }
+            );
+
+            expect(onDisplayChange, `init display`).to.have.been.calledOnceWith(true);
+
+            onDisplayChange.reset();
+            updateProps({ show: false });
+
+            await waitFor(() => {
+                expect(onDisplayChange, `display off`).to.have.been.calledOnceWith(false);
+            });
+
+            // ToDo: test unmount
+        });
+    });
 });

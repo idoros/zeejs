@@ -10,11 +10,17 @@
     export let matchWidth = false;
     export let matchHeight = false;
     export let backdrop = `none`;
+    export let onDisplayChange = ()=>{};
 
     const { open, close, updateOptions, isOpen } = popover();
 
     // close on unmount
-    onMount(() => () => close());
+    onMount(() => () => {
+        if (isOpen()) {
+            close();
+            onDisplayChange(false);
+        }
+    });
 
     let placeholderRef;
     let overlayRef;
@@ -25,6 +31,7 @@
         const opened = isOpen();
         if (opened && !show) {
             close();
+            onDisplayChange(false);
         }
         if (show && anchor && overlay) {
             const options = {
@@ -34,15 +41,18 @@
                 matchWidth,
                 matchHeight,
             };
-            opened
-                ? updateOptions(options)
-                : open(
-                      {
-                          anchor,
-                          overlay,
-                      },
-                      options
-                  );
+            if (opened) {
+                updateOptions(options);
+            } else {
+                open(
+                    {
+                        anchor,
+                        overlay,
+                    },
+                    options
+                );
+                onDisplayChange(true);
+            }
         }
     }
 </script>

@@ -11,6 +11,7 @@ export interface PopoverProps {
     matchWidth?: boolean;
     matchHeight?: boolean;
     backdrop?: LayerProps['backdrop'];
+    onDisplayChange?: (isPositioned: boolean) => void;
 }
 
 export const Popover = ({
@@ -22,13 +23,22 @@ export const Popover = ({
     matchWidth = false,
     matchHeight = false,
     backdrop = `none`,
+    onDisplayChange = noop,
 }: PopoverProps) => {
     const placeholderRef = useRef<HTMLSpanElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
 
     const { open, close, isOpen, updateOptions } = useMemo(() => popover(), []);
     // close on unmount
-    useEffect(() => () => close(), []);
+    useEffect(
+        () => () => {
+            if (isOpen()) {
+                close();
+                onDisplayChange(false);
+            }
+        },
+        []
+    );
     // open/close or update options
     useEffect(() => {
         const anchor = placeholderRef.current?.parentElement;
@@ -36,6 +46,7 @@ export const Popover = ({
         const opened = isOpen();
         if (opened && !show) {
             close();
+            onDisplayChange(false);
         }
         if (show && anchor && overlay) {
             const options = {
@@ -45,15 +56,18 @@ export const Popover = ({
                 matchWidth,
                 matchHeight,
             };
-            opened
-                ? updateOptions(options)
-                : open(
-                      {
-                          anchor,
-                          overlay,
-                      },
-                      options
-                  );
+            if (opened) {
+                updateOptions(options);
+            } else {
+                open(
+                    {
+                        anchor,
+                        overlay,
+                    },
+                    options
+                );
+                onDisplayChange(true);
+            }
         }
     }, [show, positionX, positionY, avoidAnchor, matchWidth, matchHeight]);
     // ToDo: pass ref to layer - remove extra span
@@ -66,4 +80,8 @@ export const Popover = ({
             ) : null}
         </span>
     );
+};
+
+const noop = () => {
+    /**/
 };

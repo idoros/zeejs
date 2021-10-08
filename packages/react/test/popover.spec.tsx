@@ -365,4 +365,50 @@ describe(`react popover`, () => {
             expect(contentClick, `click on blocked backdrop`).to.have.callCount(1);
         });
     });
+    describe(`display`, () => {
+        it(`should display popover by default`, () => {
+            const { query } = testDriver.render(() => (
+                <Root>
+                    <Popover>
+                        <div id="popoverContent"></div>
+                    </Popover>
+                </Root>
+            ));
+            const popoverContent = query(`#popoverContent`);
+            expect(popoverContent, `rendered to DOM`).to.be.instanceOf(HTMLDivElement);
+        });
+        it(`should not render layer with "show=false"`, () => {
+            const { query } = testDriver.render(() => (
+                <Root>
+                    <Popover show={false}>
+                        <div id="popoverContent"></div>
+                    </Popover>
+                </Root>
+            ));
+            const popoverContent = query(`#popoverContent`);
+            expect(popoverContent, `rendered to DOM`).to.equal(null);
+        });
+        it(`should invoke onDisplayChange when popup is opened/closed`, () => {
+            const onDisplayChange = stub();
+            const { setData } = testDriver.render(
+                ({ show }) => (
+                    <Root>
+                        <Popover onDisplayChange={onDisplayChange} show={show}>
+                            <div id="popoverContent"></div>
+                        </Popover>
+                    </Root>
+                ),
+                { initialData: { show: true } }
+            );
+
+            expect(onDisplayChange, `init display`).to.have.been.calledOnceWith(true);
+
+            onDisplayChange.reset();
+            setData({ show: false });
+
+            expect(onDisplayChange, `display off`).to.have.been.calledOnceWith(false);
+
+            // ToDo: test unmount
+        });
+    });
 });
