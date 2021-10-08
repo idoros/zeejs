@@ -12,6 +12,7 @@
         positionY: `after`,
         matchWidth: false,
         matchHeight: false,
+        backdrop: `none`,
     };
 
     function formSubmit(event) {
@@ -24,12 +25,8 @@
 
     function closePopover() {
         popoverData = {
+            ...popoverData,
             isOpen: false,
-            avoidAnchor: popoverData.avoidAnchor,
-            positionX: popoverData.positionX,
-            positionY: popoverData.positionY,
-            matchWidth: popoverData.matchWidth,
-            matchHeight: popoverData.matchHeight,
         };
     }
 </script>
@@ -112,6 +109,23 @@
             }
         />
     </label>
+    <label for={id + `-backdrop`}>backdrop</label>
+    <select
+        id={id + `-backdrop`}
+        value={popoverData.backdrop}
+        on:blur={({ target }) =>
+            popoverData = {
+                ...popoverData,
+                backdrop: target.value,
+            }
+        }
+    >
+        {#each [`none`, `block`, `hide`]  as backdrop}
+            <option key={backdrop} value={backdrop}>
+                {backdrop}
+            </option>
+        {/each}
+    </select>
     <button type="submit" style="height: 9em; width: 300px">
         {popoverData.isOpen ? `Popover is open` : `Open popover`}
         <Popover
@@ -121,6 +135,7 @@
             positionY={popoverData.positionY}
             matchWidth={popoverData.matchWidth}
             matchHeight={popoverData.matchHeight}
+            backdrop={popoverData.backdrop}
         >
             <Box shadow className="PopoverDemo__popoverContainer">
                 <details class="PopoverDemo__shrinkable">

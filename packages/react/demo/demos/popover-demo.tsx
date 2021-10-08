@@ -1,6 +1,6 @@
 import { getUniqueId } from '../unique-id';
 import { Box } from '../box';
-import { Popover, OverlayPosition } from '@zeejs/react';
+import { Popover, OverlayPosition, LayerProps } from '@zeejs/react';
 import React from 'react';
 
 export const PopoverDemo = ({ children }: { children: React.ReactNode }) => {
@@ -12,6 +12,7 @@ export const PopoverDemo = ({ children }: { children: React.ReactNode }) => {
         positionY: `after` as OverlayPosition,
         matchWidth: false,
         matchHeight: false,
+        backdrop: `none` as LayerProps['backdrop'],
     });
 
     const formSubmit = React.useCallback(
@@ -27,12 +28,8 @@ export const PopoverDemo = ({ children }: { children: React.ReactNode }) => {
 
     const closePopover = React.useCallback(() => {
         updateLayer({
+            ...popoverData,
             isOpen: false,
-            avoidAnchor: popoverData.avoidAnchor,
-            positionX: popoverData.positionX,
-            positionY: popoverData.positionY,
-            matchWidth: popoverData.matchWidth,
-            matchHeight: popoverData.matchHeight,
         });
     }, [popoverData]);
 
@@ -104,6 +101,23 @@ export const PopoverDemo = ({ children }: { children: React.ReactNode }) => {
                         }
                     ></input>
                 </label>
+                <label htmlFor={id + `-backdrop`}>backdrop</label>
+                <select
+                    id={id + `-backdrop`}
+                    value={popoverData.backdrop}
+                    onChange={({ target }) =>
+                        updateLayer((data) => ({
+                            ...data,
+                            backdrop: target.value as LayerProps['backdrop'],
+                        }))
+                    }
+                >
+                    {[`none`, `block`, `hide`].map((backdrop) => (
+                        <option key={backdrop} value={backdrop}>
+                            {backdrop}
+                        </option>
+                    ))}
+                </select>
                 <button type="submit" style={{ height: `9em`, width: `300px` }}>
                     {popoverData.isOpen ? `Popover is open` : `Open popover`}
                     <Popover
@@ -113,6 +127,7 @@ export const PopoverDemo = ({ children }: { children: React.ReactNode }) => {
                         positionY={popoverData.positionY}
                         matchWidth={popoverData.matchWidth}
                         matchHeight={popoverData.matchHeight}
+                        backdrop={popoverData.backdrop}
                     >
                         <Box shadow className="PopoverDemo__popoverContainer">
                             <details className="PopoverDemo__shrinkable">

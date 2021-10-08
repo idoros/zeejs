@@ -9,6 +9,7 @@
     export let avoidAnchor = false;
     export let matchWidth = false;
     export let matchHeight = false;
+    export let backdrop = `none`;
 
     const { open, close, updateOptions, isOpen } = popover();
 
@@ -50,6 +51,7 @@
     {#if show}
         <Layer
             overlap="window"
+            backdrop={backdrop}
         >
             <div bind:this={overlayRef}>
                 <slot />

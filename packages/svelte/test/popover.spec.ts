@@ -1,13 +1,15 @@
 import * as zeejsSvelte from '../src';
 import { SvelteTestDriver } from './svelte-test-driver';
+import { getInteractionApi } from '@zeejs/test-browser-bridge';
 import { waitFor } from 'promise-assist';
 import chai, { expect } from 'chai';
-import sinon from 'sinon';
+import sinon, { stub } from 'sinon';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 
 describe(`svelte popover`, () => {
     let testDriver: SvelteTestDriver;
+    const { clickIfPossible, click } = getInteractionApi();
 
     before('setup test driver', () => {
         testDriver = new SvelteTestDriver({
@@ -291,6 +293,82 @@ describe(`svelte popover`, () => {
                 expect(popoverBounds.width, `width restricted again`).to.equal(50);
                 expect(popoverBounds.height, `height not restricted`).to.not.equal(60);
             });
+        });
+    });
+    describe(`backdrop`, () => {
+        it(`should default to interactive background`, async () => {
+            const contentClick = stub();
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Popover} from '@zeejs/svelte';
+                    export let contentClick;
+                </script>
+                <Root>
+                    <div on:click={contentClick} id="back-item" style="width: 100vw; height: 100vh;">
+                        <Popover>
+                            <div style="width: 100px; height: 200px;"></div>
+                        </Popover>
+                    </div>
+                </Root>
+            `,
+                { contentClick }
+            );
+
+            await click(`#back-item`);
+
+            expect(contentClick).to.have.callCount(1);
+        });
+        it(`should accept custom backdrop`, async () => {
+            const contentClick = stub();
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Popover} from '@zeejs/svelte';
+                    export let contentClick;
+                </script>
+                <Root>
+                    <div on:click={contentClick} id="back-item" style="width: 100vw; height: 100vh;">
+                        <Popover backdrop="block">
+                            <div style="width: 100px; height: 200px;"></div>
+                        </Popover>
+                    </div>
+                </Root>
+            `,
+                { contentClick }
+            );
+
+            expect(await clickIfPossible(`#back-item`), `not clickable`).to.equal(false);
+            expect(contentClick).to.have.callCount(0);
+        });
+        it.skip(`should update backdrop on prop change`, async () => {
+            const contentClick = stub();
+            const { updateProps } = testDriver.render(
+                `
+                <script>
+                    import {Root, Popover} from '@zeejs/svelte';
+                    export let contentClick;
+                    export let initialData;
+                </script>
+                <Root>
+                    <div on:click={contentClick} id="back-item" style="width: 100vw; height: 100vh;">
+                        <Popover backdrop={initialData}>
+                            <div style="width: 100px; height: 200px;"></div>
+                        </Popover>
+                    </div>
+                </Root>
+            `,
+                { contentClick, initialData: `none` }
+            );
+
+            await click(`#back-item`);
+
+            expect(contentClick, `click through backdrop`).to.have.callCount(1);
+
+            updateProps({ initialData: `block` });
+
+            expect(await clickIfPossible(`#back-item`), `not clickable`).to.equal(false);
+            expect(contentClick, `click on blocked backdrop`).to.have.callCount(1);
         });
     });
 });

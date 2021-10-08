@@ -1,4 +1,4 @@
-import { Layer } from './layer';
+import { Layer, LayerProps } from './layer';
 import { popover, OverlayPosition } from '@zeejs/browser';
 import React, { ReactNode, useRef, useEffect, useMemo } from 'react';
 
@@ -10,6 +10,7 @@ export interface PopoverProps {
     avoidAnchor?: boolean;
     matchWidth?: boolean;
     matchHeight?: boolean;
+    backdrop?: LayerProps['backdrop'];
 }
 
 export const Popover = ({
@@ -20,6 +21,7 @@ export const Popover = ({
     avoidAnchor = false,
     matchWidth = false,
     matchHeight = false,
+    backdrop = `none`,
 }: PopoverProps) => {
     const placeholderRef = useRef<HTMLSpanElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
@@ -58,7 +60,7 @@ export const Popover = ({
     return (
         <span ref={placeholderRef}>
             {show ? (
-                <Layer overlap="window">
+                <Layer overlap="window" backdrop={backdrop}>
                     <div ref={overlayRef}>{children}</div>
                 </Layer>
             ) : null}

@@ -1,9 +1,10 @@
 import { Root, Popover, OverlayPosition } from '@zeejs/react';
 import { domElementMatchers } from './chai-dom-element';
 import { ReactTestDriver } from './react-test-driver';
+import { getInteractionApi } from '@zeejs/test-browser-bridge';
 import React from 'react';
 import chai, { expect } from 'chai';
-import sinon from 'sinon';
+import sinon, { stub } from 'sinon';
 import sinonChai from 'sinon-chai';
 import { waitFor } from 'promise-assist';
 chai.use(sinonChai);
@@ -11,6 +12,7 @@ chai.use(domElementMatchers);
 
 describe(`react popover`, () => {
     let testDriver: ReactTestDriver;
+    const { clickIfPossible, click } = getInteractionApi();
 
     before('setup test driver', () => (testDriver = new ReactTestDriver()));
     afterEach('clear test driver', () => {
@@ -295,6 +297,72 @@ describe(`react popover`, () => {
                 expect(popoverBounds.width, `width restricted again`).to.equal(50);
                 expect(popoverBounds.height, `height not restricted`).to.not.equal(60);
             });
+        });
+    });
+    describe(`backdrop`, () => {
+        it(`should default to interactive background`, async () => {
+            const contentClick = stub();
+            testDriver.render(() => (
+                <Root>
+                    <div
+                        id="back-item"
+                        onClick={contentClick}
+                        style={{ width: `100vw`, height: `100vh` }}
+                    />
+                    <Popover>
+                        <div style={{ width: `100px`, height: `200px` }}></div>
+                    </Popover>
+                </Root>
+            ));
+
+            await click(`#back-item`);
+
+            expect(contentClick).to.have.callCount(1);
+        });
+        it(`should accept custom backdrop`, async () => {
+            const contentClick = stub();
+            testDriver.render(() => (
+                <Root>
+                    <div
+                        id="back-item"
+                        onClick={contentClick}
+                        style={{ width: `100vw`, height: `100vh` }}
+                    />
+                    <Popover backdrop="block">
+                        <div style={{ width: `100px`, height: `200px` }}></div>
+                    </Popover>
+                </Root>
+            ));
+
+            expect(await clickIfPossible(`#back-item`), `not clickable`).to.equal(false);
+            expect(contentClick).to.have.callCount(0);
+        });
+        it.skip(`should update backdrop on prop change`, async () => {
+            const contentClick = stub();
+            const { setData } = testDriver.render<'none' | 'block'>(
+                (backdrop) => (
+                    <Root>
+                        <div
+                            id="back-item"
+                            onClick={contentClick}
+                            style={{ width: `100vw`, height: `100vh` }}
+                        />
+                        <Popover backdrop={backdrop}>
+                            <div style={{ width: `100px`, height: `200px` }}></div>
+                        </Popover>
+                    </Root>
+                ),
+                { initialData: `none` }
+            );
+
+            await click(`#back-item`);
+
+            expect(contentClick, `click through backdrop`).to.have.callCount(1);
+
+            setData(`block`);
+
+            expect(await clickIfPossible(`#back-item`), `not clickable`).to.equal(false);
+            expect(contentClick, `click on blocked backdrop`).to.have.callCount(1);
         });
     });
 });
