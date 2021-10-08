@@ -2,6 +2,7 @@ import { Root } from '@zeejs/react';
 import { Box } from './box';
 import { ModalDemo } from './demos/modal-demo';
 import { TooltipDemo } from './demos/tooltip-demo';
+import { PopoverDemo } from './demos/popover-demo';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -90,6 +91,15 @@ globalCSS.innerHTML = `
     .ModalDemo__modal > .Box__root {
         padding: 1em;
     }
+    .PopoverDemo__popoverContainer {
+        display: grid;
+        height: 100%;
+        max-height: 50vh;
+        grid-template-rows: 1fr auto;
+    }
+    .PopoverDemo__shrinkable {
+        overflow: auto;
+    }
     .Dialog__root {
         display: inline-block;
     }
@@ -129,6 +139,10 @@ const Demos = () => {
                 </ModalDemo>
                 <hr />
                 <TooltipDemo />
+                <hr />
+                <PopoverDemo>
+                    <Demos />
+                </PopoverDemo>
             </div>
         </>
     );

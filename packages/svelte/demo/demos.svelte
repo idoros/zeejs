@@ -2,6 +2,7 @@
     import { Root } from '../src';
     import ModalDemo from './demos/modal-demo.svelte';
     import TooltipDemo from './demos/tooltip-demo.svelte';
+    import PopoverDemo from './demos/popover-demo.svelte';
 </script>
 
 <style>
@@ -32,5 +33,9 @@
         </ModalDemo>
         <hr/>
         <TooltipDemo />
+        <hr/>
+        <PopoverDemo>
+            <svelte:self />
+        </PopoverDemo>
     </div>
 </div>
