@@ -10,6 +10,8 @@
         avoidAnchor: false,
         positionX: `center`,
         positionY: `after`,
+        matchWidth: false,
+        matchHeight: false,
     };
 
     function formSubmit(event) {
@@ -26,6 +28,8 @@
             avoidAnchor: popoverData.avoidAnchor,
             positionX: popoverData.positionX,
             positionY: popoverData.positionY,
+            matchWidth: popoverData.matchWidth,
+            matchHeight: popoverData.matchHeight,
         };
     }
 </script>
@@ -88,6 +92,26 @@
         <option value="end" label="end" />
         <option value="after" label="after" />
     </select>
+    <label>
+        match width
+        <input
+            type="checkbox"
+            checked={popoverData.matchWidth}
+            on:change={({ target }) =>
+                popoverData = { ...popoverData, matchWidth: target.checked }
+            }
+        />
+    </label>
+    <label>
+        match height
+        <input
+            type="checkbox"
+            checked={popoverData.matchHeight}
+            on:change={({ target }) =>
+                popoverData = { ...popoverData, matchHeight: target.checked }
+            }
+        />
+    </label>
     <button type="submit" style="height: 9em; width: 300px">
         {popoverData.isOpen ? `Popover is open` : `Open popover`}
         <Popover
@@ -95,6 +119,8 @@
             avoidAnchor={popoverData.avoidAnchor}
             positionX={popoverData.positionX}
             positionY={popoverData.positionY}
+            matchWidth={popoverData.matchWidth}
+            matchHeight={popoverData.matchHeight}
         >
             <Box shadow className="PopoverDemo__popoverContainer">
                 <details class="PopoverDemo__shrinkable">

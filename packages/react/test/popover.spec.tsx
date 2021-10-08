@@ -214,4 +214,87 @@ describe(`react popover`, () => {
         });
         it.skip(`should configure overflow modes (x,y,both,none)`);
     });
+    describe(`size`, () => {
+        it(`should keep original by default`, () => {
+            const { expectQuery } = testDriver.render(() => (
+                <Root>
+                    <div style={{ width: `50px`, height: `60px` }}>
+                        <Popover>
+                            <div id="popover" style={{ width: `100px`, height: `200px` }}></div>
+                        </Popover>
+                    </div>
+                </Root>
+            ));
+            const popover = expectQuery(`#popover`);
+
+            const popoverBounds = popover.getBoundingClientRect();
+            expect(popoverBounds.width, `width`).to.equal(100);
+            expect(popoverBounds.height, `height`).to.equal(200);
+        });
+        it(`should match anchor size`, async () => {
+            const { expectQuery } = testDriver.render(() => (
+                <Root>
+                    <div style={{ width: `50px`, height: `60px` }}>
+                        <Popover matchWidth={true} matchHeight={true}>
+                            <div id="popover" style={{ width: `100%`, height: `100%` }}></div>
+                        </Popover>
+                    </div>
+                </Root>
+            ));
+            const popover = expectQuery(`#popover`);
+
+            await waitFor(() => {
+                const popoverBounds = popover.getBoundingClientRect();
+                expect(popoverBounds.width, `width`).to.equal(50);
+                expect(popoverBounds.height, `height`).to.equal(60);
+            });
+        });
+        it(`should update size on prop change`, async () => {
+            const { expectQuery, setData } = testDriver.render<{
+                matchWidth: boolean;
+                matchHeight: boolean;
+            }>(
+                ({ matchWidth, matchHeight }) => (
+                    <Root>
+                        <div style={{ width: `50px`, height: `60px`, background: `red` }}>
+                            <Popover matchWidth={matchWidth} matchHeight={matchHeight}>
+                                <div
+                                    id="popover"
+                                    style={{ width: `100%`, height: `100%`, background: `green` }}
+                                >
+                                    x
+                                </div>
+                            </Popover>
+                        </div>
+                    </Root>
+                ),
+                {
+                    initialData: { matchWidth: true, matchHeight: true },
+                }
+            );
+            const popover = expectQuery(`#popover`);
+
+            await waitFor(() => {
+                const popoverBounds = popover.getBoundingClientRect();
+                expect(popoverBounds.width, `width`).to.equal(50);
+                expect(popoverBounds.height, `height`).to.equal(60);
+            });
+
+            setData({ matchWidth: false, matchHeight: true });
+
+            await waitFor(() => {
+                const popoverBounds = popover.getBoundingClientRect();
+                expect(popoverBounds.width, `width not restricted`).to.not.equal(50);
+                expect(popoverBounds.height, `height still restricted`).to.equal(60);
+            });
+
+            setData({ matchWidth: true, matchHeight: false });
+
+            await waitFor(() => {
+                const popoverBounds = popover.getBoundingClientRect();
+                expect(popoverBounds.width, `width restricted again`).to.equal(50);
+                expect(popoverBounds.height, `height not restricted`).to.not.equal(60);
+            });
+        });
+    });
 });

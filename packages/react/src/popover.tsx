@@ -4,18 +4,22 @@ import React, { ReactNode, useRef, useEffect, useMemo } from 'react';
 
 export interface PopoverProps {
     children: ReactNode;
+    show?: boolean;
     positionX?: OverlayPosition;
     positionY?: OverlayPosition;
-    show?: boolean;
     avoidAnchor?: boolean;
+    matchWidth?: boolean;
+    matchHeight?: boolean;
 }
 
 export const Popover = ({
     children,
+    show = true,
     positionX = 'center',
     positionY = 'after',
-    show = true,
     avoidAnchor = false,
+    matchWidth = false,
+    matchHeight = false,
 }: PopoverProps) => {
     const placeholderRef = useRef<HTMLSpanElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
@@ -36,6 +40,8 @@ export const Popover = ({
                 positionX,
                 positionY,
                 avoidAnchor,
+                matchWidth,
+                matchHeight,
             };
             opened
                 ? updateOptions(options)
@@ -47,7 +53,7 @@ export const Popover = ({
                       options
                   );
         }
-    }, [show, positionX, positionY, avoidAnchor]);
+    }, [show, positionX, positionY, avoidAnchor, matchWidth, matchHeight]);
     // ToDo: pass ref to layer - remove extra span
     return (
         <span ref={placeholderRef}>

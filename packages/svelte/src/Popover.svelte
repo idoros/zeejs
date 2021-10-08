@@ -3,10 +3,12 @@
     import { popover, overlayPosition } from '@zeejs/browser';
     import { onMount } from 'svelte';
 
+    export let show = true;
     export let positionX = 'center';
     export let positionY = 'after';
-    export let show = true;
     export let avoidAnchor = false;
+    export let matchWidth = false;
+    export let matchHeight = false;
 
     const { open, close, updateOptions, isOpen } = popover();
 
@@ -28,6 +30,8 @@
                 positionX,
                 positionY,
                 avoidAnchor,
+                matchWidth,
+                matchHeight,
             };
             opened
                 ? updateOptions(options)

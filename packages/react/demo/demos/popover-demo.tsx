@@ -10,6 +10,8 @@ export const PopoverDemo = ({ children }: { children: React.ReactNode }) => {
         avoidAnchor: false,
         positionX: `center` as OverlayPosition,
         positionY: `after` as OverlayPosition,
+        matchWidth: false,
+        matchHeight: false,
     });
 
     const formSubmit = React.useCallback(
@@ -29,6 +31,8 @@ export const PopoverDemo = ({ children }: { children: React.ReactNode }) => {
             avoidAnchor: popoverData.avoidAnchor,
             positionX: popoverData.positionX,
             positionY: popoverData.positionY,
+            matchWidth: popoverData.matchWidth,
+            matchHeight: popoverData.matchHeight,
         });
     }, [popoverData]);
 
@@ -80,7 +84,26 @@ export const PopoverDemo = ({ children }: { children: React.ReactNode }) => {
                     <option value="end" label="end" />
                     <option value="after" label="after" />
                 </select>
-                <label htmlFor={id + `-backdrop`}>backdrop</label>
+                <label>
+                    match width
+                    <input
+                        type="checkbox"
+                        checked={popoverData.matchWidth}
+                        onChange={({ target }) =>
+                            updateLayer((data) => ({ ...data, matchWidth: target.checked }))
+                        }
+                    ></input>
+                </label>
+                <label>
+                    match height
+                    <input
+                        type="checkbox"
+                        checked={popoverData.matchHeight}
+                        onChange={({ target }) =>
+                            updateLayer((data) => ({ ...data, matchHeight: target.checked }))
+                        }
+                    ></input>
+                </label>
                 <button type="submit" style={{ height: `9em`, width: `300px` }}>
                     {popoverData.isOpen ? `Popover is open` : `Open popover`}
                     <Popover
@@ -88,6 +111,8 @@ export const PopoverDemo = ({ children }: { children: React.ReactNode }) => {
                         avoidAnchor={popoverData.avoidAnchor}
                         positionX={popoverData.positionX}
                         positionY={popoverData.positionY}
+                        matchWidth={popoverData.matchWidth}
+                        matchHeight={popoverData.matchHeight}
                     >
                         <Box shadow className="PopoverDemo__popoverContainer">
                             <details className="PopoverDemo__shrinkable">

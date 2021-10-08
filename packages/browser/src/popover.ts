@@ -5,12 +5,16 @@ interface PopoverOptions {
     positionX: OverlayPosition;
     positionY: OverlayPosition;
     avoidAnchor: boolean;
+    matchWidth: boolean;
+    matchHeight: boolean;
 }
 
 const defaultOptions: PopoverOptions = {
     positionX: `center`,
     positionY: `after`,
     avoidAnchor: false,
+    matchWidth: false,
+    matchHeight: false,
 } as const;
 
 export const popover = () => {
@@ -20,8 +24,8 @@ export const popover = () => {
     const getOptions = () => ({
         x: options.positionX,
         y: options.positionY,
-        width: false,
-        height: false,
+        width: options.matchWidth,
+        height: options.matchHeight,
         onOverflow: (data: KeepInViewData) =>
             keepInView(data, { avoidAnchor: options.avoidAnchor }),
     });

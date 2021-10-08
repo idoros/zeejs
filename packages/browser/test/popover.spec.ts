@@ -211,4 +211,105 @@ describe.only(`popover`, () => {
             });
         });
     });
+    describe(`size`, () => {
+        it(`should keep original by default`, () => {
+            const { expectHTMLQuery } = testDriver.render(
+                () => `
+                <button id="anchor" style="width: 200px; height: 50px;">anchor</button>
+                <span id="overlay" style="width: 300px; height: 30px;">overlay</span>
+            `
+            );
+            const anchor = expectHTMLQuery(`#anchor`);
+            const overlay = expectHTMLQuery(`#overlay`);
+            const { open } = popover();
+
+            open({
+                anchor,
+                overlay,
+            });
+
+            const overlayRect = overlay.getBoundingClientRect();
+            expect(overlayRect.width, `width`).to.equal(300);
+            expect(overlayRect.height, `height`).to.equal(30);
+        });
+        it(`should match anchor size`, () => {
+            const { expectHTMLQuery } = testDriver.render(
+                () => `
+                <button id="anchor" style="width: 200px; height: 50px;">anchor</button>
+                <span id="overlay" style="width: 300px; height: 30px;">overlay</span>
+            `
+            );
+            const anchor = expectHTMLQuery(`#anchor`);
+            const overlay = expectHTMLQuery(`#overlay`);
+            const { open, close } = popover();
+
+            open(
+                {
+                    anchor,
+                    overlay,
+                },
+                {
+                    matchWidth: true,
+                    matchHeight: true,
+                }
+            );
+
+            let overlayRect = overlay.getBoundingClientRect();
+            expect(overlayRect.width, `width`).to.equal(200);
+            expect(overlayRect.height, `height`).to.equal(50);
+
+            close();
+
+            overlayRect = overlay.getBoundingClientRect();
+            expect(overlayRect.width, `width restored`).to.equal(300);
+            expect(overlayRect.height, `height restored`).to.equal(30);
+        });
+        it(`should update size on prop change`, async () => {
+            const { expectHTMLQuery } = testDriver.render(
+                () => `
+                <button id="anchor" style="width: 200px; height: 50px;">anchor</button>
+                <span id="overlay" style="width: 300px; height: 30px;">overlay</span>
+            `
+            );
+            const anchor = expectHTMLQuery(`#anchor`);
+            const overlay = expectHTMLQuery(`#overlay`);
+            const { open, updateOptions } = popover();
+
+            open(
+                {
+                    anchor,
+                    overlay,
+                },
+                {
+                    matchWidth: true,
+                    matchHeight: true,
+                }
+            );
+
+            let overlayRect = overlay.getBoundingClientRect();
+            expect(overlayRect.width, `width`).to.equal(200);
+            expect(overlayRect.height, `height`).to.equal(50);
+
+            updateOptions({
+                matchWidth: false,
+                matchHeight: true,
+            });
+
+            await waitFor(() => {
+                overlayRect = overlay.getBoundingClientRect();
+                expect(overlayRect.width, `width not restricted`).to.equal(300);
+                expect(overlayRect.height, `height still restricted`).to.equal(50);
+            });
+            updateOptions({
+                matchWidth: true,
+                matchHeight: false,
+            });
+
+            await waitFor(() => {
+                overlayRect = overlay.getBoundingClientRect();
+                expect(overlayRect.width, `width restricted again`).to.equal(200);
+                expect(overlayRect.height, `height not restricted`).to.equal(30);
+            });
+        });
+    });
 });
