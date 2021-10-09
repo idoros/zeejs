@@ -12,6 +12,9 @@ export interface PopoverProps {
     matchHeight?: boolean;
     backdrop?: LayerProps['backdrop'];
     onDisplayChange?: (isPositioned: boolean) => void;
+    onClickOutside?: LayerProps['onClickOutside'];
+    onFocusChange?: LayerProps['onFocusChange'];
+    onMouseIntersection?: LayerProps['onMouseIntersection'];
 }
 
 export const Popover = ({
@@ -24,6 +27,9 @@ export const Popover = ({
     matchHeight = false,
     backdrop = `none`,
     onDisplayChange = noop,
+    onClickOutside,
+    onFocusChange,
+    onMouseIntersection,
 }: PopoverProps) => {
     const placeholderRef = useRef<HTMLSpanElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
@@ -74,7 +80,13 @@ export const Popover = ({
     return (
         <span ref={placeholderRef}>
             {show ? (
-                <Layer overlap="window" backdrop={backdrop}>
+                <Layer
+                    overlap="window"
+                    backdrop={backdrop}
+                    onClickOutside={onClickOutside}
+                    onFocusChange={onFocusChange}
+                    onMouseIntersection={onMouseIntersection}
+                >
                     <div ref={overlayRef}>{children}</div>
                 </Layer>
             ) : null}

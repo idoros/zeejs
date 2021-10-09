@@ -11,6 +11,9 @@
     export let matchHeight = false;
     export let backdrop = `none`;
     export let onDisplayChange = ()=>{};
+    export let onClickOutside;
+    export let onFocusChange;
+    export let onMouseIntersection;
 
     const { open, close, updateOptions, isOpen } = popover();
 
@@ -62,6 +65,9 @@
         <Layer
             overlap="window"
             backdrop={backdrop}
+            onClickOutside={onClickOutside}
+            onFocusChange={onFocusChange}
+            onMouseIntersection={onMouseIntersection}
         >
             <div bind:this={overlayRef}>
                 <slot />

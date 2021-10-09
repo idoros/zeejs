@@ -12,7 +12,7 @@ chai.use(domElementMatchers);
 
 describe(`react popover`, () => {
     let testDriver: ReactTestDriver;
-    const { clickIfPossible, click } = getInteractionApi();
+    const { clickIfPossible, click, hover } = getInteractionApi();
 
     before('setup test driver', () => (testDriver = new ReactTestDriver()));
     afterEach('clear test driver', () => {
@@ -409,6 +409,75 @@ describe(`react popover`, () => {
             expect(onDisplayChange, `display off`).to.have.been.calledOnceWith(false);
 
             // ToDo: test unmount
+        });
+    });
+    describe(`interactions`, () => {
+        it(`should invoke onClickOutside when clicking out of popover`, async () => {
+            const onClickOutside = stub();
+            testDriver.render(() => (
+                <Root>
+                    <div
+                        id="root-node"
+                        style={{ width: `100px`, height: `100px`, background: `green` }}
+                    >
+                        <Popover onClickOutside={onClickOutside} positionX="after">
+                            <div
+                                id="popoverContent"
+                                style={{ width: `50px`, height: `50px`, background: `red` }}
+                            />
+                        </Popover>
+                    </div>
+                </Root>
+            ));
+            await click(`#root-node`, { force: true });
+            expect(onClickOutside, `click on root`).to.have.callCount(1);
+            await click(`#popoverContent`);
+            expect(onClickOutside, `click on root`).to.have.callCount(1);
+        });
+        it(`should invoke onFocusChange when focus moves in and out of popover`, async () => {
+            const onFocusChange = stub();
+            testDriver.render(() => (
+                <Root>
+                    <input id="root-input" />
+                    <Popover onFocusChange={onFocusChange} backdrop="none">
+                        <input id="layer-input" style={{ margin: `3em` }} />
+                    </Popover>
+                </Root>
+            ));
+            await click(`#layer-input`);
+            expect(onFocusChange, `focus in layer`).to.have.been.calledOnceWith(true);
+            onFocusChange.reset();
+            await click(`#root-input`);
+            expect(onFocusChange, `focus out of layer`).to.have.been.calledOnceWith(false);
+        });
+        it(`should invoke onMouseIntersection when mouse enters and leaves`, async () => {
+            const onMouseIntersection = stub();
+            testDriver.render(() => (
+                <Root>
+                    <div
+                        id="root-node"
+                        style={{ width: `100px`, height: `100px`, background: `green` }}
+                    >
+                        <Popover onMouseIntersection={onMouseIntersection} backdrop="none">
+                            <div
+                                id="layer-node"
+                                style={{ width: `50px`, height: `50px`, background: `red` }}
+                            />
+                        </Popover>
+                    </div>
+                </Root>
+            ));
+            await hover(`#layer-node`);
+            await waitFor(() => {
+                expect(onMouseIntersection, `catch mouse inside layer`).to.have.callCount(1);
+                expect(onMouseIntersection, `called with true`).to.have.been.calledWith(true);
+            });
+            onMouseIntersection.reset();
+            await hover(`#root-node`);
+            await waitFor(() => {
+                expect(onMouseIntersection, `catch mouse outside layer`).to.have.callCount(1);
+                expect(onMouseIntersection, `called with false`).to.have.been.calledWith(false);
+            });
         });
     });
 });
