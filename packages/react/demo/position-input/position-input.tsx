@@ -1,5 +1,5 @@
 import { getUniqueId } from '../unique-id';
-import { Dialog } from '../layers/dialog';
+import { Popover } from '@zeejs/react';
 import type { ModalPosition } from '@zeejs/react';
 import React from 'react';
 import { tabbable } from 'tabbable';
@@ -47,6 +47,17 @@ export const PositionInputButton = ({
         onChange(selectedValue);
     }, []);
 
+    const onDisplayChange = React.useCallback((isDisplayed: boolean) => {
+        if (isDisplayed && popupRef.current) {
+            const result = tabbable(popupRef.current, {
+                includeContainer: true,
+            }) as HTMLElement[];
+            if (result.length) {
+                result[0].focus();
+            }
+        }
+    }, []);
+
     return (
         <button
             id={id}
@@ -57,23 +68,15 @@ export const PositionInputButton = ({
         >
             {symbolMap[value]}
             {isOpen ? (
-                <Dialog
-                    relativeTo={id}
+                <Popover
                     backdrop="block"
+                    positionX="center"
+                    positionY="center"
                     onClickOutside={() => setOpen(false)}
-                    onPositioned={() => {
-                        if (popupRef.current) {
-                            const result = tabbable(popupRef.current, {
-                                includeContainer: true,
-                            }) as HTMLElement[];
-                            if (result.length) {
-                                result[0].focus();
-                            }
-                        }
-                    }}
+                    onDisplayChange={onDisplayChange}
                 >
                     <PositionInput ref={popupRef} value={value} onChange={onSelect} />
-                </Dialog>
+                </Popover>
             ) : null}
         </button>
     );
@@ -179,11 +182,11 @@ const underOf: Record<Position, Position> = {
 };
 const leftOf: Record<Position, Position> = {} as any;
 for (const [key, value] of Object.entries(rightOf)) {
-    leftOf[(value as unknown) as Position] = key as Position;
+    leftOf[value as unknown as Position] = key as Position;
 }
 const aboveOf: Record<Position, Position> = {} as any;
 for (const [key, value] of Object.entries(underOf)) {
-    aboveOf[(value as unknown) as Position] = key as Position;
+    aboveOf[value as unknown as Position] = key as Position;
 }
 const keyArrowMap: Record<number, Record<Position, Position>> = {
     37: leftOf,

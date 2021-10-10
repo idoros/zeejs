@@ -1,6 +1,5 @@
 <script>
     import { Root, Modal } from '../../src';
-    import { Position } from '../position-input/position';
     import Box from '../box.svelte';
     import PositionInputButton from '../position-input/position-input-button.svelte';
     import { getUniqueId } from '../unique-id';
