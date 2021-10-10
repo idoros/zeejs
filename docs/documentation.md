@@ -73,6 +73,14 @@ The handler is **not called** for a click on:
 -   a nested layer
 -   a backdrop above the layer
 
+## mouse-intersection
+
+When initiating a layer, an optional `onMouseIntersection` handler can be set. The handler is called with `isInside=true` whenever the mouse is moved into the area of the layer, or any nested layer within it, and with `isInside=false` when it leaves.
+
+## focus-change
+
+When initiating a layer, an optional `onFocusChange` handler can be set. The handler is called with `isFocused=true` whenever the focus is **moved into** the layer, or any nested layer within it, and with `isFocused=false` when it moved out.
+
 ## server rendering
 
 For implementations that support SSR, the layer content is rendered into the `origin element` on the server, and then moved or re-rendered into the correct `layer element` later on the client.

@@ -5,7 +5,7 @@
 
 <hr/>
 
-<img alt="test status" src="https://github.com/idoros/zeejs/workflows/test/badge.svg" />  
+<img alt="test status" src="https://github.com/idoros/zeejs/workflows/test/badge.svg" />
 
 ## what's in the box
 
@@ -15,8 +15,11 @@
     -   <kbd>Tab</kbd> between layers
     -   trap focus above backdrop
     -   re-focus when blocking layer close
+    -   focusChange notification when focus outside / inside logical layer
 -   **click outside** - notification for click outside of logical layer
+-   **mouse interaction** - notification for mouse enter / leave of logical layer
 -   **server rendering** - single pass nested rendering of layers in the server
+-   **component primitives** - Tooltip, Popover, Modal
 -   **typed** - built with [TypeScript](https://www.typescriptlang.org/)
 -   **tested** - tested in a browser
 -   **components** - published for multiple libraries / frameworks ([React](https://github.com/idoros/zeejs/tree/master/packages/react), [Svelte](https://github.com/idoros/zeejs/tree/master/packages/svelte) & [more to come...](https://github.com/idoros/zeejs/issues/13))
@@ -42,6 +45,6 @@ This is notable in 2 areas:
 
 ## future road map
 
--   **high level primitives** - Modal / Dialog / Alert / Tooltip / (Panel?)
 -   **ARIA support** - build in accessibility support
+-   **style support** - control overlay, tooltip/popover arrow
 -   **ordering logic** - application level re-ordering of layers
