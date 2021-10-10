@@ -18,8 +18,11 @@
     -   <kbd>Tab</kbd> between layers
     -   trap focus above backdrop
     -   re-focus when blocking layer close
+    -   focusChange notification when focus outside / inside logical layer
 -   **click outside** - notification for click outside of logical layer
+-   **mouse interaction** - notification for mouse enter / leave of logical layer
 -   **server rendering** - single pass nested rendering of layers in the server
+-   **component primitives** - Tooltip, Popover, Modal
 -   **typed** - built with [TypeScript](https://www.typescriptlang.org/)
 -   **tested** - tested in a browser
 
@@ -63,11 +66,13 @@ The component will generate a new zeejs layer above layer it is rendered in.
 
 **props:**
 
-| name             | type                        | default  | required | description                                                                                                           |
-| ---------------- | --------------------------- | -------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
-| `backdrop`       | "none" \| "block" \| "hide" | "none"   | false    | background behavior; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#backdrop)           |
-| `overlap`        | "window" \| HTMLElement     | "window" | false    | layer bounds reference                                                                                                |
-| `onClickOutside` | () => void                  |          | false    | invoked on click outside; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#click-outside) |
+| name                  | type                         | default  | required | description                                                                                                                                 |
+| --------------------- | ---------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `backdrop`            | "none" \| "block" \| "hide"  | "none"   | false    | background behavior; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#backdrop)                                 |
+| `overlap`             | "window" \| HTMLElement      | "window" | false    | layer bounds reference                                                                                                                      |
+| `onClickOutside`      | () => void                   |          | false    | invoked on click outside; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#click-outside)                       |
+| `onMouseIntersection` | (isInside: boolean) => void  |          | false    | invoked when mouse leaves or enters layer; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#mouse-intersection) |
+| `onFocusChange`       | (isFocused: boolean) => void |          | false    | invoked when focus is moved into/out of layer; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#focus-change)   |
 
 **code example:**
 
@@ -124,3 +129,54 @@ will output (assuming render in the application layer):
     </zeejs-layer>
 </div>
 ```
+
+### `<Modal>` component
+
+The modal primitive display content that is not affected by the scroll of lower layers.
+
+**props:**
+
+| name                  | type                                                                                                           | default  | required | description                                                                                                                                 |
+| --------------------- | -------------------------------------------------------------------------------------------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `backdrop`            | "none" \| "block" \| "hide"                                                                                    | "block"  | false    | background behavior; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#backdrop)                                 |
+| `position`            | "topLeft" \| "top" \| "topRight" \| "left" \| "center" \| "right" \| "bottomLeft" \| "bottom" \| "bottomRight" | "center" | false    | fixed align position                                                                                                                        |
+| `show`                | boolean                                                                                                        | true     | false    | flag if the layer should be displayed                                                                                                       |
+| `onClickOutside`      | () => void                                                                                                     |          | false    | invoked on click outside; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#click-outside)                       |
+| `onMouseIntersection` | (isInside: boolean) => void                                                                                    |          | false    | invoked when mouse leaves or enters layer; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#mouse-intersection) |
+| `onFocusChange`       | (isFocused: boolean) => void                                                                                   |          | false    | invoked when focus is moved into/out of layer; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#focus-change)   |
+| `class`           | string                                                                                                         | ""       | false    | CSS class name to add to the modal box                                                                                                      |
+| `style`               | React.CSSProperties                                                                                            | {}       | false    | CSS inline style to add to the modal box                                                                                                    |
+
+### `<Tooltip>` component
+
+The tooltip primitive displays hovered content that is bound to the UI that opened it, usually used to label or describe it.
+
+**props:**
+
+| name         | type                                                | default  | required                 | description      |
+| ------------ | --------------------------------------------------- | -------- | ------------------------ | ---------------- |
+| `mouseDelay` | number                                              | 500      | delay for mouse out / in |                  |
+| `positionX`  | "before" \| "start" \| "center" \| "end" \| "after" | "center" | false                    | align X position |
+| `positionY`  | "before" \| "start" \| "center" \| "end" \| "after" | "before" | false                    | align X position |
+
+### `<Popover>` component
+
+The modal primitive display content that is not affected by the scroll of lower layers while being bound to the UI the opened it.
+
+**props:**
+
+| name                  | type                                                | default  | required | description                                                                                                                                 |
+| --------------------- | --------------------------------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `backdrop`            | "none" \| "block" \| "hide"                         | "block"  | false    | background behavior; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#backdrop)                                 |
+| `positionX`           | "before" \| "start" \| "center" \| "end" \| "after" | "center" | false    | align X position                                                                                                                            |
+| `positionY`           | "before" \| "start" \| "center" \| "end" \| "after" | "after"  | false    | align Y position                                                                                                                            |
+| `avoidAnchor`         | boolean                                             | false    | false    | attempt to not overlap the anchor that opened it while pushed in by overflow                                                                |
+| `matchWidth`          | boolean                                             | false    | false    | force the popover box to be in the width of the anchor                                                                                      |
+| `matchHeight`         | boolean                                             | false    | false    | force the popover box to be in the height of the anchor                                                                                     |
+| `show`                | boolean                                             | true     | false    | flag if the layer should be displayed                                                                                                       |
+| `onClickOutside`      | () => void                                          |          | false    | invoked on click outside; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#click-outside)                       |
+| `onMouseIntersection` | (isInside: boolean) => void                         |          | false    | invoked when mouse leaves or enters layer; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#mouse-intersection) |
+| `onFocusChange`       | (isFocused: boolean) => void                        |          | false    | invoked when focus is moved into/out of layer; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#focus-change)   |
+| `onDisplayChange`     | (isPositioned: boolean) => void                     |          | false    | invoked when the popover is displayed (after positioning) or removed from DOM                                                               |
+| `class`           | string                                              | ""       | false    | CSS class name to add to the popover box                                                                                                      |
+| `style`               | React.CSSProperties                                 | {}       | false    | CSS inline style to add to the popover box                                                                                                    |
