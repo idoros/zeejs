@@ -1,6 +1,6 @@
 {
     "name": "@zeejs/browser",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "HTML layering",
     "author": "Ido Rosenthal",
     "main": "./dist/index.js",
@@ -9,7 +9,7 @@
         "test:dev": "cross-env DEV=true PWDEBUG=1 node -r @ts-tools/node/r ./test/setup.ts"
     },
     "dependencies": {
-        "@zeejs/core": "^0.1.0",
+        "@zeejs/core": "^0.2.0",
         "tabbable": "^5.2.1"
     },
     "files": [
