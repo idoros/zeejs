@@ -2,7 +2,7 @@
     import { getUniqueId } from '../unique-id';
     import { Position, keyArrowMap, symbolMap } from './position';
     import PositionInput from './position-input.svelte';
-    import Dialog from '../layers/dialog.svelte';
+    import { Popover } from '@zeejs/svelte';
     import { tabbable } from 'tabbable';
 
     export let id = getUniqueId();
@@ -25,6 +25,16 @@
         isOpen = false;
         onChange(selectedValue);
     }
+
+    function onDisplayChange(isDisplay) {
+        debugger;
+        if(popup) {
+            const result = tabbable(popup, { includeContainer: true });
+            if (result.length) {
+                result[0].focus();
+            }
+        }
+    }
 </script>
 
 <style>
@@ -41,19 +51,14 @@
     type="button">
     {symbolMap[value]}
     {#if isOpen}
-        <Dialog
-            relativeTo={id}
+        <Popover
             backdrop="block"
+            positionX="center"
+            positionY="center"
             onClickOutside={close}
-            onPositioned={() => {
-                if (popup) {
-                    const result = tabbable(popup, { includeContainer: true });
-                    if (result.length) {
-                        result[0].focus();
-                    }
-                }
-            }}>
+            onDisplayChange={onDisplayChange}
+        >
             <PositionInput bind:root={popup} {value} onChange={onSelect} />
-        </Dialog>
+        </Popover>
     {/if}
 </button>
