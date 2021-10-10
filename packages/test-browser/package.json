@@ -1,6 +1,6 @@
 {
     "name": "@zeejs/test-browser",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "run tests within browser with access to playwright API based on mocha-pup",
     "author": "Ido Rosenthal",
     "main": "./dist/index.js",
@@ -27,8 +27,8 @@
         "webpack-dev-middleware": "^5.2.1"
     },
     "devDependencies": {
-        "@types/mocha": "^9.0.0",
         "@types/express": "^4.17.13",
+        "@types/mocha": "^9.0.0",
         "@types/pixelmatch": "^5.2.4",
         "@types/pngjs": "^6.0.1",
         "@types/webpack-dev-middleware": "^5.0.2",
