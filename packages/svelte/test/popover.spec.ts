@@ -519,4 +519,52 @@ describe(`svelte popover`, () => {
             });
         });
     });
+    describe(`style`, () => {
+        it(`should pass CSS class`, () => {
+            const { expectQuery } = testDriver.render(
+                `
+                <script>
+                    import {Root, Popover} from '@zeejs/svelte';
+                </script>
+                <style>
+                    :global(.popover-custom-class) {
+                        width: 200px;
+                        height: 300px;
+                    }
+                </style>
+                <Root>
+                    <Popover class="popover-custom-class">
+                        <div id="popoverContent" style="width: 100%; height: 100%;"></div>
+                    </Popover>
+                </Root>
+            `
+            );
+            const popoverContent = expectQuery(`#popoverContent`);
+            const popoverBounds = popoverContent.getBoundingClientRect();
+            expect(popoverBounds).to.contain({
+                width: 200,
+                height: 300,
+            });
+        });
+        it(`should pass CSS style`, () => {
+            const { expectQuery } = testDriver.render(
+                `
+                <script>
+                    import {Root, Popover} from '@zeejs/svelte';
+                </script>
+                <Root>
+                    <Popover style="width: 200px; height: 300px;">
+                        <div id="popoverContent" style="width: 100%; height: 100%;"></div>
+                    </Popover>
+                </Root>
+            `
+            );
+            const popoverContent = expectQuery(`#popoverContent`);
+            const popoverBounds = popoverContent.getBoundingClientRect();
+            expect(popoverBounds).to.contain({
+                width: 200,
+                height: 300,
+            });
+        });
+    });
 });

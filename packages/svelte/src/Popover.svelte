@@ -3,6 +3,9 @@
     import { popover, overlayPosition } from '@zeejs/browser';
     import { onMount } from 'svelte';
 
+    let className
+    export { className as class };
+    export let style;
     export let show = true;
     export let positionX = 'center';
     export let positionY = 'after';
@@ -69,7 +72,10 @@
             onFocusChange={onFocusChange}
             onMouseIntersection={onMouseIntersection}
         >
-            <div bind:this={overlayRef}>
+            <div 
+                bind:this={overlayRef}
+                class={className}
+                style={style}>
                 <slot />
             </div>
         </Layer>

@@ -4,6 +4,8 @@ import React, { ReactNode, useRef, useEffect, useMemo } from 'react';
 
 export interface PopoverProps {
     children: ReactNode;
+    className?: string;
+    style?: React.CSSProperties;
     show?: boolean;
     positionX?: OverlayPosition;
     positionY?: OverlayPosition;
@@ -19,6 +21,8 @@ export interface PopoverProps {
 
 export const Popover = ({
     children,
+    className,
+    style,
     show = true,
     positionX = 'center',
     positionY = 'after',
@@ -87,7 +91,9 @@ export const Popover = ({
                     onFocusChange={onFocusChange}
                     onMouseIntersection={onMouseIntersection}
                 >
-                    <div ref={overlayRef}>{children}</div>
+                    <div ref={overlayRef} className={className} style={style}>
+                        {children}
+                    </div>
                 </Layer>
             ) : null}
         </span>
