@@ -6,8 +6,15 @@ export function watchClickOutside(
     topLayer: DOMLayer,
     backdrop: BackdropElements
 ) {
+    let pointerDownLayers: ReturnType<DOMLayer['generateDisplayList']> | null = null;
+    const onPointerDown = () => {
+        // set available layers while mousedown to prevent any layer that
+        // is created between mousedown and click to have it's click-outside called
+        pointerDownLayers = topLayer.generateDisplayList();
+    };
     const onClick = (event: MouseEvent) => {
-        const layers = topLayer.generateDisplayList();
+        const layers = pointerDownLayers || topLayer.generateDisplayList();
+        pointerDownLayers = null;
         const target = event.target as HTMLElement;
         const isBackdropClicked = target === backdrop.block;
         const backdropParentIndex = isBackdropClicked ? Number(backdrop.block.style.zIndex) - 1 : 0;
@@ -42,9 +49,12 @@ export function watchClickOutside(
             settings.onClickOutside!();
         }
     };
+
+    wrapper.addEventListener(`pointerdown`, onPointerDown, { capture: true });
     wrapper.addEventListener(`click`, onClick, { capture: true });
     return {
         stop() {
+            wrapper.removeEventListener(`pointerdown`, onPointerDown);
             wrapper.removeEventListener(`click`, onClick);
         },
     };
