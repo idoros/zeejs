@@ -45,6 +45,35 @@ describe(`click-outside`, () => {
         expect(onClickOutside, `no dispatch for layer click`).to.have.callCount(1);
     });
 
+    it(`should pass the target element`, async function () {
+        this.timeout(3000);
+        const onClickOutside = stub();
+        const backdrop = createBackdropParts();
+        const { container, expectQuery } = testDriver.render(
+            () => `
+            <div id="root-node" style="width: 100px; height: 100px; background: green;">
+                <div id="root-inner" style="width: 10px; height: 10px; background: yellow;"></div>
+            </div>
+        `
+        );
+        const rootLayer = createRoot();
+        const rootNode = expectQuery(`#root-node`);
+        const rootInner = expectQuery(`#root-inner`);
+        rootLayer.element.appendChild(rootNode);
+        rootLayer.createLayer({ settings: { onClickOutside } });
+        updateLayers(container, rootLayer, backdrop);
+
+        watchClickOutside(container, rootLayer, backdrop);
+
+        await click(`#root-node`);
+
+        expect(onClickOutside.getCall(0).args, `root target`).to.eql([rootNode]);
+
+        await click(`#root-inner`);
+
+        expect(onClickOutside.getCall(1).args, `root inner`).to.eql([rootInner]);
+    });
+
     it(`should not be called when an internal layer is clicked`, async () => {
         const onShallowClickOutside = stub();
         const onDeepClickOutside = stub();

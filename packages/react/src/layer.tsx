@@ -8,7 +8,7 @@ export interface LayerProps {
     children: ReactNode;
     overlap?: `window` | HTMLElement;
     backdrop?: `none` | `block` | `hide`;
-    onClickOutside?: () => void;
+    onClickOutside?: (target: EventTarget) => void;
     onMouseIntersection?: (isInside: boolean) => void;
     onFocusChange?: (isFocused: boolean) => void;
 }

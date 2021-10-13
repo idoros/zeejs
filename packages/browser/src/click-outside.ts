@@ -46,7 +46,7 @@ export function watchClickOutside(
         }
         // inform click outside
         for (const { settings } of layersToInform) {
-            settings.onClickOutside!();
+            settings.onClickOutside!(target);
         }
     };
 

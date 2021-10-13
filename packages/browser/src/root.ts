@@ -7,7 +7,7 @@ export const overlapBindConfig = Symbol(`overlap-bind`);
 export interface LayerSettings {
     overlap: `window` | HTMLElement;
     backdrop: `none` | `block` | `hide`;
-    onClickOutside?: () => void;
+    onClickOutside?: (target: EventTarget) => void;
     onMouseIntersection?: () => void;
     onFocusChange?: () => void;
     generateElement: boolean;
