@@ -176,4 +176,38 @@ describe(`click-outside`, () => {
 
         expect(onClickOutsideUnder, `no dispatch for layer under backdrop`).to.have.callCount(0);
     });
+
+    it(`should not be called for a layer created while pointer is down`, () => {
+        const onLayerClickOutside = stub();
+        const backdrop = createBackdropParts();
+        const { container, expectQuery } = testDriver.render(
+            () => `
+            <div id="root-node" style="width: 100px; height: 100px; background: green;"></div>
+        `
+        );
+        const rootLayer = createRoot();
+        watchClickOutside(container, rootLayer, backdrop);
+        rootLayer.element.appendChild(expectQuery(`#root-node`));
+
+        // user: pointer down
+        container.dispatchEvent(new MouseEvent(`pointerdown`, { bubbles: true }));
+
+        // create layer (e.g. on some focus)
+        rootLayer.createLayer({
+            settings: { onClickOutside: onLayerClickOutside },
+        });
+        updateLayers(container, rootLayer, backdrop);
+
+        // user: pointer up cause click
+        rootLayer.element.dispatchEvent(new MouseEvent(`click`));
+
+        // no click outside is reported
+        expect(onLayerClickOutside, `no click outside`).to.have.callCount(0);
+
+        // user: click again
+        rootLayer.element.dispatchEvent(new MouseEvent(`click`));
+
+        // click outside reported
+        expect(onLayerClickOutside, `click outside`).to.have.callCount(1);
+    });
 });
