@@ -1,4 +1,4 @@
-import { createLayer, Layer } from '@zeejs/core';
+import { createLayer, Layer, TopLayerOptions } from '@zeejs/core';
 import { layoutOverlay } from './layout-overlay';
 import { isBrowser } from './utils';
 
@@ -35,7 +35,7 @@ export const defaultLayerSettings: LayerSettings = {
 export function createRoot({
     onChange,
 }: {
-    onChange?: () => void;
+    onChange?: TopLayerOptions<LayerExtended, LayerSettings>[`onChange`];
 } = {}) {
     let idCounter = 0;
     const rootLayer = createLayer({
@@ -53,16 +53,12 @@ export function createRoot({
                 }
                 this.element = element;
                 initLayerElement(this);
-                if (onChange) {
-                    onChange();
-                }
+                onChange?.(`create`, this);
             },
         } as LayerExtended,
         defaultSettings: defaultLayerSettings,
-        onChange() {
-            if (onChange) {
-                onChange();
-            }
+        onChange(reason, layer) {
+            onChange?.(reason, layer);
         },
         init(layer, settings) {
             layer.state = {

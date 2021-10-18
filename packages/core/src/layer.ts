@@ -11,7 +11,7 @@ export type TopLayerOptions<T, S> = {
     parentLayer?: Layer<T, S>;
     init?: (layer: Layer<T, S>, settings: S) => void;
     destroy?: (layer: Layer<T, S>) => void;
-    onChange?: () => void;
+    onChange?: (reason: `create` | `remove`, layer: Layer<T, S>) => void;
     extendLayer?: T;
     defaultSettings?: S;
     settings?: Partial<S>;
@@ -38,11 +38,11 @@ export function createLayer<T, S>(
         createLayer: (nestedOptions = {}) => {
             const childLayer = createLayer({
                 parentLayer: layer,
-                onChange: () => {
+                onChange: (reason, layer) => {
                     if (nestedOptions.onChange) {
                         nestedOptions.onChange();
                     }
-                    onChange();
+                    onChange(reason, layer);
                 },
                 extendLayer,
                 init,
@@ -51,7 +51,7 @@ export function createLayer<T, S>(
                 settings: nestedOptions.settings,
             });
             children.push(childLayer);
-            onChange();
+            onChange(`create`, childLayer);
             return childLayer;
         },
         removeLayer: (layer) => {
@@ -59,7 +59,7 @@ export function createLayer<T, S>(
             if (layerIndex !== -1) {
                 children.splice(layerIndex, 1);
                 layer[destroyLayer]();
-                onChange();
+                onChange(`remove`, layer);
             }
         },
         [destroyLayer]: () => {

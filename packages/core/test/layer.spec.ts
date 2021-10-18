@@ -19,6 +19,8 @@ describe(`layer`, () => {
                 layerB,
             ]);
             expect(rootChanges, `notify on 2 layers added`).to.have.callCount(2);
+            expect(rootChanges.getCall(0).args, `notify 1st`).to.eql([`create`, layerA]);
+            expect(rootChanges.getCall(1).args, `notify 2nd`).to.eql([`create`, layerB]);
         });
 
         it(`should create deep nested layers`, () => {
@@ -68,6 +70,22 @@ describe(`layer`, () => {
             expect(root.parentLayer, `root`).to.equal(null);
             expect(level2.parentLayer, `level2`).to.equal(root);
             expect(level3.parentLayer, `level3`).to.equal(level2);
+        });
+
+        it(`should call onChange with removed layers`, () => {
+            const rootChanges = stub();
+            const parentChanges = stub();
+            const root = createLayer({ onChange: rootChanges });
+            const parentLayer = root.createLayer({ onChange: parentChanges });
+            parentLayer.createLayer();
+            rootChanges.reset();
+
+            root.removeLayer(parentLayer);
+
+            expect(rootChanges, `notify on 2 layers removed`).to.been.calledOnceWith(
+                `remove`,
+                parentLayer
+            );
         });
     });
 
