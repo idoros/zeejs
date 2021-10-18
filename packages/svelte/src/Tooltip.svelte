@@ -45,7 +45,7 @@
         <Layer
             onFocusChange={tooltipLogic.flagOverlayFocus}
             onMouseIntersection={tooltipLogic.flagMouseOverOverlay}
-            onClickOutside={() => tooltipLogic.flagOverlayFocus(false)}
+            onClickOutside={tooltipLogic.flagClickOutside}
         >
             <div bind:this={overlayRef} class={tooltipLogic.initialOverlayCSSClass}>
                 <slot />
