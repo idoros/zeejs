@@ -510,6 +510,41 @@ describe(`react root-and-layer`, () => {
             expect(errorSpy, `no react error`).to.have.callCount(0);
         });
 
+        it(`should focus lower layer when a focused layer is removed`, async () => {
+            const warnSpy = spy(console, `warn`);
+            const errorSpy = spy(console, `error`);
+            const { expectHTMLQuery, setData } = testDriver.render<boolean>(
+                (renderLayer) => (
+                    <Root>
+                        <input id="bgInput" />
+                        {renderLayer ? (
+                            <Layer>
+                                <input id="layerInput" style={{ margin: `100px` }} />
+                            </Layer>
+                        ) : null}
+                    </Root>
+                ),
+                { initialData: false }
+            );
+            const bgInput = expectHTMLQuery(`#bgInput`);
+            bgInput.focus();
+
+            setData(true);
+
+            const layerInput = expectHTMLQuery(`#layerInput`);
+            layerInput.focus();
+
+            setData(false);
+
+            await waitFor(() => {
+                expect(document.activeElement, `refocus input`).domElement().equal(bgInput);
+            });
+            /* blur/re-focus is delayed because React listens for blur of rendered elements during render.
+            just check that no logs have been called. */
+            expect(warnSpy, `no react warning`).to.have.callCount(0);
+            expect(errorSpy, `no react error`).to.have.callCount(0);
+        });
+
         it(`should report on focus change`, async () => {
             const onFocusChange = stub();
             testDriver.render(() => (

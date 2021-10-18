@@ -12,12 +12,13 @@
     let wrapper;
     let rootLayerElement;
     const backdrop = createBackdropParts();
-    const onChange = () => {
+    const onChange = (reason, layer) => {
         if (!wrapper) {
             return;
         }
         rootLayer.element = rootLayerElement;
-        updateLayers(wrapper, rootLayer, backdrop, { asyncFocusChange: true });
+        const forceFocus = reason === `remove` && layer.state.focusInside;
+        updateLayers(wrapper, rootLayer, backdrop, { asyncFocusChange: true, forceFocus });
     };
     const rootLayer = createRoot({ onChange });
 

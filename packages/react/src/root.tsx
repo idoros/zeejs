@@ -37,13 +37,14 @@ export const Root = ({ className, style, children }: RootProps) => {
         style.innerText = css;
         const parts = { style: style as HTMLStyleElement, ...createBackdropParts() };
         const rootLayer = createRoot({
-            onChange() {
+            onChange(reason, layer) {
                 const wrapper = rootRef.current;
                 if (!wrapper) {
                     return;
                 }
-                // buffer delay blur/re-focus because Layer renders and updates during render
-                updateLayers(wrapper, rootLayer, parts, { asyncFocusChange: true });
+                const forceFocus = reason === `remove` && layer.state.focusInside;
+                // delay blur/re-focus because Layer renders and updates during render
+                updateLayers(wrapper, rootLayer, parts, { asyncFocusChange: true, forceFocus });
             },
         });
         return { rootLayer, parts };
