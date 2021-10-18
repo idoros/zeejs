@@ -15,7 +15,6 @@ export function createBackdropParts(): BackdropElements {
 
 type Focusable = HTMLElement | SVGElement;
 
-const lastFocusMap = new WeakMap<Element, Focusable>();
 const asyncFocusChangePromise = new WeakMap<
     Element,
     {
@@ -43,7 +42,6 @@ export async function updateLayers(
     { hide, block }: BackdropElements,
     asyncFocusChange?: boolean
 ): Promise<void> {
-    const focusedElement = (document.activeElement as unknown) as Focusable | null;
     const layers = topLayer.generateDisplayList();
     let blocking: HTMLElement | null = null;
     let hiding: HTMLElement | null = null;
@@ -90,31 +88,30 @@ export async function updateLayers(
         wrapper.insertBefore(block, blocking);
         block.style.zIndex = blocking.style.zIndex;
     }
-    // find and save reference for active element in inert layer
+    // reference active element in layer + inert check
+    const focusedElement = (document.activeElement as unknown) as Focusable | null;
     let elementToBlur: void | Focusable;
     let elementToFocus: void | Focusable;
+    let isLayerFocused = false;
     if (focusedElement) {
         const focusedLayer = findContainingLayer(focusedElement);
+        isLayerFocused = !!focusedLayer;
         if (focusedLayer && focusedLayer.hasAttribute(`inert`)) {
-            lastFocusMap.set(focusedLayer, focusedElement);
             elementToBlur = focusedElement;
         }
     }
     // find re-focus last input from activated layer
-    const currentlyFocused = !!(
-        document.activeElement && findContainingLayer(document.activeElement)
-    );
-    if (!currentlyFocused && activatedLayers.length) {
-        // top layer last
-        const sortedLayers = activatedLayers.sort(
-            (a, b) => Number(a.style.zIndex) - Number(b.style.zIndex)
-        );
+    if (!isLayerFocused && activatedLayers.length) {
+        // search layer with previously focused element
         let refocusElement: Focusable | void;
-        while (!refocusElement && sortedLayers.length) {
-            const currentLayer = sortedLayers.pop()!;
-            const lastInput = lastFocusMap.get(currentLayer);
-            if (lastInput) {
-                refocusElement = lastInput;
+        for (let i = layers.length - 1; i >= 0; --i) {
+            const layer = layers[i];
+            if (layer.element.hasAttribute(`inert`)) {
+                break;
+            }
+            if (layer.state.lastFocusedElement) {
+                refocusElement = layer.state.lastFocusedElement;
+                break;
             }
         }
         if (refocusElement) {

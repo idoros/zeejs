@@ -16,7 +16,11 @@ export interface LayerExtended {
     id: string;
     element: HTMLElement;
     settings: LayerSettings;
-    state: { mouseInside: boolean; focusInside: boolean };
+    state: {
+        mouseInside: boolean;
+        focusInside: boolean;
+        lastFocusedElement: HTMLElement | SVGElement | null;
+    };
     setElement: (this: DOMLayer, element: HTMLElement) => void;
     [overlapBindConfig]: ReturnType<typeof layoutOverlay>;
 }
@@ -36,7 +40,7 @@ export function createRoot({
     let idCounter = 0;
     const rootLayer = createLayer({
         extendLayer: {
-            element: (null as unknown) as HTMLElement,
+            element: null as unknown as HTMLElement,
             settings: defaultLayerSettings,
             setElement: function (element: HTMLElement) {
                 if (this.element) {
@@ -64,6 +68,7 @@ export function createRoot({
             layer.state = {
                 mouseInside: false,
                 focusInside: false,
+                lastFocusedElement: null,
             };
             layer.settings = settings;
             layer.id = `zeejs-layer-${idCounter++}`;

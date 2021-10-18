@@ -45,22 +45,22 @@ const createOnFocusHandler = (topLayer: DOMLayer) => {
                 }
             }
         }
-        if (topLayer) {
-            const layers = topLayer.generateDisplayList();
-            const activeElement = document.activeElement;
-            const currentLayerElement = activeElement ? findContainingLayer(activeElement) : null;
-            const focusedLayers = new Set<DOMLayer>();
-            for (const layer of layers.reverse()) {
-                if (layer.element === currentLayerElement) {
-                    let focusedLayer: DOMLayer | null = layer;
-                    while (focusedLayer) {
-                        focusedLayers.add(focusedLayer);
-                        updateLayer(focusedLayer, true);
-                        focusedLayer = focusedLayer.parentLayer;
-                    }
-                } else if (!focusedLayers.has(layer)) {
-                    updateLayer(layer, false);
+        // update layers focus state
+        const layers = topLayer.generateDisplayList();
+        const activeElement = document.activeElement;
+        const currentLayerElement = activeElement ? findContainingLayer(activeElement) : null;
+        const focusedLayers = new Set<DOMLayer>();
+        for (const layer of layers.reverse()) {
+            if (layer.element === currentLayerElement) {
+                layer.state.lastFocusedElement = activeElement as HTMLElement; // ToDo: fix type
+                let focusedLayer: DOMLayer | null = layer;
+                while (focusedLayer) {
+                    focusedLayers.add(focusedLayer);
+                    updateLayer(focusedLayer, true);
+                    focusedLayer = focusedLayer.parentLayer;
                 }
+            } else if (!focusedLayers.has(layer)) {
+                updateLayer(layer, false);
             }
         }
     };

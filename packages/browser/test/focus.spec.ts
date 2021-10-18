@@ -11,6 +11,52 @@ describe(`focus`, () => {
     before('setup test driver', () => (testDriver = new HTMLTestDriver()));
     afterEach('clear test driver', () => testDriver.clean());
 
+    it(`should keep last focused element reference on layer`, () => {
+        const { expectHTMLQuery, container } = testDriver.render(
+            () => `
+            <div>
+                <zeejs-layer id="root">
+                    <input id="rootInput1" />
+                    <input id="rootInput2" />
+                </zeejs-layer>
+                <zeejs-layer id="layer" >
+                    <input id="layerInput1" />
+                    <input id="layerInput2" />
+                </zeejs-layer>
+            </div>
+        `
+        );
+        const root = createRoot();
+        const layer = root.createLayer();
+        root.element = expectHTMLQuery(`#root`);
+        layer.element = expectHTMLQuery(`#layer`);
+
+        watchFocus(container, root);
+
+        expect(root.state.lastFocusedElement, `root init`).to.eql(null);
+        expect(layer.state.lastFocusedElement, `root init`).to.eql(null);
+
+        expectHTMLQuery(`#rootInput1`).focus();
+        expectHTMLQuery(`#layerInput1`).focus();
+
+        expect(root.state.lastFocusedElement, `root focus 1`).to.eql(
+            expectHTMLQuery(`#rootInput1`)
+        );
+        expect(layer.state.lastFocusedElement, `root focus 1`).to.eql(
+            expectHTMLQuery(`#layerInput1`)
+        );
+
+        expectHTMLQuery(`#rootInput2`).focus();
+        expectHTMLQuery(`#layerInput2`).focus();
+
+        expect(root.state.lastFocusedElement, `root focus 2`).to.eql(
+            expectHTMLQuery(`#rootInput2`)
+        );
+        expect(layer.state.lastFocusedElement, `root focus 2`).to.eql(
+            expectHTMLQuery(`#layerInput2`)
+        );
+    });
+
     it(`should [Tab] navigate through layer`, async () => {
         const { expectHTMLQuery, container } = testDriver.render(
             () => `

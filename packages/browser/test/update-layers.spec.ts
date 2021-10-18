@@ -1,4 +1,4 @@
-import { updateLayers, createRoot, createBackdropParts, css } from '@zeejs/browser';
+import { updateLayers, watchFocus, createRoot, createBackdropParts, css } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
 import { expectImageSnapshot } from '@zeejs/test-browser-bridge';
 import { expect } from 'chai';
@@ -292,6 +292,7 @@ describe(`update-layers`, () => {
     it(`should re-focus last focused element of activate layer`, () => {
         const { container: wrapper } = testDriver.render(() => ``);
         const rootLayer = createRoot();
+        watchFocus(wrapper, rootLayer);
         const rootInput = document.createElement(`input`);
         rootLayer.element.appendChild(rootInput);
         wrapper.appendChild(rootLayer.element);
@@ -313,6 +314,7 @@ describe(`update-layers`, () => {
     it(`should re-focus last focused element of TOP activated layer`, () => {
         const { container: wrapper } = testDriver.render(() => ``);
         const rootLayer = createRoot();
+        watchFocus(wrapper, rootLayer);
         const rootInput = document.createElement(`input`);
         const middleLayerInput = document.createElement(`input`);
         rootLayer.element.appendChild(rootInput);
@@ -339,6 +341,7 @@ describe(`update-layers`, () => {
     it(`should re-focus last focused element of TOP activated layer that HAD focus`, () => {
         const { container: wrapper } = testDriver.render(() => ``);
         const rootLayer = createRoot();
+        watchFocus(wrapper, rootLayer);
         const rootInput = document.createElement(`input`);
         const middleLayerInput = document.createElement(`input`);
         rootLayer.element.appendChild(rootInput);
@@ -364,6 +367,7 @@ describe(`update-layers`, () => {
     it(`should maintain focus in active layer even when a re-activated layer had previous focus`, () => {
         const { container: wrapper } = testDriver.render(() => ``);
         const rootLayer = createRoot();
+        watchFocus(wrapper, rootLayer);
         const rootInput = document.createElement(`input`);
         const topLayerInput = document.createElement(`input`);
         rootLayer.element.appendChild(rootInput);
@@ -392,6 +396,7 @@ describe(`update-layers`, () => {
     it(`should optionally blur/refocus asynchronically`, async () => {
         const { container: wrapper } = testDriver.render(() => ``);
         const rootLayer = createRoot();
+        watchFocus(wrapper, rootLayer);
         const rootInput = document.createElement(`input`);
         rootLayer.element.appendChild(rootInput);
         wrapper.appendChild(rootLayer.element);
