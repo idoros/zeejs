@@ -28,19 +28,19 @@ export function updateLayers(
     wrapper: HTMLElement,
     topLayer: DOMLayer,
     { hide, block }: BackdropElements,
-    asyncFocusChange?: false
+    options?: { asyncFocusChange?: false; forceFocus?: boolean }
 ): void;
 export function updateLayers(
     wrapper: HTMLElement,
     topLayer: DOMLayer,
     { hide, block }: BackdropElements,
-    asyncFocusChange: true
+    options: { asyncFocusChange?: true; forceFocus?: boolean }
 ): Promise<void>;
 export async function updateLayers(
     wrapper: HTMLElement,
     topLayer: DOMLayer,
     { hide, block }: BackdropElements,
-    asyncFocusChange?: boolean
+    { asyncFocusChange, forceFocus }: { asyncFocusChange?: boolean; forceFocus?: boolean } = {}
 ): Promise<void> {
     const layers = topLayer.generateDisplayList();
     let blocking: HTMLElement | null = null;
@@ -89,7 +89,7 @@ export async function updateLayers(
         block.style.zIndex = blocking.style.zIndex;
     }
     // reference active element in layer + inert check
-    const focusedElement = (document.activeElement as unknown) as Focusable | null;
+    const focusedElement = document.activeElement as unknown as Focusable | null;
     let elementToBlur: void | Focusable;
     let elementToFocus: void | Focusable;
     let isLayerFocused = false;
@@ -101,7 +101,7 @@ export async function updateLayers(
         }
     }
     // find re-focus last input from activated layer
-    if (!isLayerFocused && activatedLayers.length) {
+    if (!isLayerFocused && (activatedLayers.length || forceFocus)) {
         // search layer with previously focused element
         let refocusElement: Focusable | void;
         for (let i = layers.length - 1; i >= 0; --i) {

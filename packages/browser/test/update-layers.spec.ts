@@ -393,6 +393,29 @@ describe(`update-layers`, () => {
         expect(document.activeElement, `top focus not changed`).to.equal(topLayerInput);
     });
 
+    it(`should focus the top most non-inert layer with force param`, () => {
+        const { container, expectHTMLQuery } = testDriver.render(
+            () => `
+            <input id="root"/>
+            <input id="child"/>
+        `
+        );
+        const rootLayer = createRoot();
+        watchFocus(container, rootLayer);
+        const childLayer = rootLayer.createLayer();
+        rootLayer.element.appendChild(expectHTMLQuery(`#root`));
+        childLayer.element.appendChild(expectHTMLQuery(`#child`));
+        container.appendChild(rootLayer.element);
+        (rootLayer.element.firstElementChild as HTMLElement).focus();
+        (childLayer.element.firstElementChild as HTMLElement).focus();
+        updateLayers(container, rootLayer, backdropParts);
+
+        rootLayer.removeLayer(childLayer);
+        updateLayers(container, rootLayer, backdropParts, { forceFocus: true });
+
+        expect(document.activeElement, `top focus not changed`).to.equal(expectHTMLQuery(`#root`));
+    });
+
     it(`should optionally blur/refocus asynchronically`, async () => {
         const { container: wrapper } = testDriver.render(() => ``);
         const rootLayer = createRoot();
@@ -405,7 +428,9 @@ describe(`update-layers`, () => {
             settings: { backdrop: `block` },
         });
 
-        const waitForBlur = updateLayers(wrapper, rootLayer, backdropParts, true /*async*/);
+        const waitForBlur = updateLayers(wrapper, rootLayer, backdropParts, {
+            asyncFocusChange: true,
+        });
 
         expect(document.activeElement, `no sync blur`).to.equal(rootInput);
 
@@ -414,7 +439,9 @@ describe(`update-layers`, () => {
         expect(document.activeElement, `async blur`).to.be.oneOf([null, document.body]);
 
         rootLayer.removeLayer(blockingLayer);
-        const waitForRefocus = updateLayers(wrapper, rootLayer, backdropParts, true /*async*/);
+        const waitForRefocus = updateLayers(wrapper, rootLayer, backdropParts, {
+            asyncFocusChange: true,
+        });
 
         expect(document.activeElement, `no sync blur`).to.be.oneOf([null, document.body]);
 

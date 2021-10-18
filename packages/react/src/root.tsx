@@ -11,7 +11,7 @@ import {
 } from '@zeejs/browser';
 import React, { useRef, useMemo, createContext, CSSProperties, ReactNode, useEffect } from 'react';
 
-export const zeejsContext = createContext<DOMLayer>((null as any) as DOMLayer);
+export const zeejsContext = createContext<DOMLayer>(null as any as DOMLayer);
 
 export interface RootProps {
     className?: string;
@@ -43,7 +43,7 @@ export const Root = ({ className, style, children }: RootProps) => {
                     return;
                 }
                 // buffer delay blur/re-focus because Layer renders and updates during render
-                updateLayers(wrapper, rootLayer, parts, /*asyncFocusChange*/ true);
+                updateLayers(wrapper, rootLayer, parts, { asyncFocusChange: true });
             },
         });
         return { rootLayer, parts };

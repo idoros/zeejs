@@ -17,7 +17,7 @@
             return;
         }
         rootLayer.element = rootLayerElement;
-        updateLayers(wrapper, rootLayer, backdrop, true);
+        updateLayers(wrapper, rootLayer, backdrop, { asyncFocusChange: true });
     };
     const rootLayer = createRoot({ onChange });
 
