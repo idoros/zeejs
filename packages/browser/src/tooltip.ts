@@ -70,11 +70,7 @@ export const tooltip = ({
     const flagClickOutside = () => {
         cancelAnimationFrame(blurBuffer);
         isFocusHold = isMouseIn = isMouseInOverlay = false;
-        disableFocus = true;
         updateOpen();
-        setTimeout(() => {
-            disableFocus = false;
-        }, 100);
     };
     const flagMouseOverOverlay = (flag: boolean) => {
         isMouseInOverlay = flag;
@@ -126,6 +122,13 @@ export const tooltip = ({
         }
         if (newOpenState !== isOpen) {
             isOpen = newOpenState;
+            if (!isOpen) {
+                // momentarily prevent re-focus from opening again
+                disableFocus = true;
+                setTimeout(() => {
+                    disableFocus = false;
+                }, 100);
+            }
             onToggle && onToggle(isOpen);
         }
     };
