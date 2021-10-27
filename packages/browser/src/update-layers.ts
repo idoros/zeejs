@@ -1,3 +1,4 @@
+import { isFocusable, tabbable } from 'tabbable';
 import type { DOMLayer } from './root';
 import { isBrowser, findContainingLayer } from './utils';
 
@@ -21,6 +22,7 @@ const asyncFocusChangePromise = new WeakMap<
         promise: Promise<void>;
         blur: Focusable | void;
         focus: Focusable | void;
+        focusLayer: HTMLElement | null;
     }
 >();
 
@@ -42,6 +44,7 @@ export async function updateLayers(
     { hide, block }: BackdropElements,
     { asyncFocusChange, forceFocus }: { asyncFocusChange?: boolean; forceFocus?: boolean } = {}
 ): Promise<void> {
+    const focusedElement = document.activeElement as unknown as Focusable | null;
     const layers = topLayer.generateDisplayList();
     let blocking: HTMLElement | null = null;
     let hiding: HTMLElement | null = null;
@@ -88,70 +91,95 @@ export async function updateLayers(
         wrapper.insertBefore(block, blocking);
         block.style.zIndex = blocking.style.zIndex;
     }
+
     // reference active element in layer + inert check
-    const focusedElement = document.activeElement as unknown as Focusable | null;
     let elementToBlur: void | Focusable;
     let elementToFocus: void | Focusable;
-    let isLayerFocused = false;
+    let prevFocusLayer: HTMLElement | null = null;
+    let nextFocusLayer: HTMLElement | null = null;
     if (focusedElement) {
-        const focusedLayer = findContainingLayer(focusedElement);
-        isLayerFocused = !!focusedLayer;
-        if (focusedLayer && focusedLayer.hasAttribute(`inert`)) {
+        prevFocusLayer = findContainingLayer(focusedElement);
+        if (prevFocusLayer && prevFocusLayer.hasAttribute(`inert`)) {
             elementToBlur = focusedElement;
         }
     }
     // find re-focus last input from activated layer
-    if (!isLayerFocused && (activatedLayers.length || forceFocus)) {
+    if (
+        forceFocus ||
+        (!prevFocusLayer && activatedLayers.length) ||
+        (prevFocusLayer &&
+            document.compareDocumentPosition(prevFocusLayer) &
+                document.DOCUMENT_POSITION_DISCONNECTED)
+    ) {
         // search layer with previously focused element
-        let refocusElement: Focusable | void;
         for (let i = layers.length - 1; i >= 0; --i) {
             const layer = layers[i];
             if (layer.element.hasAttribute(`inert`)) {
                 break;
             }
             if (layer.state.lastFocusedElement) {
-                refocusElement = layer.state.lastFocusedElement;
+                nextFocusLayer = layer.element;
+                elementToFocus = layer.state.lastFocusedElement;
                 break;
             }
         }
-        if (refocusElement) {
-            elementToFocus = refocusElement;
-        }
     }
     // sync/async blur/refocus
-    if (asyncFocusChange) {
-        let buffered = asyncFocusChangePromise.get(wrapper);
-        if (buffered) {
-            buffered.blur = elementToBlur;
-            buffered.focus = elementToFocus;
+    if (elementToBlur || elementToFocus || nextFocusLayer) {
+        if (asyncFocusChange) {
+            let buffered = asyncFocusChangePromise.get(wrapper);
+            if (buffered) {
+                buffered.blur = elementToBlur;
+                buffered.focus = elementToFocus;
+                buffered.focusLayer = nextFocusLayer;
+            } else {
+                buffered = {
+                    promise: Promise.resolve().then(() => {
+                        const change = asyncFocusChangePromise.get(wrapper);
+                        if (change) {
+                            changeFocus(change);
+                        }
+                        asyncFocusChangePromise.delete(wrapper);
+                    }),
+                    blur: elementToBlur,
+                    focus: elementToFocus,
+                    focusLayer: nextFocusLayer,
+                };
+                asyncFocusChangePromise.set(wrapper, buffered);
+            }
+            return buffered.promise;
         } else {
-            buffered = {
-                promise: Promise.resolve().then(() => {
-                    const change = asyncFocusChangePromise.get(wrapper);
-                    if (change) {
-                        changeFocus(change);
-                    }
-                    asyncFocusChangePromise.delete(wrapper);
-                }),
+            changeFocus({
                 blur: elementToBlur,
                 focus: elementToFocus,
-            };
-            asyncFocusChangePromise.set(wrapper, buffered);
+                focusLayer: nextFocusLayer,
+            });
         }
-        return buffered.promise;
-    } else {
-        changeFocus({
-            blur: elementToBlur,
-            focus: elementToFocus,
-        });
     }
 }
 
-function changeFocus({ blur, focus }: { blur: Focusable | void; focus: Focusable | void }) {
+function changeFocus({
+    blur,
+    focus,
+    focusLayer,
+}: {
+    blur: Focusable | void;
+    focus: Focusable | void;
+    focusLayer: HTMLElement | null;
+}) {
     if (blur) {
         blur.blur();
     }
-    if (focus) {
+    if (focus && isFocusable(focus)) {
         focus.focus();
+    } else if (focusLayer && !focusLayer.hasAttribute(`inert`)) {
+        // ToDo: currently find the first focusable when focused is to possible
+        // solve issues:
+        // 1. find closest in layer
+        // 2. handle no focusable elements in layer (including layer itself)
+        const focusList = tabbable(focusLayer, { includeContainer: true });
+        if (focusList.length) {
+            focusList[0].focus();
+        }
     }
 }

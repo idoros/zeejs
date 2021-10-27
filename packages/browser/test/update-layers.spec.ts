@@ -278,6 +278,7 @@ describe(`update-layers`, () => {
     it(`should blur within an inert layer`, () => {
         const { container: wrapper } = testDriver.render(() => ``);
         const rootLayer = createRoot();
+        watchFocus(wrapper, rootLayer);
         const rootInput = document.createElement(`input`);
         rootLayer.element.appendChild(rootInput);
         wrapper.appendChild(rootLayer.element);
@@ -416,6 +417,40 @@ describe(`update-layers`, () => {
         expect(document.activeElement, `top focus not changed`).to.equal(expectHTMLQuery(`#root`));
     });
 
+    it(`should focus the first focusable in case the last focused element is not focusable (in the same layer)`, () => {
+        // ToDo: improve on this behavior
+        // - focus closest focusable instead of just the first
+        // - search for candidates in lower non inert layers
+        const { container, expectHTMLQuery } = testDriver.render(
+            () => `
+            <div id="root-inputs">
+                <input id="input1"/>
+                <input id="input2" disabled/>
+                <input id="input3"/>
+                <input id="input4" disabled/>
+                <input id="input5"/>
+            </div>
+            <input id="child-input"/>
+        `
+        );
+        const rootLayer = createRoot();
+        watchFocus(container, rootLayer);
+        const childLayer = rootLayer.createLayer();
+        rootLayer.element.appendChild(expectHTMLQuery(`#root-inputs`));
+        childLayer.element.appendChild(expectHTMLQuery(`#child-input`));
+
+        updateLayers(container, rootLayer, backdropParts);
+
+        expectHTMLQuery(`#input3`).focus();
+        expectHTMLQuery(`#child-input`).focus();
+        expectHTMLQuery(`#input3`).setAttribute(`disabled`, ``);
+
+        rootLayer.removeLayer(childLayer);
+        updateLayers(container, rootLayer, backdropParts, { forceFocus: true });
+
+        expect(document.activeElement).to.equal(expectHTMLQuery(`#input1`));
+    });
+
     it(`should optionally blur/refocus asynchronically`, async () => {
         const { container: wrapper } = testDriver.render(() => ``);
         const rootLayer = createRoot();
@@ -432,7 +467,7 @@ describe(`update-layers`, () => {
             asyncFocusChange: true,
         });
 
-        expect(document.activeElement, `no sync blur`).to.equal(rootInput);
+        expect(document.activeElement, `no sync blur 1`).to.equal(rootInput);
 
         await waitForBlur;
 
@@ -443,7 +478,7 @@ describe(`update-layers`, () => {
             asyncFocusChange: true,
         });
 
-        expect(document.activeElement, `no sync blur`).to.be.oneOf([null, document.body]);
+        expect(document.activeElement, `no sync blur 2`).to.be.oneOf([null, document.body]);
 
         await waitForRefocus;
 
