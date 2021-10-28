@@ -27,9 +27,9 @@
                     onFocusChange(layer.state.focusInside);
                 }
             },
-            onEscape: () => {
+            onEscape: (event) => {
                 if (onEscape) {
-                    onEscape();
+                    onEscape(event);
                 }
             },
         }
