@@ -2,7 +2,7 @@ import { watchEscape, createRoot, updateLayers, createBackdropParts } from '@zee
 import { HTMLTestDriver } from './html-test-driver';
 import { getInteractionApi } from '@zeejs/test-browser-bridge';
 import chai, { expect } from 'chai';
-import { stub } from 'sinon';
+import { stub, spy } from 'sinon';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 
@@ -101,6 +101,39 @@ describe(`escape`, () => {
 
         expect(onChildEscape).to.have.callCount(1);
     });
-    // propagate event down the layers
-    // pass event to handler
+    it(`should propagate event down the layers`, async function () {
+        const onChildAEscape = stub();
+        const onChildBEscape = stub();
+        const { container } = testDriver.render(() => ``);
+        const rootLayer = createRoot();
+        rootLayer.createLayer({ settings: { onEscape: onChildAEscape } });
+        rootLayer.createLayer({ settings: { onEscape: onChildBEscape } });
+        updateLayers(container, rootLayer, createBackdropParts());
+
+        watchEscape(rootLayer);
+
+        await keyboard.press(`Escape`);
+
+        expect(onChildAEscape, `escape A`).to.have.callCount(1);
+        expect(onChildBEscape, `escape B`).to.have.callCount(1);
+    });
+    it(`should propagate event down the layers until stopPropagation is called`, async function () {
+        const onChildAEscape = spy();
+        const onChildBEscape = spy((e: KeyboardEvent) => e.stopPropagation());
+        const onChildCEscape = spy();
+        const { container } = testDriver.render(() => ``);
+        const rootLayer = createRoot();
+        rootLayer.createLayer({ settings: { onEscape: onChildAEscape } });
+        const b = rootLayer.createLayer({ settings: { onEscape: onChildBEscape } });
+        b.createLayer({ settings: { onEscape: onChildCEscape } });
+        updateLayers(container, rootLayer, createBackdropParts());
+
+        watchEscape(rootLayer);
+
+        await keyboard.press(`Escape`);
+
+        expect(onChildCEscape, `c`).to.have.callCount(1);
+        expect(onChildBEscape, `b`).to.have.callCount(1);
+        expect(onChildAEscape, `a`).to.have.callCount(0);
+    });
 });

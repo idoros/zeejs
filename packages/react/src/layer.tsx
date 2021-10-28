@@ -11,7 +11,7 @@ export interface LayerProps {
     onClickOutside?: (target: EventTarget) => void;
     onMouseIntersection?: (isInside: boolean) => void;
     onFocusChange?: (isFocused: boolean) => void;
-    onEscape?: () => void;
+    onEscape?: (event: KeyboardEvent) => void;
 }
 
 // ToDo: handle styling on portal root
@@ -42,9 +42,9 @@ export const Layer = ({
                             onFocusChange(layer.state.focusInside);
                         }
                     },
-                    onEscape: () => {
+                    onEscape: (event) => {
                         if (onEscape) {
-                            onEscape();
+                            onEscape(event);
                         }
                     },
                 },
