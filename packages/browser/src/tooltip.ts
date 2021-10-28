@@ -86,7 +86,8 @@ export const tooltip = ({
             onBlur();
         }
     };
-    const onEscape = () => {
+    const onEscape = (event: KeyboardEvent) => {
+        event.stopPropagation();
         cancelAnimationFrame(blurBuffer);
         isFocusHold = isMouseIn = isMouseInOverlay = false;
         updateOpen();
