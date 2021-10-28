@@ -25,34 +25,6 @@ describe(`escape`, () => {
 
         expect(onChildEscape).to.have.callCount(1);
     });
-    it(`should inform only the top layer`, async function () {
-        const onLayerAEscape = stub();
-        const onLayerBEscape = stub();
-        const { container } = testDriver.render(() => ``);
-        const rootLayer = createRoot();
-        const layerA = rootLayer.createLayer({ settings: { onEscape: onLayerAEscape } });
-        const layerB = rootLayer.createLayer({ settings: { onEscape: onLayerBEscape } });
-        updateLayers(container, rootLayer, createBackdropParts());
-
-        watchEscape(rootLayer);
-
-        await keyboard.press(`Escape`);
-
-        expect(onLayerAEscape, `A not top`).to.have.callCount(0);
-        expect(onLayerBEscape, `B is top`).to.have.callCount(1);
-
-        rootLayer.removeLayer(layerB);
-        await keyboard.press(`Escape`);
-
-        expect(onLayerAEscape, `A is top`).to.have.callCount(1);
-        expect(onLayerBEscape, `B not connected`).to.have.callCount(1);
-
-        rootLayer.removeLayer(layerA);
-        await keyboard.press(`Escape`);
-
-        expect(onLayerAEscape, `A not connected`).to.have.callCount(1);
-        expect(onLayerBEscape, `B not connected`).to.have.callCount(1);
-    });
     it(`should ignore if preventDefault is triggered`, async function () {
         const onChildEscape = stub();
         const { container } = testDriver.render(() => ``);
