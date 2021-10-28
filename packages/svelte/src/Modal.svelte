@@ -12,6 +12,7 @@
     export let onClickOutside;
     export let onFocusChange;
     export let onMouseIntersection;
+    export let onEscape;
 
     let wrapperStyle;
     $: {
@@ -27,6 +28,7 @@
         onClickOutside={onClickOutside}
         onFocusChange={onFocusChange}
         onMouseIntersection={onMouseIntersection}
+        onEscape={onEscape}
     >
         <div class={className} style={wrapperStyle}>
             <slot />

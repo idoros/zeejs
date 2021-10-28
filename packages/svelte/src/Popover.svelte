@@ -17,6 +17,7 @@
     export let onClickOutside;
     export let onFocusChange;
     export let onMouseIntersection;
+    export let onEscape;
 
     const { open, close, updateOptions, isOpen } = popover();
 
@@ -71,6 +72,7 @@
             onClickOutside={onClickOutside}
             onFocusChange={onFocusChange}
             onMouseIntersection={onMouseIntersection}
+            onEscape={onEscape}
         >
             <div 
                 bind:this={overlayRef}

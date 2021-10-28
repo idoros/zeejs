@@ -15,6 +15,7 @@ export interface ModalProps {
     onClickOutside?: LayerProps['onClickOutside'];
     onFocusChange?: LayerProps['onFocusChange'];
     onMouseIntersection?: LayerProps['onMouseIntersection'];
+    onEscape?: LayerProps['onEscape'];
 }
 
 export const Modal = ({
@@ -27,6 +28,7 @@ export const Modal = ({
     onClickOutside,
     onFocusChange,
     onMouseIntersection,
+    onEscape,
 }: ModalProps) => {
     const alignStyle = modalAbsolutePosition(position);
     const wrapperStyle = style ? { ...style, ...alignStyle } : alignStyle;
@@ -37,6 +39,7 @@ export const Modal = ({
             onClickOutside={onClickOutside}
             onFocusChange={onFocusChange}
             onMouseIntersection={onMouseIntersection}
+            onEscape={onEscape}
         >
             <div className={className} style={wrapperStyle}>
                 {children}
