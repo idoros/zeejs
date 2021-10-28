@@ -52,6 +52,7 @@ export const Tooltip = ({ children, mouseDelay, positionX, positionY }: TooltipP
                     onFocusChange={tooltipLogic.flagOverlayFocus}
                     onMouseIntersection={tooltipLogic.flagMouseOverOverlay}
                     onClickOutside={tooltipLogic.flagClickOutside}
+                    onEscape={tooltipLogic.onEscape}
                 >
                     <div ref={overlayRef} className={tooltipLogic.initialOverlayCSSClass}>
                         {children}

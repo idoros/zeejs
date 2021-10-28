@@ -12,7 +12,7 @@ chai.use(domElementMatchers);
 
 describe(`react tooltip`, () => {
     let testDriver: ReactTestDriver;
-    const { hover } = getInteractionApi();
+    const { hover, keyboard } = getInteractionApi();
 
     before('setup test driver', () => (testDriver = new ReactTestDriver()));
     afterEach('clear test driver', () => {
@@ -222,6 +222,35 @@ describe(`react tooltip`, () => {
                 expect(query(`#tooltip-node`), `click outside`).to.not.be.domElement();
             });
         });
+
+        it(`should hide tooltip on escape`, async () => {
+            const { expectHTMLQuery, query } = testDriver.render(() => (
+                <Root>
+                    <div id="parent-node">
+                        <span>parent content</span>
+                        <Tooltip>
+                            <span id="tooltip-node">tooltip content</span>
+                        </Tooltip>
+                    </div>
+                    <div id="outside-node" style={{ width: `200px`, height: `200px` }}></div>
+                </Root>
+            ));
+
+            await hover(`#parent-node`);
+
+            await waitFor(() => {
+                const parentNode = expectHTMLQuery(`#parent-node`);
+                const tooltipNode = expectHTMLQuery(`#tooltip-node`);
+                expect(parentNode).domElement().preceding(tooltipNode);
+            });
+
+            // direct click with no mouseout event
+            await keyboard.press(`Escape`);
+
+            await waitFor(() => {
+                expect(query(`#tooltip-node`), `removed on escape`).to.not.be.domElement();
+            });
+        });
     });
 
     describe(`position`, () => {
@@ -285,10 +314,7 @@ describe(`react tooltip`, () => {
                         tabIndex={0}
                         style={{ width: `100px`, height: `40px`, background: 'red' }}
                     >
-                        <Tooltip
-                            positionX="after"
-                            positionY="after"
-                        >
+                        <Tooltip positionX="after" positionY="after">
                             <div
                                 id="tooltip-node"
                                 style={{ width: `80px`, height: `20px`, background: 'green' }}

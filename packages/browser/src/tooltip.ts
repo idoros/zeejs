@@ -86,6 +86,11 @@ export const tooltip = ({
             onBlur();
         }
     };
+    const onEscape = () => {
+        cancelAnimationFrame(blurBuffer);
+        isFocusHold = isMouseIn = isMouseInOverlay = false;
+        updateOpen();
+    };
     const isIn = (element: Element) => {
         if (isInOverlay && element) {
             if (overlay && isInOverlay(element, overlay)) {
@@ -172,6 +177,7 @@ export const tooltip = ({
         flagClickOutside,
         flagMouseOverOverlay,
         flagOverlayFocus,
+        onEscape,
         setOverlay,
         updatePosition({ x, y }: { x?: OverlayPosition; y?: OverlayPosition }) {
             positionX = x || `center`;
