@@ -27,8 +27,12 @@ export const tooltip = ({
     let bindPosition: ReturnType<typeof layoutOverlay> | null = null;
     let buffer = 0;
     let blurBuffer = 0;
+    let disableFocus = false;
 
     const onFocus = () => {
+        if (disableFocus) {
+            return;
+        }
         isFocusHold = true;
         window.addEventListener(`mousemove`, onMouseMove, {
             once: true,
@@ -62,6 +66,11 @@ export const tooltip = ({
             isFocusHold = isMouseIn = isMouseInOverlay = false;
             bufferUpdate(mouseDelay);
         }
+    };
+    const flagClickOutside = () => {
+        cancelAnimationFrame(blurBuffer);
+        isFocusHold = isMouseIn = isMouseInOverlay = false;
+        updateOpen();
     };
     const flagMouseOverOverlay = (flag: boolean) => {
         isMouseInOverlay = flag;
@@ -113,6 +122,13 @@ export const tooltip = ({
         }
         if (newOpenState !== isOpen) {
             isOpen = newOpenState;
+            if (!isOpen) {
+                // momentarily prevent re-focus from opening again
+                disableFocus = true;
+                setTimeout(() => {
+                    disableFocus = false;
+                }, 100);
+            }
             onToggle && onToggle(isOpen);
         }
     };
@@ -153,6 +169,7 @@ export const tooltip = ({
     return {
         isOpen: () => isOpen,
         setAnchor,
+        flagClickOutside,
         flagMouseOverOverlay,
         flagOverlayFocus,
         setOverlay,

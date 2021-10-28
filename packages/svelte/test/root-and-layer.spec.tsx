@@ -510,6 +510,34 @@ describe(`svelte root-and-layer`, () => {
             expect(document.activeElement, `refocus input`).domElement().equal(bgInput);
         });
 
+        it(`should focus lower layer when a focused layer is removed`, async () => {
+            const { expectHTMLQuery, updateProps } = testDriver.render(`
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let renderLayer = false;
+                </script>
+                <Root>
+                    <input id="bgInput" />
+                    {#if renderLayer}
+                        <Layer>
+                            <input id="layerInput" style="margin: 100px;" />
+                        </Layer>
+                    {/if}
+                </Root>
+            `);
+            const bgInput = expectHTMLQuery(`#bgInput`);
+            bgInput.focus();
+
+            await updateProps({ renderLayer: true });
+
+            const layerInput = expectHTMLQuery(`#layerInput`);
+            layerInput.focus();
+
+            await updateProps({ renderLayer: false });
+
+            expect(document.activeElement, `refocus input`).domElement().equal(bgInput);
+        });
+
         it(`should report on focus change`, async () => {
             const onFocusChange = stub();
             testDriver.render(

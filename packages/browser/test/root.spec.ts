@@ -27,14 +27,17 @@ describe(`root`, () => {
         const innerLayer = rootLayer.createLayer();
 
         expect(onChange, `layer added`).to.have.callCount(1);
+        expect(onChange.getCall(0).args, `level 1 added`).to.eql([`create`, innerLayer]);
 
-        innerLayer.createLayer();
+        const deepLayer = innerLayer.createLayer();
 
         expect(onChange, `deep layer added`).to.have.callCount(2);
+        expect(onChange.getCall(1).args, `level 2 added`).to.eql([`create`, deepLayer]);
 
         rootLayer.removeLayer(innerLayer);
 
         expect(onChange, `layer branch removed - single change`).to.have.callCount(3);
+        expect(onChange.getCall(2).args, `level 1 removed`).to.eql([`remove`, innerLayer]);
     });
 
     it(`should generate unique id for each layer`, () => {
@@ -67,6 +70,7 @@ describe(`root`, () => {
 
         expect(layer.element, `no initial element`).to.equal(null);
         expect(onChange, `layer added`).to.have.callCount(1);
+        expect(onChange.getCall(0).args, `create change info`).to.eql([`create`, layer]);
 
         expect(() => {
             layer.setElement(document.createElement(`div`));
@@ -77,6 +81,7 @@ describe(`root`, () => {
         expect(layer.element, `layer html element`).to.an.instanceOf(HTMLElement);
         expect(layer.element.tagName, `zeejs-layer tag`).to.equal(`ZEEJS-LAYER`);
         expect(onChange, `element added to layer`).to.have.callCount(2);
+        expect(onChange.getCall(1).args, `create done change info`).to.eql([`create`, layer]);
 
         expect(() => {
             layer.setElement(document.createElement(`zeejs-layer`));

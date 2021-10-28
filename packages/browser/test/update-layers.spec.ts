@@ -1,4 +1,4 @@
-import { updateLayers, createRoot, createBackdropParts, css } from '@zeejs/browser';
+import { updateLayers, watchFocus, createRoot, createBackdropParts, css } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
 import { expectImageSnapshot } from '@zeejs/test-browser-bridge';
 import { expect } from 'chai';
@@ -278,6 +278,7 @@ describe(`update-layers`, () => {
     it(`should blur within an inert layer`, () => {
         const { container: wrapper } = testDriver.render(() => ``);
         const rootLayer = createRoot();
+        watchFocus(wrapper, rootLayer);
         const rootInput = document.createElement(`input`);
         rootLayer.element.appendChild(rootInput);
         wrapper.appendChild(rootLayer.element);
@@ -292,6 +293,7 @@ describe(`update-layers`, () => {
     it(`should re-focus last focused element of activate layer`, () => {
         const { container: wrapper } = testDriver.render(() => ``);
         const rootLayer = createRoot();
+        watchFocus(wrapper, rootLayer);
         const rootInput = document.createElement(`input`);
         rootLayer.element.appendChild(rootInput);
         wrapper.appendChild(rootLayer.element);
@@ -313,6 +315,7 @@ describe(`update-layers`, () => {
     it(`should re-focus last focused element of TOP activated layer`, () => {
         const { container: wrapper } = testDriver.render(() => ``);
         const rootLayer = createRoot();
+        watchFocus(wrapper, rootLayer);
         const rootInput = document.createElement(`input`);
         const middleLayerInput = document.createElement(`input`);
         rootLayer.element.appendChild(rootInput);
@@ -339,6 +342,7 @@ describe(`update-layers`, () => {
     it(`should re-focus last focused element of TOP activated layer that HAD focus`, () => {
         const { container: wrapper } = testDriver.render(() => ``);
         const rootLayer = createRoot();
+        watchFocus(wrapper, rootLayer);
         const rootInput = document.createElement(`input`);
         const middleLayerInput = document.createElement(`input`);
         rootLayer.element.appendChild(rootInput);
@@ -364,6 +368,7 @@ describe(`update-layers`, () => {
     it(`should maintain focus in active layer even when a re-activated layer had previous focus`, () => {
         const { container: wrapper } = testDriver.render(() => ``);
         const rootLayer = createRoot();
+        watchFocus(wrapper, rootLayer);
         const rootInput = document.createElement(`input`);
         const topLayerInput = document.createElement(`input`);
         rootLayer.element.appendChild(rootInput);
@@ -389,9 +394,67 @@ describe(`update-layers`, () => {
         expect(document.activeElement, `top focus not changed`).to.equal(topLayerInput);
     });
 
+    it(`should focus the top most non-inert layer with force param`, () => {
+        const { container, expectHTMLQuery } = testDriver.render(
+            () => `
+            <input id="root"/>
+            <input id="child"/>
+        `
+        );
+        const rootLayer = createRoot();
+        watchFocus(container, rootLayer);
+        const childLayer = rootLayer.createLayer();
+        rootLayer.element.appendChild(expectHTMLQuery(`#root`));
+        childLayer.element.appendChild(expectHTMLQuery(`#child`));
+        container.appendChild(rootLayer.element);
+        (rootLayer.element.firstElementChild as HTMLElement).focus();
+        (childLayer.element.firstElementChild as HTMLElement).focus();
+        updateLayers(container, rootLayer, backdropParts);
+
+        rootLayer.removeLayer(childLayer);
+        updateLayers(container, rootLayer, backdropParts, { forceFocus: true });
+
+        expect(document.activeElement, `top focus not changed`).to.equal(expectHTMLQuery(`#root`));
+    });
+
+    it(`should focus the first focusable in case the last focused element is not focusable (in the same layer)`, () => {
+        // ToDo: improve on this behavior
+        // - focus closest focusable instead of just the first
+        // - search for candidates in lower non inert layers
+        const { container, expectHTMLQuery } = testDriver.render(
+            () => `
+            <div id="root-inputs">
+                <input id="input1"/>
+                <input id="input2" disabled/>
+                <input id="input3"/>
+                <input id="input4" disabled/>
+                <input id="input5"/>
+            </div>
+            <input id="child-input"/>
+        `
+        );
+        const rootLayer = createRoot();
+        watchFocus(container, rootLayer);
+        const childLayer = rootLayer.createLayer();
+        rootLayer.element.appendChild(expectHTMLQuery(`#root-inputs`));
+        childLayer.element.appendChild(expectHTMLQuery(`#child-input`));
+
+        updateLayers(container, rootLayer, backdropParts);
+
+        expectHTMLQuery(`#input3`).focus();
+        expectHTMLQuery(`#child-input`).focus();
+        expectHTMLQuery(`#input3`).setAttribute(`disabled`, ``);
+
+        rootLayer.removeLayer(childLayer);
+        updateLayers(container, rootLayer, backdropParts, { forceFocus: true });
+
+        expect(document.activeElement).to.equal(expectHTMLQuery(`#input1`));
+    });
+
     it(`should optionally blur/refocus asynchronically`, async () => {
         const { container: wrapper } = testDriver.render(() => ``);
         const rootLayer = createRoot();
+        watchFocus(wrapper, rootLayer);
         const rootInput = document.createElement(`input`);
         rootLayer.element.appendChild(rootInput);
         wrapper.appendChild(rootLayer.element);
@@ -400,18 +463,22 @@ describe(`update-layers`, () => {
             settings: { backdrop: `block` },
         });
 
-        const waitForBlur = updateLayers(wrapper, rootLayer, backdropParts, true /*async*/);
+        const waitForBlur = updateLayers(wrapper, rootLayer, backdropParts, {
+            asyncFocusChange: true,
+        });
 
-        expect(document.activeElement, `no sync blur`).to.equal(rootInput);
+        expect(document.activeElement, `no sync blur 1`).to.equal(rootInput);
 
         await waitForBlur;
 
         expect(document.activeElement, `async blur`).to.be.oneOf([null, document.body]);
 
         rootLayer.removeLayer(blockingLayer);
-        const waitForRefocus = updateLayers(wrapper, rootLayer, backdropParts, true /*async*/);
+        const waitForRefocus = updateLayers(wrapper, rootLayer, backdropParts, {
+            asyncFocusChange: true,
+        });
 
-        expect(document.activeElement, `no sync blur`).to.be.oneOf([null, document.body]);
+        expect(document.activeElement, `no sync blur 2`).to.be.oneOf([null, document.body]);
 
         await waitForRefocus;
 

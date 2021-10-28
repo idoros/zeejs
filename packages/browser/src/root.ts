@@ -1,4 +1,4 @@
-import { createLayer, Layer } from '@zeejs/core';
+import { createLayer, Layer, TopLayerOptions } from '@zeejs/core';
 import { layoutOverlay } from './layout-overlay';
 import { isBrowser } from './utils';
 
@@ -16,7 +16,11 @@ export interface LayerExtended {
     id: string;
     element: HTMLElement;
     settings: LayerSettings;
-    state: { mouseInside: boolean; focusInside: boolean };
+    state: {
+        mouseInside: boolean;
+        focusInside: boolean;
+        lastFocusedElement: HTMLElement | SVGElement | null;
+    };
     setElement: (this: DOMLayer, element: HTMLElement) => void;
     [overlapBindConfig]: ReturnType<typeof layoutOverlay>;
 }
@@ -31,12 +35,12 @@ export const defaultLayerSettings: LayerSettings = {
 export function createRoot({
     onChange,
 }: {
-    onChange?: () => void;
+    onChange?: TopLayerOptions<LayerExtended, LayerSettings>[`onChange`];
 } = {}) {
     let idCounter = 0;
     const rootLayer = createLayer({
         extendLayer: {
-            element: (null as unknown) as HTMLElement,
+            element: null as unknown as HTMLElement,
             settings: defaultLayerSettings,
             setElement: function (element: HTMLElement) {
                 if (this.element) {
@@ -49,21 +53,18 @@ export function createRoot({
                 }
                 this.element = element;
                 initLayerElement(this);
-                if (onChange) {
-                    onChange();
-                }
+                onChange?.(`create`, this);
             },
         } as LayerExtended,
         defaultSettings: defaultLayerSettings,
-        onChange() {
-            if (onChange) {
-                onChange();
-            }
+        onChange(reason, layer) {
+            onChange?.(reason, layer);
         },
         init(layer, settings) {
             layer.state = {
                 mouseInside: false,
                 focusInside: false,
+                lastFocusedElement: null,
             };
             layer.settings = settings;
             layer.id = `zeejs-layer-${idCounter++}`;

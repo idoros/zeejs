@@ -335,6 +335,43 @@ describe(`tooltip`, () => {
             });
         });
 
+        it(`should be negative on click outside`, async () => {
+            // click outside -> overlay disappears -> focus is disabled momentarily
+            const { expectHTMLQuery } = testDriver.render(
+                () => `
+                <button id="anchor" style="width: 30px; height: 30px;">button</button>
+                <button id="other" style="width: 30px; height: 30px;">other button</button>
+            `
+            );
+            const anchor = expectHTMLQuery(`#anchor`) as HTMLButtonElement;
+            const { isOpen, flagClickOutside } = tooltip({ anchor });
+            await hover(`#anchor`);
+            await waitFor(() => {
+                expect(isOpen(), `open on hover`).to.equal(true);
+            });
+
+            flagClickOutside();
+
+            await waitFor(() => {
+                expect(isOpen(), `close on click outside`).to.equal(false);
+            });
+
+            anchor.blur();
+            anchor.focus();
+
+            // incase delayed render refocus anchor
+            expect(isOpen(), `focus disabled for a moment`).to.equal(false);
+
+            await sleep(100);
+
+            anchor.blur();
+            anchor.focus();
+
+            await waitFor(() => {
+                expect(isOpen(), `focus enabled`).to.equal(true);
+            });
+        });
+
         it.skip(`should be negative on escape press`, () => {
             /*todo*/
         });
