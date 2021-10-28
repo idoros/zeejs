@@ -11,6 +11,7 @@ export interface LayerProps {
     onClickOutside?: (target: EventTarget) => void;
     onMouseIntersection?: (isInside: boolean) => void;
     onFocusChange?: (isFocused: boolean) => void;
+    onEscape?: () => void;
 }
 
 // ToDo: handle styling on portal root
@@ -21,6 +22,7 @@ export const Layer = ({
     onClickOutside,
     onMouseIntersection,
     onFocusChange,
+    onEscape,
 }: LayerProps) => {
     const parentLayer = useContext(zeejsContext);
     const layer = useMemo(
@@ -38,6 +40,11 @@ export const Layer = ({
                     onFocusChange: () => {
                         if (onFocusChange) {
                             onFocusChange(layer.state.focusInside);
+                        }
+                    },
+                    onEscape: () => {
+                        if (onEscape) {
+                            onEscape();
                         }
                     },
                 },

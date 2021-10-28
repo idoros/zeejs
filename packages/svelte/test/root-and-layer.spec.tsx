@@ -662,6 +662,32 @@ describe(`svelte root-and-layer`, () => {
         });
     });
 
+    describe(`escape`, () => {
+        it(`should invoke onEscape handler when escape is pressed`, async () => {
+            const onEscape = stub();
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Layer} from '@zeejs/svelte';
+                    export let onEscape;
+                </script>
+                <Root>
+                    <div id="root-node" style="width: 100px; height: 100px; background: green;">
+                        <Layer onEscape={onEscape}>
+                            <div id="layer-node" style="width: 50px; height: 50px; background: red;" />
+                        </Layer>
+                    </div>
+                </Root>
+            `,
+                { onEscape }
+            );
+
+            await keyboard.press(`Escape`);
+
+            expect(onEscape).to.have.callCount(1);
+        });
+    });
+
     describe(`server rendering`, () => {
         it(`should render root on server and connect in browser`, async () => {
             const warnSpy = spy(console, `warn`);

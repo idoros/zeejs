@@ -10,6 +10,7 @@ export interface LayerSettings {
     onClickOutside?: (target: EventTarget) => void;
     onMouseIntersection?: () => void;
     onFocusChange?: () => void;
+    onEscape?: () => void;
     generateElement: boolean;
 }
 export interface LayerExtended {

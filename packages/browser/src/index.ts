@@ -5,6 +5,7 @@ export { keepInView } from './keep-in-view';
 export { watchFocus } from './focus';
 export { watchClickOutside } from './click-outside';
 export { watchMouseInside } from './mouse-inside';
+export { watchEscape } from './escape';
 export { updateLayers, createBackdropParts } from './update-layers';
 export { isBrowser, isContainedBy } from './utils';
 export { tooltip } from './tooltip';

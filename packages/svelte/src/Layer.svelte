@@ -6,6 +6,7 @@
     export let onClickOutside;
     export let onFocusChange;
     export let onMouseIntersection;
+    export let onEscape;
 
     let originRoot;
     let element;
@@ -24,6 +25,11 @@
             onFocusChange: () => {
                 if (onFocusChange) {
                     onFocusChange(layer.state.focusInside);
+                }
+            },
+            onEscape: () => {
+                if (onEscape) {
+                    onEscape();
                 }
             },
         }
