@@ -57,6 +57,10 @@
             positionY="center"
             onClickOutside={close}
             onDisplayChange={onDisplayChange}
+            onEscape={(event) => {
+                event.stopPropagation();
+                close();
+            }}
         >
             <PositionInput bind:root={popup} {value} onChange={onSelect} />
         </Popover>

@@ -74,6 +74,10 @@ export const PositionInputButton = ({
                     positionY="center"
                     onClickOutside={() => setOpen(false)}
                     onDisplayChange={onDisplayChange}
+                    onEscape={(event) => {
+                        event.stopPropagation();
+                        setOpen(false);
+                    }}
                 >
                     <PositionInput ref={popupRef} value={value} onChange={onSelect} />
                 </Popover>
