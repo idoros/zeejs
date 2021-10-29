@@ -6,7 +6,7 @@ import { expect } from 'chai';
 
 describe(`svelte tooltip`, () => {
     let testDriver: SvelteTestDriver;
-    const { hover } = getInteractionApi();
+    const { hover, keyboard } = getInteractionApi();
 
     before('setup test driver', () => {
         testDriver = new SvelteTestDriver({
@@ -236,6 +236,38 @@ describe(`svelte tooltip`, () => {
 
             await waitFor(() => {
                 expect(query(`#tooltip-node`), `click outside`).to.not.be.domElement();
+            });
+        });
+
+        it(`should hide tooltip on escape`, async () => {
+            const { expectHTMLQuery, query } = testDriver.render(`
+                <script>
+                    import {Root, Tooltip} from '@zeejs/svelte';
+                </script>
+                <Root>
+                    <div id="parent-node">
+                        <span>parent content</span>
+                        <Tooltip>
+                            <span id="tooltip-node">tooltip content</span>
+                        </Tooltip>
+                    </div>
+                    <div id="outside-node" style="width: 200px; height: 200px;"></div>
+                </Root>
+            `);
+
+            await hover(`#parent-node`);
+
+            await waitFor(() => {
+                const parentNode = expectHTMLQuery(`#parent-node`);
+                const tooltipNode = expectHTMLQuery(`#tooltip-node`);
+                expect(parentNode).domElement().preceding(tooltipNode);
+            });
+
+            // direct click with no mouseout event
+            await keyboard.press(`Escape`);
+
+            await waitFor(() => {
+                expect(query(`#tooltip-node`), `removed on escape`).to.not.be.domElement();
             });
         });
     });

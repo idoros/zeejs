@@ -12,7 +12,7 @@ chai.use(domElementMatchers);
 
 describe(`react modal`, () => {
     let testDriver: ReactTestDriver;
-    const { clickIfPossible, click, hover } = getInteractionApi();
+    const { clickIfPossible, click, hover, keyboard } = getInteractionApi();
 
     before('setup test driver', () => (testDriver = new ReactTestDriver()));
     afterEach('clear test driver', () => {
@@ -284,6 +284,28 @@ describe(`react modal`, () => {
                 expect(onMouseIntersection, `catch mouse outside layer`).to.have.callCount(1);
                 expect(onMouseIntersection, `called with false`).to.have.been.calledWith(false);
             });
+        });
+        it(`should invoke onEscape when pressing escape`, async () => {
+            const onEscape = stub();
+            testDriver.render(() => (
+                <Root>
+                    <div
+                        id="root-node"
+                        style={{ width: `100px`, height: `100px`, background: `green` }}
+                    >
+                        <Modal onEscape={onEscape} position="topRight">
+                            <div
+                                id="modalContent"
+                                style={{ width: `50px`, height: `50px`, background: `red` }}
+                            />
+                        </Modal>
+                    </div>
+                </Root>
+            ));
+
+            await keyboard.press(`Escape`);
+
+            expect(onEscape, `invoke on escape`).to.have.callCount(1);
         });
     });
     describe(`style`, () => {

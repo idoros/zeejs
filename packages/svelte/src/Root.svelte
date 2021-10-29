@@ -5,6 +5,7 @@
         watchFocus,
         watchClickOutside,
         watchMouseInside,
+        watchEscape,
         createBackdropParts
     } from '@zeejs/browser';
     import { setContext, onMount } from 'svelte';
@@ -28,11 +29,13 @@
         const { stop: stopFocus } = watchFocus(wrapper, rootLayer);
         const { stop: stopClickOutside } = watchClickOutside(wrapper, rootLayer, backdrop);
         const { stop: stopMouseInside } = watchMouseInside(wrapper, rootLayer, backdrop);
+        const { stop: stopEscape } = watchEscape(rootLayer);
         onChange();
         return () => {
             stopFocus();
             stopClickOutside();
             stopMouseInside();
+            stopEscape();
         };
     });
 </script>

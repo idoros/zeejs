@@ -9,7 +9,7 @@ chai.use(sinonChai);
 
 describe(`svelte popover`, () => {
     let testDriver: SvelteTestDriver;
-    const { clickIfPossible, click, hover } = getInteractionApi();
+    const { clickIfPossible, click, hover, keyboard } = getInteractionApi();
 
     before('setup test driver', () => {
         testDriver = new SvelteTestDriver({
@@ -517,6 +517,32 @@ describe(`svelte popover`, () => {
                 expect(onMouseIntersection, `catch mouse outside layer`).to.have.callCount(1);
                 expect(onMouseIntersection, `called with false`).to.have.been.calledWith(false);
             });
+        });
+        it(`should invoke onEscape when pressing escape`, async () => {
+            const onEscape = stub();
+            testDriver.render(
+                `
+                <script>
+                    import {Root, Popover} from '@zeejs/svelte';
+                    export let onEscape;
+                </script>
+                <Root>
+                    <div id="root-node" style="width: 100px; height: 100px; background: green;">
+                        <Popover onEscape={onEscape} positionX="after">
+                            <div
+                                id="popoverContent"
+                                style="width: 50px; height: 50px; background: red;"
+                            ></div>
+                        </Popover>
+                    </div>
+                </Root>
+            `,
+                { onEscape }
+            );
+
+            await keyboard.press(`Escape`);
+
+            expect(onEscape, `invoke escape`).to.have.callCount(1);
         });
     });
     describe(`style`, () => {

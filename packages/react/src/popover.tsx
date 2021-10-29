@@ -17,6 +17,7 @@ export interface PopoverProps {
     onClickOutside?: LayerProps['onClickOutside'];
     onFocusChange?: LayerProps['onFocusChange'];
     onMouseIntersection?: LayerProps['onMouseIntersection'];
+    onEscape?: LayerProps['onEscape'];
 }
 
 export const Popover = ({
@@ -34,6 +35,7 @@ export const Popover = ({
     onClickOutside,
     onFocusChange,
     onMouseIntersection,
+    onEscape,
 }: PopoverProps) => {
     const placeholderRef = useRef<HTMLSpanElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
@@ -90,6 +92,7 @@ export const Popover = ({
                     onClickOutside={onClickOutside}
                     onFocusChange={onFocusChange}
                     onMouseIntersection={onMouseIntersection}
+                    onEscape={onEscape}
                 >
                     <div ref={overlayRef} className={className} style={style}>
                         {children}

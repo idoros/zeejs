@@ -372,8 +372,33 @@ describe(`tooltip`, () => {
             });
         });
 
-        it.skip(`should be negative on escape press`, () => {
-            /*todo*/
+        it(`should be negative on escape press`, async () => {
+            // mouse escape -> overlay disappears
+            const onToggle = stub();
+            const stopPropagation = stub();
+            const { expectHTMLQuery } = testDriver.render(
+                () => `
+                <button id="anchor" style="width: 30px; height: 30px;">button</button>
+            `
+            );
+            const anchor = expectHTMLQuery(`#anchor`) as HTMLButtonElement;
+            const { isOpen, onEscape } = tooltip({ anchor, onToggle });
+            await hover(`#anchor`);
+            await waitFor(() => {
+                expect(isOpen(), `open on hover`).to.equal(true);
+            });
+            onToggle.reset();
+            const event = Object.assign({}, new KeyboardEvent('keydown'), {
+                stopPropagation,
+            });
+
+            onEscape(event);
+
+            await waitFor(() => {
+                expect(isOpen(), `close on out`).to.equal(false);
+                expect(onToggle, `close state on escape`).to.have.callCount(1);
+                expect(stopPropagation, `stopPropagation on escape event`).to.have.callCount(1);
+            });
         });
     });
 
