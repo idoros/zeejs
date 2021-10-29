@@ -1,13 +1,13 @@
 {
     "name": "@zeejs/test-browser-bridge",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "access to playwright API running in test-browser",
     "author": "Ido Rosenthal",
     "main": "./dist/index.js",
     "private": true,
     "scripts": {},
     "dependencies": {
-        "@zeejs/test-browser": "^0.2.0"
+        "@zeejs/test-browser": "^0.3.0"
     },
     "files": [
         "cjs",
