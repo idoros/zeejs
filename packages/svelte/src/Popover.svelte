@@ -15,6 +15,7 @@
     export let backdrop = `none`;
     export let onDisplayChange = ()=>{};
     export let onClickOutside;
+    export let ignoreAnchorClick;
     export let onFocusChange;
     export let onMouseIntersection;
     export let onEscape;
@@ -62,6 +63,24 @@
             }
         }
     }
+    const onClickOutsideWrap = (target) => {
+        const anchor = placeholderRef ? placeholderRef.parentElement : null;
+        // ignore click-outside in case there is no handler or
+        // in case `ignoreAnchorClick=true` and the target is within
+        // the opening anchor
+        if (
+            !onClickOutside ||
+            (ignoreAnchorClick &&
+                anchor &&
+                (target === anchor ||
+                    (target instanceof Node &&
+                        target.compareDocumentPosition(anchor) &
+                            anchor.DOCUMENT_POSITION_CONTAINS)))
+        ) {
+            return;
+        }
+        onClickOutside(target);
+    }
 </script>
 
 <span bind:this={placeholderRef}>
@@ -69,7 +88,7 @@
         <Layer
             overlap="window"
             backdrop={backdrop}
-            onClickOutside={onClickOutside}
+            onClickOutside={onClickOutsideWrap}
             onFocusChange={onFocusChange}
             onMouseIntersection={onMouseIntersection}
             onEscape={onEscape}

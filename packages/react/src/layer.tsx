@@ -51,6 +51,8 @@ export const Layer = ({
             }),
         []
     );
+    // update 
+    layer.settings.onClickOutside = onClickOutside;
 
     useEffect(() => {
         return () => {

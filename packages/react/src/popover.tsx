@@ -1,6 +1,6 @@
 import { Layer, LayerProps } from './layer';
 import { popover, OverlayPosition } from '@zeejs/browser';
-import React, { ReactNode, useRef, useEffect, useMemo } from 'react';
+import React, { ReactNode, useRef, useEffect, useMemo, useCallback } from 'react';
 
 export interface PopoverProps {
     children: ReactNode;
@@ -15,6 +15,7 @@ export interface PopoverProps {
     backdrop?: LayerProps['backdrop'];
     onDisplayChange?: (isPositioned: boolean) => void;
     onClickOutside?: LayerProps['onClickOutside'];
+    ignoreAnchorClick?: boolean;
     onFocusChange?: LayerProps['onFocusChange'];
     onMouseIntersection?: LayerProps['onMouseIntersection'];
     onEscape?: LayerProps['onEscape'];
@@ -33,6 +34,7 @@ export const Popover = ({
     backdrop = `none`,
     onDisplayChange = noop,
     onClickOutside,
+    ignoreAnchorClick,
     onFocusChange,
     onMouseIntersection,
     onEscape,
@@ -82,6 +84,28 @@ export const Popover = ({
             }
         }
     }, [show, positionX, positionY, avoidAnchor, matchWidth, matchHeight]);
+
+    const onClickOutsideWrap = useCallback(
+        (target: EventTarget) => {
+            const anchor = placeholderRef.current?.parentElement;
+            // ignore click-outside in case there is no handler or
+            // in case `ignoreAnchorClick=true` and the target is within
+            // the opening anchor
+            if (
+                !onClickOutside ||
+                (ignoreAnchorClick &&
+                    anchor &&
+                    (target === anchor ||
+                        (target instanceof Node &&
+                            target.compareDocumentPosition(anchor) &
+                                anchor.DOCUMENT_POSITION_CONTAINS)))
+            ) {
+                return;
+            }
+            onClickOutside(target);
+        },
+        [onClickOutside, ignoreAnchorClick]
+    );
     // ToDo: pass ref to layer - remove extra span
     return (
         <span ref={placeholderRef}>
@@ -89,7 +113,7 @@ export const Popover = ({
                 <Layer
                     overlap="window"
                     backdrop={backdrop}
-                    onClickOutside={onClickOutside}
+                    onClickOutside={onClickOutsideWrap}
                     onFocusChange={onFocusChange}
                     onMouseIntersection={onMouseIntersection}
                     onEscape={onEscape}
