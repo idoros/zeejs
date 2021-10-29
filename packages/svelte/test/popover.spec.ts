@@ -463,6 +463,47 @@ describe(`svelte popover`, () => {
             await click(`#popoverContent`);
             expect(onClickOutside, `click on root`).to.have.callCount(1);
         });
+        it(`should NOT invoke onClickOutside when clicking on the anchor with ignoreAnchorClick`, async () => {
+            const onClickOutside = stub();
+            const { updateProps } = testDriver.render(
+                `
+                <script>
+                    import {Root, Popover} from '@zeejs/svelte';
+                    export let onClickOutside;
+                    export let ignoreAnchorClick;
+                </script>
+                <Root>
+                    <div id="root-node" style="width: 100px; height: 100px; background: green;">
+                        <div
+                            id="inner-anchor-node"
+                            style="width: 100px; height: 100px; background: green;"
+                        ></div>
+                        <Popover onClickOutside={onClickOutside} ignoreAnchorClick={ignoreAnchorClick} positionX="after">
+                            <div
+                                id="popoverContent"
+                                style="width: 50px; height: 50px; background: red;"
+                            ></div>
+                        </Popover>
+                    </div>
+                </Root>
+            `,
+                { onClickOutside, ignoreAnchorClick: true }
+            );
+
+            await click(`#inner-anchor-node`, { force: true });
+
+            expect(onClickOutside, `click on anchor`).to.have.callCount(0);
+
+            await click(`body`, { force: true });
+
+            expect(onClickOutside, `click on body`).to.have.callCount(1);
+
+            updateProps({ ignoreAnchorClick: false });
+
+            await click(`#inner-anchor-node`, { force: true });
+
+            expect(onClickOutside, `ignoreAnchorClick=false`).to.have.callCount(2);
+        });
         it(`should invoke onFocusChange when focus moves in and out of popover`, async () => {
             const onFocusChange = stub();
             testDriver.render(
