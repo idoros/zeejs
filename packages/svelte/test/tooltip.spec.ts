@@ -200,6 +200,7 @@ describe(`svelte tooltip`, () => {
                 expect(parentNode).domElement().preceding(tooltipNode);
             });
 
+            await hover(`#other-node`);
             expectHTMLQuery(`#other-node`).focus();
 
             await waitFor(() => {

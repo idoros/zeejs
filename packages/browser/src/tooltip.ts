@@ -42,6 +42,9 @@ export const tooltip = ({
         updateOpen();
     };
     const onBlur = () => {
+        if (isMouseInOverlay) {
+            return;
+        }
         cancelAnimationFrame(blurBuffer);
         blurBuffer = requestAnimationFrame(() => {
             const activeElement = document.activeElement;

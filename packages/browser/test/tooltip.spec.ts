@@ -160,6 +160,29 @@ describe(`tooltip`, () => {
             });
         });
 
+        it(`should persist on mouse over and blur`, async () => {
+            // mouse moves over overlay -> blur
+            const onToggle = stub();
+            const { expectHTMLQuery } = testDriver.render(
+                () => `
+                <button id="anchor" style="width: 30px; height: 30px;">button</button>
+                <button id="other" style="width: 30px; height: 30px;">other button</button>
+            `
+            );
+            const anchor = expectHTMLQuery(`#anchor`) as HTMLButtonElement;
+            const { isOpen, flagMouseOverOverlay } = tooltip({ anchor, mouseDelay: 200, onToggle });
+            anchor.focus();
+            onToggle.reset();
+
+            flagMouseOverOverlay(true);
+            anchor.blur();
+
+            await waitFor(() => {
+                expect(isOpen(), `keep open on back`).to.equal(true);
+                expect(onToggle, `no open state toggle`).to.have.callCount(0);
+            });
+        });
+
         it(`should be negative on mouse out of overlay`, async () => {
             // mouse moves outside -> delay -> mouse over overlay -> mouse out of overlay -> delay -> overlay disappears
             const onToggle = stub();
@@ -309,7 +332,7 @@ describe(`tooltip`, () => {
         });
 
         it(`should be negative on blur`, async () => {
-            // focus out -> content disappears (async delay, doesn't matter where the mouse is)
+            // focus out -> content disappears (async delay, mouse outside)
             const onToggle = stub();
             const { expectHTMLQuery } = testDriver.render(
                 () => `
@@ -318,9 +341,8 @@ describe(`tooltip`, () => {
             `
             );
             const anchor = expectHTMLQuery(`#anchor`) as HTMLButtonElement;
-            const { isOpen, flagMouseOverOverlay } = tooltip({ anchor, mouseDelay: 200, onToggle });
+            const { isOpen } = tooltip({ anchor, mouseDelay: 200, onToggle });
             await hover(`#anchor`);
-            flagMouseOverOverlay(true);
             await waitFor(() => {
                 expect(isOpen(), `open on hover`).to.equal(true);
             });
