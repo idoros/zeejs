@@ -18,6 +18,7 @@
     -   focusChange notification when focus outside / inside logical layer
 -   **click outside** - notification for click outside of logical layer
 -   **mouse interaction** - notification for mouse enter / leave of logical layer
+-   **escape catching** - notification for escape press
 -   **server rendering** - single pass nested rendering of layers in the server
 -   **component primitives** - Tooltip, Popover, Modal
 -   **typed** - built with [TypeScript](https://www.typescriptlang.org/)

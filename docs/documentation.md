@@ -81,6 +81,10 @@ When initiating a layer, an optional `onMouseIntersection` handler can be set. T
 
 When initiating a layer, an optional `onFocusChange` handler can be set. The handler is called with `isFocused=true` whenever the focus is **moved into** the layer, or any nested layer within it, and with `isFocused=false` when it moved out.
 
+## escape
+
+When initiating a layer, an optional `onEscape` handler can be set. An escape `KeyboardEvent` that is not stopped and reaches the top is propagated down to each layer that handles escape until it is called on all the layers or one that calls `stopPropagation()` on the event.
+
 ## server rendering
 
 For implementations that support SSR, the layer content is rendered into the `origin element` on the server, and then moved or re-rendered into the correct `layer element` later on the client.
