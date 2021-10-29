@@ -623,6 +623,39 @@ describe(`react root-and-layer`, () => {
 
             expect(onClickOutside, `no invocation for nested click`).to.have.callCount(0);
         });
+
+        it(`should update onClickOutside handler`, async () => {
+            const onClickOutsideA = stub();
+            const onClickOutsideB = stub();
+            const { setData } = testDriver.render(
+                ({ onClickOutside }) => (
+                    <Root>
+                        <div
+                            id="root-node"
+                            style={{ width: `100px`, height: `100px`, background: `green` }}
+                        >
+                            <Layer onClickOutside={onClickOutside}>
+                                <div
+                                    id="layer-node"
+                                    style={{ width: `50px`, height: `50px`, background: `red` }}
+                                />
+                            </Layer>
+                        </div>
+                    </Root>
+                ),
+                { initialData: { onClickOutside: onClickOutsideA } }
+            );
+
+            await click(`#root-node`);
+
+            expect(onClickOutsideA, `A`).to.have.callCount(1);
+
+            setData({ onClickOutside: onClickOutsideB });
+            await click(`#root-node`);
+
+            expect(onClickOutsideA, `A`).to.have.callCount(1);
+            expect(onClickOutsideB, `B`).to.have.callCount(1);
+        });
     });
 
     describe(`mouse inside`, () => {
