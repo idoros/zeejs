@@ -38,3 +38,14 @@ export interface InteractionApi {
     viewportSize: () => Promise<ReturnType<Page['viewportSize']>>;
     clickIfPossible: (selector: string) => Promise<boolean>;
 }
+export type InteractionResponse =
+    | {
+          type: `success`;
+          value?: any;
+      }
+    | {
+          type: `error`;
+          msg: string;
+          value?: any;
+          stack?: string;
+      };

@@ -15,7 +15,7 @@ export function getInteractionApi(): InteractionApi {
                 if (response.type === `success`) {
                     return response.value;
                 } else if (response.type === `error`) {
-                    throw new Error(response.msg);
+                    throw new Error(response.msg as string);
                 }
             };
         }
