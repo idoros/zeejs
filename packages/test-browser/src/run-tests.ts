@@ -67,7 +67,8 @@ export async function runTests({
 
         const app = express();
         app.use(devMiddleware);
-        app.use(express.static(compiler.options.context || process.cwd()));
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        app.use(express.static(compiler.options.context || process.cwd()) as any);
 
         const { httpServer, port } = await safeListeningHttpServer(preferredPort, app);
         closables.push(httpServer);

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 const svelteCompiler = require(`svelte/compiler`);
 const glob = require(`glob`);
 const path = require(`path`);
