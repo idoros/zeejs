@@ -1,11 +1,7 @@
 import type { DOMLayer } from './root';
 import type { BackdropElements } from './update-layers';
 
-export function watchClickOutside(
-    wrapper: HTMLElement,
-    topLayer: DOMLayer,
-    backdrop: BackdropElements
-) {
+export function watchClickOutside(topLayer: DOMLayer, backdrop: BackdropElements) {
     let pointerDownLayers: ReturnType<DOMLayer['generateDisplayList']> | null = null;
     const onPointerDown = () => {
         // set available layers while mousedown to prevent any layer that
@@ -50,12 +46,12 @@ export function watchClickOutside(
         }
     };
 
-    wrapper.addEventListener(`pointerdown`, onPointerDown, { capture: true });
-    wrapper.addEventListener(`click`, onClick, { capture: true });
+    window.addEventListener(`pointerdown`, onPointerDown, { capture: true });
+    window.addEventListener(`click`, onClick, { capture: true });
     return {
         stop() {
-            wrapper.removeEventListener(`pointerdown`, onPointerDown);
-            wrapper.removeEventListener(`click`, onClick);
+            window.removeEventListener(`pointerdown`, onPointerDown);
+            window.removeEventListener(`click`, onClick);
         },
     };
 }

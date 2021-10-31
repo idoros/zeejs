@@ -34,7 +34,7 @@ describe(`click-outside`, () => {
         childLayer.element.appendChild(expectQuery(`#child-node`));
         updateLayers(container, rootLayer, backdrop);
 
-        watchClickOutside(container, rootLayer, backdrop);
+        watchClickOutside(rootLayer, backdrop);
 
         await click(`#root-node`);
 
@@ -63,7 +63,7 @@ describe(`click-outside`, () => {
         rootLayer.createLayer({ settings: { onClickOutside } });
         updateLayers(container, rootLayer, backdrop);
 
-        watchClickOutside(container, rootLayer, backdrop);
+        watchClickOutside(rootLayer, backdrop);
 
         await click(`#root-node`);
 
@@ -97,7 +97,7 @@ describe(`click-outside`, () => {
         deepLayer.element.appendChild(expectQuery(`#deep-node`));
         updateLayers(container, rootLayer, backdrop);
 
-        watchClickOutside(container, rootLayer, backdrop);
+        watchClickOutside(rootLayer, backdrop);
 
         await click(`#root-node`);
 
@@ -133,7 +133,7 @@ describe(`click-outside`, () => {
         bLayer.element.appendChild(expectQuery(`#layerB-node`));
         updateLayers(container, rootLayer, backdrop);
 
-        watchClickOutside(container, rootLayer, backdrop);
+        watchClickOutside(rootLayer, backdrop);
 
         await click(`#root-node`);
 
@@ -173,7 +173,7 @@ describe(`click-outside`, () => {
         backdrop.block.id = `backdrop`;
         updateLayers(container, rootLayer, backdrop);
 
-        watchClickOutside(container, rootLayer, backdrop);
+        watchClickOutside(rootLayer, backdrop);
 
         await click(`#backdrop`);
 
@@ -199,7 +199,7 @@ describe(`click-outside`, () => {
         backdrop.block.id = `backdrop`;
         updateLayers(container, rootLayer, backdrop);
 
-        watchClickOutside(container, rootLayer, backdrop);
+        watchClickOutside(rootLayer, backdrop);
 
         await click(`#backdrop`);
 
@@ -215,7 +215,7 @@ describe(`click-outside`, () => {
         `
         );
         const rootLayer = createRoot();
-        watchClickOutside(container, rootLayer, backdrop);
+        watchClickOutside(rootLayer, backdrop);
         rootLayer.element.appendChild(expectQuery(`#root-node`));
 
         // user: pointer down
@@ -238,5 +238,30 @@ describe(`click-outside`, () => {
 
         // click outside reported
         expect(onLayerClickOutside, `click outside`).to.have.callCount(1);
+    });
+
+    it(`should inform layer on root click (out of root)`, async function () {
+        this.timeout(3000);
+        const onClickOutside = stub();
+        const backdrop = createBackdropParts();
+        const { container, expectQuery } = testDriver.render(
+            () => `
+            <div id="root-node" style="width: 10px; height: 10px; background: green;"></div>
+            <div id="child-node" style="width: 20px; height: 20px; background: red;"></div>
+        `
+        );
+        container.style.width = `10px`;
+        container.style.height = `10px`;
+        const rootLayer = createRoot();
+        const childLayer = rootLayer.createLayer({ settings: { onClickOutside } });
+        rootLayer.element.appendChild(expectQuery(`#root-node`));
+        childLayer.element.appendChild(expectQuery(`#child-node`));
+        updateLayers(container, rootLayer, backdrop);
+
+        watchClickOutside(rootLayer, backdrop);
+
+        await click(`body`);
+
+        expect(onClickOutside, `catch click on root`).to.have.callCount(1);
     });
 });
