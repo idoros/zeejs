@@ -27,7 +27,7 @@
 
     onMount(() => {
         const { stop: stopFocus } = watchFocus(wrapper, rootLayer);
-        const { stop: stopClickOutside } = watchClickOutside(wrapper, rootLayer, backdrop);
+        const { stop: stopClickOutside } = watchClickOutside(rootLayer, backdrop);
         const { stop: stopMouseInside } = watchMouseInside(wrapper, rootLayer, backdrop);
         const { stop: stopEscape } = watchEscape(rootLayer);
         onChange();
