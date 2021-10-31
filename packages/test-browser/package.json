@@ -1,6 +1,6 @@
 {
     "name": "@zeejs/test-browser",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "description": "run tests within browser with access to playwright API based on mocha-pup",
     "author": "Ido Rosenthal",
     "main": "./dist/index.js",

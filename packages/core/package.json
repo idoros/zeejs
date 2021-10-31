@@ -1,6 +1,6 @@
 {
     "name": "@zeejs/core",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "description": "Layers state machine",
     "author": "Ido Rosenthal",
     "main": "./dist/index.js",
