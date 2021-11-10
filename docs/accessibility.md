@@ -4,8 +4,6 @@ Web Content Accessibility Guidelines (WCAG) 2.1
 
 ## Success criterions
 
-https://www.w3.org/TR/WCAG21/#content-on-hover-or-focus
-
 **Open questions**:
 
 - does `2.3.1 - Three Flashes or Below Threshold` apply to tooltips? should they stay visible for a minimum of time?
