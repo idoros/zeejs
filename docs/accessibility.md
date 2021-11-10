@@ -1,0 +1,96 @@
+# Accessibility
+
+Web Content Accessibility Guidelines (WCAG) 2.1
+
+## Success criterions
+
+https://www.w3.org/TR/WCAG21/#content-on-hover-or-focus
+
+**Open questions**:
+
+- does `2.3.1 - Three Flashes or Below Threshold` apply to tooltips? should they stay visible for a minimum of time?
+- how to validate library conformance with WCAG 2.1?
+- should `inert` background layers be also marked with `aria-hidden`?
+
+### Success Criterion 1.4.13 Content on Hover or Focus
+
+> ([link](https://www.w3.org/TR/WCAG21/#content-on-hover-or-focus))Where receiving and then removing pointer hover or keyboard focus triggers additional content to become visible and then hidden, the following are true: 
+
+- `Tooltip`:
+    - **dismissable**: mechanism to dismiss without pointer hover or keyboard focus
+        - closed on escape
+        - accepts user UI for custom dismissal
+    - **hoverable**: keep open when pointer is over additional content
+        - [ ] default to the behavior only if triggered by pointer hover
+        - [ ] add config to change default so that pointer always keep open
+    - **persistent**: content remains visible until hover or focus is removed or the user dismisses it
+
+### Success Criterion 2.1.1 Keyboard
+
+> ([link](https://www.w3.org/TR/WCAG21/#keyboard)) All functionality of the content is operable through a keyboard interface without requiring specific timings for individual keystrokes, except where the underlying function requires input that depends on the path of the user's movement and not just the endpoints.
+
+- all built in functionality is available through focus and escape
+
+### Success Criterion 2.1.2 No Keyboard Trap
+
+> ([link](https://www.w3.org/TR/WCAG21/#no-keyboard-trap)) If keyboard focus can be moved to a component of the page using a keyboard interface, then focus can be moved away from that component using only a keyboard interface, and, if it requires more than unmodified arrow or tab keys or other standard exit methods, the user is advised of the method for moving focus away. 
+
+- `Layer|Modal|Popover` supports backdrop property to control background interactivity
+    - `backdrop=none` - does not block any background interactivity and allows focus to be moved between layer and background
+    - `backdrop=block|hide` - blocks background interactivity and creates a focus trap that needs to be **dismissible by author code** that opened it
+- `Tooltip` is dismissed by escape or focus out
+- [ ] fix issue where tabbing forward from the last element moves focus to the first element - allow browser to control behavior
+
+### Success Criterion 2.1.3 Keyboard (No Exception)
+
+> ([link](https://www.w3.org/TR/WCAG21/#keyboard-no-exception)) All functionality of the content is operable through a keyboard interface without requiring specific timings for individual keystrokes.
+
+- `Layer|Modal|Popover` are opened and closed by author code and does not contain any specific timings for individual keystrokes
+- `Tooltip` is triggered by focus and dismissed by escape
+
+### Success Criterion 2.4.3 Focus Order
+
+> ([link](https://www.w3.org/TR/WCAG21/#focus-order)) If a Web page can be navigated sequentially and the navigation sequences affect meaning or operation, focusable components receive focus in an order that preserves meaning and operability. 
+
+- `backdrop=none` - any interactive elements within a `Layer` are inserted immediately after the anchor `origin element` that they originated from and are followed by the next interactive elements following it
+- `backdrop=block|hide` creates a focus trap of the interactive elements within that is dismiss when the `Layer` is closed
+    - [ ] default to `autoFocus` on the first focusable element
+    - when dismissed return focus to the previous focused element in the `Layer` below
+
+### Success Criterion 2.5.3: Label in Name
+
+> ([link](https://www.w3.org/WAI/WCAG21/Understanding/label-in-name.html)) For user interface components with labels that include text or images of text, the name contains the text that is presented visually.
+
+- [ ] `Layer`
+    - accept layer `aria-label` or `aria-labelledby`
+    - accept layer `aria-describeby`
+- [ ] `Modal|Popover`
+    - accept layer `aria-label` or `aria-labelledby`
+    - accept layer `aria-describeby`
+- [ ] `Tooltip`
+    - set `<tooltip-container>` layer
+        - `id=#`
+    - set `<tooltip-references>` element
+        - `aria-describedby=#`
+    - `interactive=true`
+        - set `<tooltip-container>` layer
+
+### Success Criterion 3.2.1 On Focus
+
+> ([link](https://www.w3.org/TR/WCAG21/#on-focus)) When any UI component receives focus, it does not initiate a change of context.
+
+- `Tooltip` dismissed with focus-within returns the focus to the anchor origin without reopening
+- `Layer|Popover|Modal` with `backdrop=block|hide` or focus-within are closed by the authors code and automatically returns the focus to the layer below - it is up to the **author that opens on focus to prevent reopening in such a case**
+
+### Success Criterion 4.1.2 Name, Role, Value
+
+> ([link](https://www.w3.org/TR/WCAG22/#name-role-value)) For all user interface components (including but not limited to: form elements, links and components generated by scripts), the name and role can be programmatically determined; states, properties, and values that can be set by the user can be programmatically set; and notification of changes to these items is available to user agents, including assistive technologies.
+
+- [ ] `Layer`
+    - accept `role`
+- [ ] `Modal|Popover`
+    - set layer `role=dialog`
+- [ ] `Tooltip`
+    - set `<tooltip-container role=tooltip>` layer
+    - `interactive=true`
+        - set `<tooltip-container role=dialog>` layer
