@@ -1,6 +1,6 @@
 import { tooltip, css } from '@zeejs/browser';
 import { HTMLTestDriver } from './html-test-driver';
-import { getInteractionApi } from '@zeejs/test-browser-bridge';
+import { getInteractionApi, a11ySnapshot, queryA11yNode } from '@zeejs/test-browser-bridge';
 import chai, { expect } from 'chai';
 import { stub } from 'sinon';
 import { waitFor, sleep } from 'promise-assist';
@@ -568,6 +568,145 @@ describe(`tooltip`, () => {
                 expect(overlayRect.bottom, `above`).to.be.approximately(anchorRect.top, 0.5);
                 expect(overlayRect.right, `left of`).to.be.approximately(anchorRect.left, 0.5);
             });
+        });
+    });
+
+    describe(`aria`, () => {
+        it(`should set overlay role=tooltip & and default to connect aria-labelledby`, async () => {
+            const { expectHTMLQuery } = testDriver.render(
+                () => `
+                <button id="trigger">origin</button>
+                <div id="layer">overlay</div>
+                
+            `
+            );
+            const anchor = expectHTMLQuery(`#trigger`) as HTMLButtonElement;
+            const overlay = expectHTMLQuery(`#layer`);
+
+            const { setAnchor } = tooltip({ anchor, overlay });
+
+            const snapshot = await a11ySnapshot({ interestingOnly: false });
+            expect(
+                queryA11yNode(snapshot, {
+                    role: `button`,
+                    name: `overlay`,
+                }),
+                `set aria-labelledby default`
+            ).to.not.equal(null);
+            expect(
+                queryA11yNode(snapshot, {
+                    role: `tooltip`,
+                    name: `overlay`,
+                }),
+                `add tooltip role`
+            ).to.not.equal(null);
+
+            setAnchor(document.createElement(`div`));
+
+            expect(anchor.getAttribute(`aria-labelledby`), `reverse laballedby`).to.equal(null);
+        });
+        it(`should respect initial anchor aria-labelledby & aria-describedby`, async () => {
+            const { expectHTMLQuery } = testDriver.render(
+                () => `
+                <label id="label">intended label</label>
+                <label id="desc">intended description</label>
+                <button id="trigger" aria-labelledby="label" aria-describedby="desc">origin</button>
+                <div id="layer">overlay</div>
+                
+            `
+            );
+            const anchor = expectHTMLQuery(`#trigger`) as HTMLButtonElement;
+            const overlay = expectHTMLQuery(`#layer`);
+
+            tooltip({ anchor, overlay });
+
+            const snapshot = await a11ySnapshot({ interestingOnly: false });
+            expect(
+                queryA11yNode(snapshot, {
+                    role: `button`,
+                    name: `intended label`,
+                    description: `intended description`,
+                }),
+                `source labelledby & describedby preserved`
+            ).to.not.equal(null);
+        });
+        it(`should insert overlay id on aria-labelledby placeholder`, async () => {
+            const { expectHTMLQuery } = testDriver.render(
+                () => `
+                <label id="label">a button with a tooltip</label>
+                <button id="trigger" aria-labelledby="label TOOLTIP">origin</button>
+                <div id="layer">overlay</div>
+            `
+            );
+            const anchor = expectHTMLQuery(`#trigger`) as HTMLButtonElement;
+            const overlay = expectHTMLQuery(`#layer`);
+
+            const { setAnchor } = tooltip({ anchor, overlay });
+
+            const snapshot = await a11ySnapshot({ interestingOnly: false });
+            expect(
+                queryA11yNode(snapshot, {
+                    role: `button`,
+                    name: `a button with a tooltip overlay`,
+                }),
+                `labelledby from both references`
+            ).to.not.equal(null);
+
+            setAnchor(document.createElement(`div`));
+
+            expect(anchor.getAttribute(`aria-labelledby`), `reverse laballedby`).to.equal(
+                `label TOOLTIP`
+            );
+        });
+        it(`should set overlay id on aria-describedby placeholder`, async () => {
+            const { expectHTMLQuery } = testDriver.render(
+                () => `
+                <button id="trigger" aria-describedby="TOOLTIP">origin</button>
+                <div id="layer">overlay</div>
+            `
+            );
+            const anchor = expectHTMLQuery(`#trigger`) as HTMLButtonElement;
+            const overlay = expectHTMLQuery(`#layer`);
+
+            const { setAnchor } = tooltip({ anchor, overlay });
+
+            const snapshot = await a11ySnapshot({ interestingOnly: false });
+            expect(
+                queryA11yNode(snapshot, {
+                    role: `button`,
+                    name: `origin`,
+                    description: `overlay`,
+                }),
+                `aria-describedby referencing tooltip id`
+            ).to.not.equal(null);
+
+            setAnchor(document.createElement(`div`));
+
+            expect(anchor.getAttribute(`aria-describedby`), `reverse describedby`).to.equal(
+                `TOOLTIP`
+            );
+        });
+        it(`should not connect aria-labelledby when aria-label exist`, async () => {
+            const { expectHTMLQuery } = testDriver.render(
+                () => `
+                <button id="trigger" aria-label="inline label">origin</button>
+                <div id="layer">overlay</div>
+                
+            `
+            );
+            const anchor = expectHTMLQuery(`#trigger`) as HTMLButtonElement;
+            const overlay = expectHTMLQuery(`#layer`);
+
+            tooltip({ anchor, overlay });
+
+            const snapshot = await a11ySnapshot({ interestingOnly: false });
+            expect(
+                queryA11yNode(snapshot, {
+                    role: `button`,
+                    name: `inline label`,
+                }),
+                `labelledby not set`
+            ).to.not.equal(null);
         });
     });
 });
