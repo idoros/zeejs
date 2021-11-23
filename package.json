@@ -10,7 +10,7 @@
         "clean": "rimraf ./packages/*/dist",
         "build": "tsc --build && lerna run build:after --stream",
         "watch": "tsc --build -w && lerna run build:after --stream",
-        "pretest": "yarn build && yarn test:types && yarn test:lint",
+        "pretest": "npm run build && npm run test:types && npm run test:lint",
         "test:types": "tsc --noEmit",
         "test:lint": "eslint . --ext .js,.ts,.tsx -f codeframe",
         "test": "lerna run test",
