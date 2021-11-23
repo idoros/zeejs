@@ -31,8 +31,6 @@
         "@types/sinon-chai": "^3.2.5",
         "@typescript-eslint/eslint-plugin": "^5.4.0",
         "@typescript-eslint/parser": "^5.4.0",
-        "@zeejs/test-browser": "^0.3.1",
-        "@zeejs/test-browser-bridge": "^0.3.1",
         "chai": "^4.3.4",
         "chai-subset": "^1.6.0",
         "cross-env": "^7.0.3",
