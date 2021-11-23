@@ -8,7 +8,7 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                node-version: [12]
+                node-version: [16]
                 os: [ubuntu-latest, windows-latest, macOS-latest]
         steps:
             - uses: actions/checkout@v2
@@ -16,7 +16,7 @@ jobs:
               uses: actions/setup-node@v2
               with:
                   node-version: ${{ matrix.node-version }}
+                  cache: npm
             - uses: microsoft/playwright-github-action@v1
-            - run: npm i -g yarn@1
-            - run: yarn
-            - run: yarn test
+            - run: npm ci
+            - run: npm run test
