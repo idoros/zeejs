@@ -641,6 +641,23 @@ describe(`tooltip`, () => {
                         0.5
                     );
                 });
+
+                updatePosition({
+                    margin: 0,
+                });
+
+                await waitFor(() => {
+                    const anchorRect = anchor.getBoundingClientRect();
+                    const overlayRect = overlay.getBoundingClientRect();
+                    expect(overlayRect.top, `below + 0`).to.be.approximately(
+                        anchorRect.bottom,
+                        0.5
+                    );
+                    expect(overlayRect.left, `right of + 0`).to.be.approximately(
+                        anchorRect.right,
+                        0.5
+                    );
+                });
             });
         });
     });

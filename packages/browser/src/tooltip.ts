@@ -195,9 +195,9 @@ export const tooltip = ({
             y?: OverlayPosition;
             margin?: number;
         }) {
-            positionX = x || positionX; //`center`;
-            positionY = y || positionY; //`before`;
-            margin = newMargin || margin;
+            positionX = x || positionX;
+            positionY = y || positionY;
+            margin = newMargin ?? margin;
             if (bindPosition) {
                 bindPosition.updateOptions({
                     x: positionX,
