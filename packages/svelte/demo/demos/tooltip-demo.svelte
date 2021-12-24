@@ -9,6 +9,7 @@
         // mouseDelay: 500,
         positionX: `center`,
         positionY: `before`,
+        margin: 0,
     };
 
     function formChange(event) {
@@ -16,6 +17,7 @@
         tooltipOptions = {
             positionX: data.get(`positionX`),
             positionY: data.get(`positionY`),
+            margin: Number(data.get(`margin`)),
         };
     }
 </script>
@@ -23,6 +25,7 @@
 <h2>Tooltip</h2>
 <form
     on:change={formChange}
+    on:keyup={formChange}
 >
     <label for={id + `-positionX`}>position X</label>
     <select
@@ -48,6 +51,13 @@
         <option value="end" label="end" />
         <option value="after" label="after" />
     </select>
+    <label for={id + `-margin`}>margin</label>
+    <input
+        type="number"
+        id={id + `-margin`}
+        name="margin"
+        value={tooltipOptions.margin}
+    />
 </form>
 <div
     style="
@@ -61,6 +71,7 @@
         link<Tooltip
             positionX={tooltipOptions.positionX}
             positionY={tooltipOptions.positionY}
+            margin={tooltipOptions.margin}
         >
             <Box shadow>
                 <Box shadow style="padding: 0.5em;">
@@ -73,6 +84,7 @@
         button<Tooltip
             positionX={tooltipOptions.positionX}
             positionY={tooltipOptions.positionY}
+            margin={tooltipOptions.margin}
         >
             <Box shadow style="padding: 0.5em;">
                 Tooltip from {`<button />`}
@@ -83,6 +95,7 @@
         div with tip<Tooltip
             positionX={tooltipOptions.positionX}
             positionY={tooltipOptions.positionY}
+            margin={tooltipOptions.margin}
         >
             <Box shadow style="padding: 0.5em; max-width: 20em;">
                 Don't forget to set the tooltip anchor to be tabbable for keyboard
@@ -94,6 +107,7 @@
         interactive tooltip<Tooltip
             positionX={tooltipOptions.positionX}
             positionY={tooltipOptions.positionY}
+            margin={tooltipOptions.margin}
         >
             <Box
                 shadow
@@ -106,6 +120,7 @@
                     nested tooltip<Tooltip
                         positionX={tooltipOptions.positionX}
                         positionY={tooltipOptions.positionY}
+                        margin={tooltipOptions.margin}
                     >
                         <Box shadow style="padding: 0.5em;">
                             Tooltip from{' '}
@@ -113,6 +128,7 @@
                                 tooltip?<Tooltip
                                     positionX={tooltipOptions.positionX}
                                     positionY={tooltipOptions.positionY}
+                                    margin={tooltipOptions.margin}
                                 >
                                     <Box shadow style="padding: 0.5em;">
                                         ...from tooltip
