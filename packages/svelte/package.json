@@ -15,7 +15,7 @@
         "@zeejs/core": "^0.3.1"
     },
     "devDependencies": {
-        "svelte": "^3.44.2",
+        "svelte": "^3.44.3",
         "svelte-loader": "^3.1.2"
     },
     "files": [
