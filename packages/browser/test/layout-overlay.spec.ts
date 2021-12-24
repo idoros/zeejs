@@ -436,6 +436,102 @@ describe(`layout-overlay`, () => {
 
             stop();
         });
+        describe(`margin`, () => {
+            it(`should set overlay with positive margin`, () => {
+                const { expectQuery, expectHTMLQuery } = testDriver.render(
+                    () => ` 
+                        <div style="width: 400px; height: 400px; display: grid; justify-items: center; align-content: center;"> 
+                            <div id="anchor" style="width: 100px; height: 200px; background: blue;"></div> 
+                        </div> 
+                        <div id="overlay" style="background: green;" /> 
+                    `
+                );
+                const anchor = expectQuery(`#anchor`);
+                const overlay = expectHTMLQuery(`#overlay`);
+
+                const { stop } = layoutOverlay(anchor, overlay, {
+                    x: `before`,
+                    y: `after`,
+                    margin: 5,
+                });
+
+                const refRect = anchor.getBoundingClientRect();
+                const overlayRect = overlay.getBoundingClientRect();
+                expect(overlayRect.x, `before x - 5`).to.be.approximately(
+                    refRect.x - overlayRect.width - 5,
+                    1
+                );
+                expect(overlayRect.y, `after y + 5`).to.be.approximately(refRect.bottom + 5, 1);
+
+                stop();
+            });
+            it(`should set overlay with negative margin`, () => {
+                const { expectQuery, expectHTMLQuery } = testDriver.render(
+                    () => ` 
+                        <div style="width: 400px; height: 400px; display: grid; justify-items: center; align-content: center;"> 
+                            <div id="anchor" style="width: 100px; height: 200px; background: blue;"></div> 
+                        </div> 
+                        <div id="overlay" style="background: green;" /> 
+                    `
+                );
+                const anchor = expectQuery(`#anchor`);
+                const overlay = expectHTMLQuery(`#overlay`);
+
+                const { stop } = layoutOverlay(anchor, overlay, {
+                    x: `before`,
+                    y: `after`,
+                    margin: -5,
+                });
+
+                const refRect = anchor.getBoundingClientRect();
+                const overlayRect = overlay.getBoundingClientRect();
+                expect(overlayRect.x, `before x - -5`).to.be.approximately(
+                    refRect.x - overlayRect.width - -5,
+                    1
+                );
+                expect(overlayRect.y, `after y + -5`).to.be.approximately(refRect.bottom + -5, 1);
+
+                stop();
+            });
+            it(`should not set margin when overlapping (start, center, end)`, () => {
+                const { expectQuery, expectHTMLQuery } = testDriver.render(
+                    () => ` 
+                        <div style="width: 400px; height: 400px; display: grid; justify-items: center; align-content: center;"> 
+                            <div id="anchor" style="width: 100px; height: 200px; background: blue;"></div> 
+                        </div> 
+                        <div id="overlay" style="background: green;" /> 
+                    `
+                );
+                const anchor = expectQuery(`#anchor`);
+                const overlay = expectHTMLQuery(`#overlay`);
+
+                const { stop, updateOptions } = layoutOverlay(anchor, overlay, {
+                    x: `center`,
+                    y: `start`,
+                    margin: 5,
+                });
+
+                let refRect = anchor.getBoundingClientRect();
+                let overlayRect = overlay.getBoundingClientRect();
+                expect(overlayRect.x + overlayRect.width / 2, `center x`).to.be.approximately(
+                    refRect.x + overlayRect.width / 2,
+                    1
+                );
+                expect(overlayRect.y, `start y`).to.be.approximately(refRect.y, 1);
+
+                updateOptions({
+                    x: `start`,
+                    y: `end`,
+                });
+
+                refRect = anchor.getBoundingClientRect();
+                overlayRect = overlay.getBoundingClientRect();
+                expect(overlayRect.left, `start x`).to.be.approximately(refRect.left, 1);
+                expect(overlayRect.bottom, `end y`).to.be.approximately(refRect.bottom, 1);
+
+                stop();
+            });
+        });
     });
     describe(`configure size`, () => {
         it(`should set overlay with unbound size`, () => {
@@ -552,6 +648,44 @@ describe(`layout-overlay`, () => {
                 width: 100,
                 height: 200,
             });
+
+            stop();
+        });
+        it(`should be overflowed by margin`, () => {
+            const onOverflow = stub();
+            const { expectQuery, expectHTMLQuery } = testDriver.render(
+                () => `
+                    <style>
+                        body {overflow: hidden;}
+                    </style>
+                    <div id="anchor" style=" 
+                        position: absolute; top: 90vh; left: 90vw; 
+                        width: 5vw; height: 5vh; background: green;" 
+                    ></div> 
+                    <div id="overlay" style="
+                        width: 5vw; height: 5vh;
+                        outline: 1px solid blue;"
+                    ></div> 
+                `
+            );
+            const anchor = expectQuery(`#anchor`);
+            const overlay = expectHTMLQuery(`#overlay`);
+
+            const { stop } = layoutOverlay(anchor, overlay, {
+                x: `after`,
+                y: `after`,
+                margin: 5,
+                onOverflow,
+            });
+
+            expect(onOverflow).to.have.callCount(1);
+            const { overlayBounds } = onOverflow.getCall(0).args[0];
+            expect(overlayBounds.x + overlayBounds.width, `x out by margin`).to.eql(
+                document.documentElement.clientWidth + 5
+            );
+            expect(overlayBounds.y + overlayBounds.height, `y out by margin`).to.eql(
+                document.documentElement.clientHeight + 5
+            );
 
             stop();
         });

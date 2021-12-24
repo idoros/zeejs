@@ -1,6 +1,7 @@
 interface OverlayOptions {
     x: OverlayPosition;
     y: OverlayPosition;
+    margin: number;
     width: boolean;
     height: boolean;
     onOverflow: (data: OverflowData) => void;
@@ -73,6 +74,7 @@ export const layoutOverlay = (
         anchor,
         x: options.x || `center`,
         y: options.y || `center`,
+        margin: options.margin ?? 0,
         width: options.width ?? true,
         height: options.height ?? true,
         init: {
@@ -219,7 +221,7 @@ function update(overlay: HTMLElement) {
     if (!overlayConfig) {
         return;
     }
-    const { anchor, x, y, onOverflow } = overlayConfig;
+    const { anchor, x, y, margin, onOverflow } = overlayConfig;
     const anchorBounds = anchor.getBoundingClientRect();
     overlay.style.position = `absolute`;
     updateSize(`width`, anchorBounds, overlayConfig, overlay);
@@ -237,8 +239,8 @@ function update(overlay: HTMLElement) {
     if (offsetParent && offsetParent.tagName !== `BODY`) {
         ({ x: offsetX, y: offsetY } = offsetParent.getBoundingClientRect());
     }
-    const yPos = getPosition(y, `y`, anchorBounds, overlayBounds);
-    const xPos = getPosition(x, `x`, anchorBounds, overlayBounds);
+    const yPos = getPosition(y, margin, `y`, anchorBounds, overlayBounds);
+    const xPos = getPosition(x, margin, `x`, anchorBounds, overlayBounds);
     const desiredY = yPos + scrollY - offsetY;
     const desiredX = xPos + scrollX - offsetX;
     overlay.style.top = desiredY + `px`;
@@ -310,14 +312,20 @@ function restoreSize(dir: `width` | `height`, overlayConfig: OverlayConfig, over
         init[overflow] = UNSET;
     }
 }
-function getPosition(pos: OverlayPosition, dir: `x` | `y`, refRect: DOMRect, overlayRect: DOMRect) {
+function getPosition(
+    pos: OverlayPosition,
+    margin: number,
+    dir: `x` | `y`,
+    refRect: DOMRect,
+    overlayRect: DOMRect
+) {
     const sizeField = dir === `x` ? `width` : `height`;
     const refPos = refRect[dir];
     const refSize = refRect[sizeField];
     const overlaySize = overlayRect[sizeField];
     switch (pos) {
         case `before`:
-            return refPos - overlaySize;
+            return refPos - overlaySize - margin;
         case `start`:
             return refPos;
         case `center`:
@@ -325,6 +333,6 @@ function getPosition(pos: OverlayPosition, dir: `x` | `y`, refRect: DOMRect, ove
         case `end`:
             return refPos + refSize - overlaySize;
         case `after`:
-            return refPos + refSize;
+            return refPos + refSize + margin;
     }
 }

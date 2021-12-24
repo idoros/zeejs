@@ -9,6 +9,7 @@ interface TooltipOptions {
     isInOverlay?: (element: Element, overlay: Element) => boolean;
     positionX?: OverlayPosition;
     positionY?: OverlayPosition;
+    margin?: number;
 }
 
 export const tooltip = ({
@@ -19,6 +20,7 @@ export const tooltip = ({
     isInOverlay,
     positionX = `center`,
     positionY = `before`,
+    margin = 0,
 }: TooltipOptions) => {
     let isFocusHold = false;
     let isMouseIn = false;
@@ -115,9 +117,10 @@ export const tooltip = ({
             bindPosition = layoutOverlay(anchor, overlay, {
                 x: positionX,
                 y: positionY,
+                margin,
                 height: false,
                 width: false,
-                onOverflow: keepInView,
+                onOverflow: (data) => keepInView(data, { avoidAnchor: true, margin }),
             });
             overlay.classList.remove(layoutOverlay.NOT_PLACED);
         } else if (!newOpenState) {
@@ -183,13 +186,23 @@ export const tooltip = ({
         flagOverlayFocus,
         onEscape,
         setOverlay,
-        updatePosition({ x, y }: { x?: OverlayPosition; y?: OverlayPosition }) {
-            positionX = x || `center`;
-            positionY = y || `before`;
+        updatePosition({
+            x,
+            y,
+            margin: newMargin,
+        }: {
+            x?: OverlayPosition;
+            y?: OverlayPosition;
+            margin?: number;
+        }) {
+            positionX = x || positionX; //`center`;
+            positionY = y || positionY; //`before`;
+            margin = newMargin || margin;
             if (bindPosition) {
                 bindPosition.updateOptions({
                     x: positionX,
                     y: positionY,
+                    margin,
                 });
             }
         },
