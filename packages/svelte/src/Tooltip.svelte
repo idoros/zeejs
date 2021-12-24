@@ -6,6 +6,7 @@
     export let mouseDelay;
     export let positionX;
     export let positionY;
+    export let margin;
 
     let placeholderRef;
     let overlayRef;
@@ -17,7 +18,8 @@
         mouseDelay,
         isInOverlay: isContainedBy,
         positionX,
-        positionY
+        positionY,
+        margin,
     });
 
     onMount(() => {
@@ -36,6 +38,7 @@
         tooltipLogic.updatePosition({
             x: positionX,
             y: positionY,
+            margin,
         });
     }
 </script>
