@@ -10,6 +10,7 @@ export const PopoverDemo = ({ children }: { children: React.ReactNode }) => {
         avoidAnchor: false,
         positionX: `center` as OverlayPosition,
         positionY: `after` as OverlayPosition,
+        margin: 0,
         matchWidth: false,
         matchHeight: false,
         backdrop: `none` as LayerProps['backdrop'],
@@ -81,6 +82,15 @@ export const PopoverDemo = ({ children }: { children: React.ReactNode }) => {
                     <option value="end" label="end" />
                     <option value="after" label="after" />
                 </select>
+                <label htmlFor={id + `-margin`}>margin</label>
+                <input
+                    id={id + `-margin`}
+                    type="number"
+                    value={popoverData.margin}
+                    onChange={({ target }) =>
+                        updateLayer((data) => ({ ...data, margin: Number(target.value) }))
+                    }
+                ></input>
                 <label>
                     match width
                     <input
@@ -125,6 +135,7 @@ export const PopoverDemo = ({ children }: { children: React.ReactNode }) => {
                         avoidAnchor={popoverData.avoidAnchor}
                         positionX={popoverData.positionX}
                         positionY={popoverData.positionY}
+                        margin={popoverData.margin}
                         matchWidth={popoverData.matchWidth}
                         matchHeight={popoverData.matchHeight}
                         backdrop={popoverData.backdrop}

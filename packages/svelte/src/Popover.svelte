@@ -9,6 +9,7 @@
     export let show = true;
     export let positionX = 'center';
     export let positionY = 'after';
+    export let margin = 0;
     export let avoidAnchor = false;
     export let matchWidth = false;
     export let matchHeight = false;
@@ -45,6 +46,7 @@
             const options = {
                 positionX,
                 positionY,
+                margin,
                 avoidAnchor,
                 matchWidth,
                 matchHeight,
