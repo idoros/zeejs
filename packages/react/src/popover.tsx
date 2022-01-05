@@ -9,6 +9,7 @@ export interface PopoverProps {
     show?: boolean;
     positionX?: OverlayPosition;
     positionY?: OverlayPosition;
+    margin?: number;
     avoidAnchor?: boolean;
     matchWidth?: boolean;
     matchHeight?: boolean;
@@ -28,6 +29,7 @@ export const Popover = ({
     show = true,
     positionX = 'center',
     positionY = 'after',
+    margin = 0,
     avoidAnchor = false,
     matchWidth = false,
     matchHeight = false,
@@ -66,6 +68,7 @@ export const Popover = ({
             const options = {
                 positionX,
                 positionY,
+                margin,
                 avoidAnchor,
                 matchWidth,
                 matchHeight,
@@ -83,7 +86,7 @@ export const Popover = ({
                 onDisplayChange(true);
             }
         }
-    }, [show, positionX, positionY, avoidAnchor, matchWidth, matchHeight]);
+    }, [show, positionX, positionY, margin, avoidAnchor, matchWidth, matchHeight]);
 
     const onClickOutsideWrap = useCallback(
         (target: EventTarget) => {

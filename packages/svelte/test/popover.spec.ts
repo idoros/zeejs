@@ -201,6 +201,84 @@ describe(`svelte popover`, () => {
             });
         });
         it.skip(`should configure overflow modes (x,y,both,none)`);
+        describe(`margin`, () => {
+            it(`should space from anchor`, async () => {
+                const { expectHTMLQuery } = testDriver.render(`
+                    <script>
+                        import {Root, Popover} from '@zeejs/svelte';
+                    </script>
+                    <Root>
+                        <div style="width: 300px;height: 300px;display: grid;justify-items: center;align-content: center;">
+                            <div
+                                id="parent-node"
+                                style="width: 100px; height: 40px; background: red;"
+                            >
+                                <Popover positionX="before" positionY="before" margin={10}>
+                                    <div
+                                        id="popover-node"
+                                        style="width: 80px; height: 20px; background: green;"
+                                    ></div>
+                                </Popover>
+                            </div>
+                        </div>
+                    </Root>
+                `);
+
+                await waitFor(() => {
+                    const popoverNode = expectHTMLQuery(`#popover-node`);
+                    const parentNode = expectHTMLQuery(`#parent-node`);
+                    const popoverBounds = popoverNode.getBoundingClientRect();
+                    const parentBounds = parentNode.getBoundingClientRect();
+                    expect(popoverBounds.bottom, `popover above - margin`).to.equal(
+                        parentBounds.top - 10
+                    );
+                    expect(popoverBounds.right, `popover left of - margin`).to.equal(
+                        parentBounds.left - 10
+                    );
+                });
+            });
+            it(`should update when changed`, async () => {
+                const { expectHTMLQuery, updateProps } = testDriver.render(
+                    `
+                        <script>
+                            import {Root, Popover} from '@zeejs/svelte';
+                            export let margin;
+                        </script>
+                        <Root>
+                            <div style="width: 300px;height: 300px;display: grid;justify-items: center;align-content: center;">
+                                <div
+                                    id="parent-node"
+                                    style="width: 100px; height: 40px; background: red;"
+                                >
+                                    <Popover positionX="before" positionY="before" margin={margin}>
+                                        <div
+                                            id="popover-node"
+                                            style="width: 80px; height: 20px; background: green;"
+                                        ></div>
+                                    </Popover>
+                                </div>
+                            </div>
+                        </Root>
+                    `,
+                    { margin: 10 }
+                );
+
+                updateProps({ margin: 20 });
+
+                await waitFor(() => {
+                    const popoverNode = expectHTMLQuery(`#popover-node`);
+                    const parentNode = expectHTMLQuery(`#parent-node`);
+                    const popoverBounds = popoverNode.getBoundingClientRect();
+                    const parentBounds = parentNode.getBoundingClientRect();
+                    expect(popoverBounds.bottom, `popover above - margin`).to.equal(
+                        parentBounds.top - 20
+                    );
+                    expect(popoverBounds.right, `popover left of - margin`).to.equal(
+                        parentBounds.left - 20
+                    );
+                });
+            });
+        });
     });
     describe(`size`, () => {
         it(`should keep original by default`, () => {

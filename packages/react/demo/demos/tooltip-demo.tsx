@@ -9,6 +9,7 @@ export const TooltipDemo = () => {
         // mouseDelay: 500,
         positionX: `center` as OverlayPosition,
         positionY: `before` as OverlayPosition,
+        margin: 0,
     });
 
     return (
@@ -49,6 +50,18 @@ export const TooltipDemo = () => {
                     <option value="end" label="end" />
                     <option value="after" label="after" />
                 </select>
+                <label htmlFor={id + `-margin`}>margin</label>
+                <input
+                    type="number"
+                    id={id + `-margin`}
+                    value={tooltipOptions.margin}
+                    onChange={({ target }) => {
+                        updateOptions((data) => ({
+                            ...data,
+                            margin: Number(target.value),
+                        }));
+                    }}
+                />
             </form>
             <div
                 style={{
@@ -63,6 +76,7 @@ export const TooltipDemo = () => {
                     <Tooltip
                         positionX={tooltipOptions.positionX}
                         positionY={tooltipOptions.positionY}
+                        margin={tooltipOptions.margin}
                     >
                         <Box shadow style={{ padding: `0.5em` }}>
                             Tooltip from {`<a />`}
@@ -74,6 +88,7 @@ export const TooltipDemo = () => {
                     <Tooltip
                         positionX={tooltipOptions.positionX}
                         positionY={tooltipOptions.positionY}
+                        margin={tooltipOptions.margin}
                     >
                         <Box shadow style={{ padding: `0.5em` }}>
                             Tooltip from {`<button />`}
@@ -85,6 +100,7 @@ export const TooltipDemo = () => {
                     <Tooltip
                         positionX={tooltipOptions.positionX}
                         positionY={tooltipOptions.positionY}
+                        margin={tooltipOptions.margin}
                     >
                         <Box shadow style={{ maxWidth: `20em`, padding: `0.5em` }}>
                             Don't forget to set the tooltip anchor to be tabbable for keyboard
@@ -97,6 +113,7 @@ export const TooltipDemo = () => {
                     <Tooltip
                         positionX={tooltipOptions.positionX}
                         positionY={tooltipOptions.positionY}
+                        margin={tooltipOptions.margin}
                     >
                         <Box
                             shadow
@@ -108,6 +125,7 @@ export const TooltipDemo = () => {
                                 <Tooltip
                                     positionX={tooltipOptions.positionX}
                                     positionY={tooltipOptions.positionY}
+                                    margin={tooltipOptions.margin}
                                 >
                                     <Box shadow style={{ padding: `0.5em` }}>
                                         Tooltip from{' '}
@@ -116,6 +134,7 @@ export const TooltipDemo = () => {
                                             <Tooltip
                                                 positionX={tooltipOptions.positionX}
                                                 positionY={tooltipOptions.positionY}
+                                                margin={tooltipOptions.margin}
                                             >
                                                 <Box shadow style={{ padding: `0.5em` }}>
                                                     ...from tooltip

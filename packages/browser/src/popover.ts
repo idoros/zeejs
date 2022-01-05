@@ -4,6 +4,7 @@ import { keepInView, KeepInViewData } from './keep-in-view';
 interface PopoverOptions {
     positionX: OverlayPosition;
     positionY: OverlayPosition;
+    margin: number;
     avoidAnchor: boolean;
     matchWidth: boolean;
     matchHeight: boolean;
@@ -12,6 +13,7 @@ interface PopoverOptions {
 const defaultOptions: PopoverOptions = {
     positionX: `center`,
     positionY: `after`,
+    margin: 0,
     avoidAnchor: false,
     matchWidth: false,
     matchHeight: false,
@@ -24,10 +26,11 @@ export const popover = () => {
     const getOptions = () => ({
         x: options.positionX,
         y: options.positionY,
+        margin: options.margin,
         width: options.matchWidth,
         height: options.matchHeight,
         onOverflow: (data: KeepInViewData) =>
-            keepInView(data, { avoidAnchor: options.avoidAnchor }),
+            keepInView(data, { avoidAnchor: options.avoidAnchor, margin: options.margin }),
     });
     return {
         open(

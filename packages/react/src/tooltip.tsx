@@ -7,9 +7,10 @@ export interface TooltipProps {
     mouseDelay?: number;
     positionX?: OverlayPosition;
     positionY?: OverlayPosition;
+    margin?: number;
 }
 
-export const Tooltip = ({ children, mouseDelay, positionX, positionY }: TooltipProps) => {
+export const Tooltip = ({ children, mouseDelay, positionX, positionY, margin }: TooltipProps) => {
     const [isOpen, onToggle] = useState(false);
     const tooltipLogic = useMemo(
         () =>
@@ -19,6 +20,7 @@ export const Tooltip = ({ children, mouseDelay, positionX, positionY }: TooltipP
                 isInOverlay: isContainedBy,
                 positionX,
                 positionY,
+                margin,
             }),
         []
     );
@@ -42,8 +44,9 @@ export const Tooltip = ({ children, mouseDelay, positionX, positionY }: TooltipP
         tooltipLogic.updatePosition({
             x: positionX,
             y: positionY,
+            margin,
         });
-    }, [positionX, positionY]);
+    }, [positionX, positionY, margin]);
 
     return (
         <span ref={placeholderRef}>

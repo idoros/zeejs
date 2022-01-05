@@ -569,5 +569,96 @@ describe(`tooltip`, () => {
                 expect(overlayRect.right, `left of`).to.be.approximately(anchorRect.left, 0.5);
             });
         });
+
+        describe(`margin`, () => {
+            it(`should position with extra margin`, async () => {
+                const { expectHTMLQuery } = testDriver.render(
+                    () => `
+                    <div style="height: 100vh; display: grid; align-items: center; justify-content: center;">
+                        <button id="anchor" style="width: 30px; height: 30px;">anchor</button>
+                    </div>
+                    <span id="overlay">overlay</span>
+                `
+                );
+                const anchor = expectHTMLQuery(`#anchor`) as HTMLButtonElement;
+                const overlay = expectHTMLQuery(`#overlay`);
+
+                tooltip({
+                    anchor,
+                    overlay,
+                    positionX: `after`,
+                    positionY: `before`,
+                    margin: 10,
+                });
+
+                anchor.focus();
+
+                await waitFor(() => {
+                    const anchorRect = anchor.getBoundingClientRect();
+                    const overlayRect = overlay.getBoundingClientRect();
+                    expect(Math.round(overlayRect.bottom), `above - 10`).to.equal(
+                        anchorRect.top - 10
+                    );
+                    expect(Math.round(overlayRect.left), `right of + 10`).to.equal(
+                        anchorRect.right + 10
+                    );
+                });
+            });
+            it(`should update margin`, async () => {
+                const { expectHTMLQuery } = testDriver.render(
+                    () => `
+                    <div style="height: 100vh; display: grid; align-items: center; justify-content: center;">
+                        <button id="anchor" style="width: 30px; height: 30px;">anchor</button>
+                    </div>
+                    <span id="overlay">overlay</span>
+                `
+                );
+                const anchor = expectHTMLQuery(`#anchor`) as HTMLButtonElement;
+                const overlay = expectHTMLQuery(`#overlay`);
+
+                const { updatePosition } = tooltip({
+                    anchor,
+                    overlay,
+                    positionX: `after`,
+                    positionY: `after`,
+                });
+
+                anchor.focus();
+
+                updatePosition({
+                    margin: 10,
+                });
+
+                await waitFor(() => {
+                    const anchorRect = anchor.getBoundingClientRect();
+                    const overlayRect = overlay.getBoundingClientRect();
+                    expect(overlayRect.top, `below + 10`).to.be.approximately(
+                        anchorRect.bottom + 10,
+                        0.5
+                    );
+                    expect(overlayRect.left, `right of + 10`).to.be.approximately(
+                        anchorRect.right + 10,
+                        0.5
+                    );
+                });
+
+                updatePosition({
+                    margin: 0,
+                });
+
+                await waitFor(() => {
+                    const anchorRect = anchor.getBoundingClientRect();
+                    const overlayRect = overlay.getBoundingClientRect();
+                    expect(overlayRect.top, `below + 0`).to.be.approximately(
+                        anchorRect.bottom,
+                        0.5
+                    );
+                    expect(overlayRect.left, `right of + 0`).to.be.approximately(
+                        anchorRect.right,
+                        0.5
+                    );
+                });
+            });
+        });
     });
 });

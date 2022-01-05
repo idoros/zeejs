@@ -210,6 +210,126 @@ describe(`popover`, () => {
                 expect(popoverBounds.right, `popover right`).to.equal(parentBounds.right);
             });
         });
+        describe(`margin`, () => {
+            it(`should position with extra space`, async () => {
+                const { expectHTMLQuery } = testDriver.render(
+                    () => `
+                    <div style="height: 100vh; display: grid; align-items: center; justify-content: center;">
+                        <button id="anchor" style="width: 30px; height: 30px;">anchor</button>
+                    </div>
+                    <span id="overlay">overlay</span>
+                `
+                );
+                const anchor = expectHTMLQuery(`#anchor`) as HTMLButtonElement;
+                const overlay = expectHTMLQuery(`#overlay`);
+                const { open } = popover();
+
+                open(
+                    {
+                        anchor,
+                        overlay,
+                    },
+                    {
+                        positionX: `after`,
+                        positionY: `after`,
+                        margin: 10,
+                    }
+                );
+
+                await waitFor(() => {
+                    const anchorRect = anchor.getBoundingClientRect();
+                    const overlayRect = overlay.getBoundingClientRect();
+                    expect(overlayRect.top, `below + margin`).to.equal(anchorRect.bottom + 10);
+                    expect(overlayRect.left, `right of + margin`).to.equal(anchorRect.right + 10);
+                });
+            });
+            it(`should update margin`, async () => {
+                const { expectHTMLQuery } = testDriver.render(
+                    () => `
+                    <div style="height: 100vh; display: grid; align-items: center; justify-content: center;">
+                        <button id="anchor" style="width: 30px; height: 30px;">anchor</button>
+                    </div>
+                    <span id="overlay">overlay</span>
+                `
+                );
+                const anchor = expectHTMLQuery(`#anchor`) as HTMLButtonElement;
+                const overlay = expectHTMLQuery(`#overlay`);
+                const { open, updateOptions } = popover();
+
+                open(
+                    {
+                        anchor,
+                        overlay,
+                    },
+                    {
+                        positionX: `after`,
+                        positionY: `after`,
+                        margin: 10,
+                    }
+                );
+
+                await waitFor(() => {
+                    const anchorRect = anchor.getBoundingClientRect();
+                    const overlayRect = overlay.getBoundingClientRect();
+                    expect(overlayRect.top, `below + initial margin`).to.equal(
+                        anchorRect.bottom + 10
+                    );
+                    expect(overlayRect.left, `right of + initial margin`).to.equal(
+                        anchorRect.right + 10
+                    );
+                });
+
+                updateOptions({
+                    margin: 20,
+                });
+
+                await waitFor(() => {
+                    const anchorRect = anchor.getBoundingClientRect();
+                    const overlayRect = overlay.getBoundingClientRect();
+                    expect(overlayRect.top, `below + changed margin`).to.equal(
+                        anchorRect.bottom + 20
+                    );
+                    expect(overlayRect.left, `right of + changed margin`).to.equal(
+                        anchorRect.right + 20
+                    );
+                });
+            });
+            it(`should avoid anchor with margin space`, async () => {
+                const { expectHTMLQuery } = testDriver.render(
+                    () => `
+                    <div id="anchor" style="width: 100px; height: 40px; position: fixed; bottom: 0; right: 0; background: red;"></div>
+                    <div id="overlay" style="width: 80px; height: 20px; background: green;"></div>
+                `
+                );
+                const anchor = expectHTMLQuery(`#anchor`);
+                const overlay = expectHTMLQuery(`#overlay`);
+
+                const { open } = popover();
+                open(
+                    {
+                        anchor,
+                        overlay,
+                    },
+                    {
+                        positionX: `after`,
+                        positionY: `after`,
+                        margin: 10,
+                        avoidAnchor: true,
+                    }
+                );
+
+                await waitFor(() => {
+                    const popoverNode = expectHTMLQuery(`#overlay`);
+                    const parentNode = expectHTMLQuery(`#anchor`);
+                    const popoverBounds = popoverNode.getBoundingClientRect();
+                    const parentBounds = parentNode.getBoundingClientRect();
+                    expect(popoverBounds.right, `popover pushed on x`).to.equal(parentBounds.right);
+                    expect(popoverBounds.bottom, `popover flipped on y - margin`).to.equal(
+                        parentBounds.top - 10
+                    );
+                });
+            });
+        });
     });
     describe(`size`, () => {
         it(`should keep original by default`, () => {

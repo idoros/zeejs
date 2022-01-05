@@ -10,15 +10,19 @@ export interface KeepInViewData {
 
 export interface KeepInViewOptions {
     avoidAnchor: boolean;
+    margin: number;
 }
 
-export function keepInView(data: KeepInViewData, { avoidAnchor = true }: Partial<KeepInViewOptions> = {}) {
-    const x = keepInViewBase(`x`, data, avoidAnchor);
+export function keepInView(
+    data: KeepInViewData,
+    { avoidAnchor = true, margin = 0 }: Partial<KeepInViewOptions> = {}
+) {
+    const x = keepInViewBase(`x`, data, avoidAnchor, margin);
     if (!isNaN(x)) {
         data.overlayBounds.x = x;
         data.overlay.style.left = x + `px`;
     }
-    const y = keepInViewBase(`y`, data, avoidAnchor);
+    const y = keepInViewBase(`y`, data, avoidAnchor, margin);
     if (!isNaN(y)) {
         data.overlayBounds.y = y;
         data.overlay.style.top = y + `px`;

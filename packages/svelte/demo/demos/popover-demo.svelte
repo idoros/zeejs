@@ -10,6 +10,7 @@
         avoidAnchor: false,
         positionX: `center`,
         positionY: `after`,
+        margin: 0,
         matchWidth: false,
         matchHeight: false,
         backdrop: `none`,
@@ -28,6 +29,13 @@
             ...popoverData,
             isOpen: false,
         };
+    }
+
+    function onMarginChange({target}) {
+        popoverData = { 
+            ...popoverData,
+            margin: Number(target.value)
+        }
     }
 </script>
 
@@ -89,6 +97,14 @@
         <option value="end" label="end" />
         <option value="after" label="after" />
     </select>
+    <label for={id + `-margin`}>margin</label>
+    <input
+        id={id + `-margin`}
+        type="number"
+        value={popoverData.margin}
+        on:change={onMarginChange}
+        on:keyup={onMarginChange}
+    />
     <label>
         match width
         <input
@@ -133,6 +149,7 @@
             avoidAnchor={popoverData.avoidAnchor}
             positionX={popoverData.positionX}
             positionY={popoverData.positionY}
+            margin={popoverData.margin}
             matchWidth={popoverData.matchWidth}
             matchHeight={popoverData.matchHeight}
             backdrop={popoverData.backdrop}

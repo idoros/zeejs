@@ -177,6 +177,17 @@ describe(`keep-in-view`, () => {
                 expect(keepInView(`x`, xData, true), `x`).to.equal(0);
                 expect(keepInView(`y`, xToY(xData), true), `y`).to.equal(0);
             });
+            it(`should flip to other side of anchor with margin`, () => {
+                //       o|oo aaa     |
+                //        |   aaa ooo |
+                const xData = {
+                    anchorBounds: { x: 50, y: 50, width: 50, height: 50 },
+                    overlayBounds: { x: -55, y: 50, width: 50, height: 50 },
+                    viewport: { width: 200, height: 200 },
+                };
+                expect(keepInView(`x`, xData, true, 10), `x`).to.equal(110);
+                expect(keepInView(`y`, xToY(xData), true, 10), `y`).to.equal(110);
+            });
         });
         describe(`overflow end`, () => {
             it(`should flip to other side of anchor`, () => {
@@ -228,6 +239,17 @@ describe(`keep-in-view`, () => {
                 };
                 expect(keepInView(`x`, xData, true), `x`).to.equal(150);
                 expect(keepInView(`y`, xToY(xData), true), `y`).to.equal(150);
+            });
+            it(`should flip to other side of anchor with margin`, () => {
+                //        |     aaa oo|o
+                //        | ooo aaa   |
+                const xData = {
+                    anchorBounds: { x: 100, y: 50, width: 50, height: 50 },
+                    overlayBounds: { x: 160, y: 50, width: 50, height: 50 },
+                    viewport: { width: 200, height: 200 },
+                };
+                expect(keepInView(`x`, xData, true, 10), `x`).to.equal(40);
+                expect(keepInView(`y`, xToY(xData), true, 10), `y`).to.equal(40);
             });
         });
     });

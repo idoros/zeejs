@@ -17,7 +17,8 @@ interface Data {
 export function keepInView(
     dir: `x` | `y`,
     { overlayBounds, anchorBounds, viewport }: Data,
-    avoidAnchor = false
+    avoidAnchor = false,
+    margin = 0
 ): number {
     const sizeField = dir === `x` ? `width` : `height`;
     const posField = dir === `x` ? `x` : `y`;
@@ -38,13 +39,13 @@ export function keepInView(
     const flip = avoidAnchor && oppositeDirOverlap && !dirOverlap;
     if (flip) {
         // flip
-        const spaceBefore = anchorPos;
-        const spaceAfter = viewport[sizeField] - anchorEnd;
+        const spaceBefore = anchorPos - margin;
+        const spaceAfter = viewport[sizeField] - anchorEnd - margin;
         const worthFlip = overflowDir === -1 ? spaceBefore < spaceAfter : spaceBefore > spaceAfter;
         if (!worthFlip) {
             return NaN;
         }
-        inViewPos = overlayPos >= anchorEnd ? anchorPos - overlaySize : anchorEnd; // ?anchorPos;
+        inViewPos = overlayPos >= anchorEnd ? anchorPos - overlaySize - margin : anchorEnd + margin; // ?anchorPos;
         if (
             (overflowDir === 1 && inViewPos > viewport[sizeField]) ||
             (overflowDir === -1 && inViewPos + overlaySize < 0)
@@ -57,8 +58,8 @@ export function keepInView(
         inViewPos = overflowDir === -1 ? 0 : viewport[sizeField] - overlaySize;
     }
     return overflowDir === -1
-        ? Math.min(inViewPos, anchorEnd)
-        : Math.max(inViewPos, anchorPos - overlaySize);
+        ? Math.min(inViewPos, anchorEnd + margin)
+        : Math.max(inViewPos, anchorPos - overlaySize - margin);
 }
 function isAxleOverlap(dir: `x` | `y`, anchorBounds: Bounds, overlayBounds: Bounds) {
     const sizeField = dir === `x` ? `width` : `height`;

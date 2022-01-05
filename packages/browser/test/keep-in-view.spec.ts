@@ -165,4 +165,49 @@ describe(`keep-in-view`, () => {
             anchorBounds.y - overlayBounds.height + `px`
         );
     });
+
+    describe(`margin`, () => {
+        it(`should flip with a distance from the other side`, () => {
+            const { expectHTMLQuery } = testDriver.render(
+                () => `
+                    <style>
+                        #anchor {
+                            position: absolute; background: blue;
+                            left: 80vw; width: 20vw; /*right: 100% */
+                            top: 40vh; height: 20vh; /*bottom: 60% */
+                        }
+                        #overlay {
+                            position: absolute; background: blue;
+                            left: 100vw; width: 20vw;
+                            top: 40vh; height: 20vh;
+                        }
+                    </style>
+                    <div id="anchor"></div> 
+                    <div id="overlay"></div> 
+                `
+            );
+            const anchor = expectHTMLQuery(`#anchor`);
+            const overlay = expectHTMLQuery(`#overlay`);
+            const anchorBounds = getBounds(anchor);
+            const overlayBounds = getBounds(overlay);
+
+            keepInView(
+                {
+                    anchorBounds,
+                    overlayBounds,
+                    overlay,
+                    viewport: getViewportSize(),
+                },
+                {
+                    avoidAnchor: true,
+                    margin: 10,
+                }
+            );
+
+            expect(overlay.style.left, 'left flipped minus margin').to.equal(
+                anchorBounds.x - overlayBounds.width - 10 + `px`
+            );
+            expect(overlay.style.top, 'top untouched').to.equal(``);
+        });
+    });
 });

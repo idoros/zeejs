@@ -379,5 +379,99 @@ describe(`react tooltip`, () => {
                 expect(tooltipBounds.right, `tooltip left of`).to.equal(parentBounds.left);
             });
         });
+
+        describe(`margin`, () => {
+            it(`should space from anchor`, async () => {
+                const { expectHTMLQuery } = testDriver.render(() => (
+                    <Root
+                        style={{
+                            width: `300px`,
+                            height: `300px`,
+                            display: `grid`,
+                            justifyItems: `center`,
+                            alignContent: `center`,
+                        }}
+                    >
+                        <div
+                            id="parent-node"
+                            tabIndex={0}
+                            style={{ width: `100px`, height: `40px`, background: 'red' }}
+                        >
+                            <Tooltip positionX="after" positionY="after" margin={10}>
+                                <div
+                                    id="tooltip-node"
+                                    style={{ width: `80px`, height: `20px`, background: 'green' }}
+                                ></div>
+                            </Tooltip>
+                        </div>
+                    </Root>
+                ));
+
+                await hover(`#parent-node`);
+
+                await waitFor(() => {
+                    const tooltipNode = expectHTMLQuery(`#tooltip-node`);
+                    const parentNode = expectHTMLQuery(`#parent-node`);
+                    const tooltipBounds = tooltipNode.getBoundingClientRect();
+                    const parentBounds = parentNode.getBoundingClientRect();
+                    expect(tooltipBounds.top, `tooltip below + margin`).to.equal(
+                        parentBounds.bottom + 10
+                    );
+                    expect(tooltipBounds.left, `tooltip right of + margin`).to.equal(
+                        parentBounds.right + 10
+                    );
+                });
+            });
+            it(`should update when changed`, async () => {
+                const { expectHTMLQuery, setData } = testDriver.render<number>(
+                    (margin) => (
+                        <Root
+                            style={{
+                                width: `300px`,
+                                height: `300px`,
+                                display: `grid`,
+                                justifyItems: `center`,
+                                alignContent: `center`,
+                            }}
+                        >
+                            <div
+                                id="parent-node"
+                                tabIndex={0}
+                                style={{ width: `100px`, height: `40px`, background: 'red' }}
+                            >
+                                <Tooltip positionX="after" positionY="after" margin={margin}>
+                                    <div
+                                        id="tooltip-node"
+                                        style={{
+                                            width: `80px`,
+                                            height: `20px`,
+                                            background: 'green',
+                                        }}
+                                    ></div>
+                                </Tooltip>
+                            </div>
+                        </Root>
+                    ),
+                    { initialData: 10 }
+                );
+
+                await hover(`#parent-node`);
+
+                setData(20);
+
+                await waitFor(() => {
+                    const tooltipNode = expectHTMLQuery(`#tooltip-node`);
+                    const parentNode = expectHTMLQuery(`#parent-node`);
+                    const tooltipBounds = tooltipNode.getBoundingClientRect();
+                    const parentBounds = parentNode.getBoundingClientRect();
+                    expect(tooltipBounds.top, `tooltip below + margin`).to.equal(
+                        parentBounds.bottom + 20
+                    );
+                    expect(tooltipBounds.left, `tooltip right of + margin`).to.equal(
+                        parentBounds.right + 20
+                    );
+                });
+            });
+        });
     });
 });

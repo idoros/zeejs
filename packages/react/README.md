@@ -74,14 +74,14 @@ The component will generate a new zeejs layer above layer it is rendered in.
 
 **props:**
 
-| name                  | type                          | default  | required | description                                                                                                                                 |
-| --------------------- | ----------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `backdrop`            | "none" \| "block" \| "hide"   | "none"   | false    | background behavior; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#backdrop)                                 |
-| `overlap`             | "window" \| HTMLElement       | "window" | false    | layer bounds reference                                                                                                                      |
-| `onClickOutside`      | (target: EventTarget) => void |          | false    | invoked on click outside; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#click-outside)                       |
-| `onMouseIntersection` | (isInside: boolean) => void   |          | false    | invoked when mouse leaves or enters layer; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#mouse-intersection) |
-| `onFocusChange`       | (isFocused: boolean) => void  |          | false    | invoked when focus is moved into/out of layer; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#focus-change)   |
-| `onEscape`       | (event: KeyboardEvent) => void  |          | false    | invoked when escape is pressed; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#escape)   |
+| name                  | type                           | default  | required | description                                                                                                                                 |
+| --------------------- | ------------------------------ | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `backdrop`            | "none" \| "block" \| "hide"    | "none"   | false    | background behavior; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#backdrop)                                 |
+| `overlap`             | "window" \| HTMLElement        | "window" | false    | layer bounds reference                                                                                                                      |
+| `onClickOutside`      | (target: EventTarget) => void  |          | false    | invoked on click outside; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#click-outside)                       |
+| `onMouseIntersection` | (isInside: boolean) => void    |          | false    | invoked when mouse leaves or enters layer; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#mouse-intersection) |
+| `onFocusChange`       | (isFocused: boolean) => void   |          | false    | invoked when focus is moved into/out of layer; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#focus-change)   |
+| `onEscape`            | (event: KeyboardEvent) => void |          | false    | invoked when escape is pressed; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#escape)                        |
 
 **code example:**
 
@@ -155,13 +155,13 @@ The modal primitive display content that is not affected by the scroll of lower 
 | --------------------- | -------------------------------------------------------------------------------------------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `backdrop`            | "none" \| "block" \| "hide"                                                                                    | "block"  | false    | background behavior; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#backdrop)                                 |
 | `position`            | "topLeft" \| "top" \| "topRight" \| "left" \| "center" \| "right" \| "bottomLeft" \| "bottom" \| "bottomRight" | "center" | false    | fixed align position                                                                                                                        |
-| `show`                | boolean                                                                                                        | true     | false    | flag if the layer should be displayed |
+| `show`                | boolean                                                                                                        | true     | false    | flag if the layer should be displayed                                                                                                       |
 | `onClickOutside`      | (target: EventTarget) => void                                                                                  |          | false    | invoked on click outside; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#click-outside)                       |
 | `onMouseIntersection` | (isInside: boolean) => void                                                                                    |          | false    | invoked when mouse leaves or enters layer; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#mouse-intersection) |
 | `onFocusChange`       | (isFocused: boolean) => void                                                                                   |          | false    | invoked when focus is moved into/out of layer; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#focus-change)   |
-| `onEscape`       | (event: KeyboardEvent) => void  |          | false    | invoked when escape is pressed; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#escape)   |
-| `className`           | string                                                                                                         | ""       | false    | CSS class name to add to the modal box |
-| `style`               | React.CSSProperties                                                                                            | {}       | false    | CSS inline style to add to the modal box |
+| `onEscape`            | (event: KeyboardEvent) => void                                                                                 |          | false    | invoked when escape is pressed; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#escape)                        |
+| `className`           | string                                                                                                         | ""       | false    | CSS class name to add to the modal box                                                                                                      |
+| `style`               | React.CSSProperties                                                                                            | {}       | false    | CSS inline style to add to the modal box                                                                                                    |
 
 ### `<Tooltip>` component
 
@@ -169,11 +169,12 @@ The tooltip primitive displays hovered content that is bound to the UI that open
 
 **props:**
 
-| name         | type                                                | default  | required                 | description      |
-| ------------ | --------------------------------------------------- | -------- | ------------------------ | ---------------- |
-| `mouseDelay` | number                                              | 500      | delay for mouse out / in |                  |
-| `positionX`  | "before" \| "start" \| "center" \| "end" \| "after" | "center" | false                    | align X position |
-| `positionY`  | "before" \| "start" \| "center" \| "end" \| "after" | "before" | false                    | align X position |
+| name         | type                                                | default  | required                 | description               |
+| ------------ | --------------------------------------------------- | -------- | ------------------------ | ------------------------- |
+| `mouseDelay` | number                                              | 500      | delay for mouse out / in |                           |
+| `positionX`  | "before" \| "start" \| "center" \| "end" \| "after" | "center" | false                    | align X position          |
+| `positionY`  | "before" \| "start" \| "center" \| "end" \| "after" | "before" | false                    | align X position          |
+| `margin`     | number                                              | 0        | false                    | requested gap from anchor |
 
 ### `<Popover>` component
 
@@ -186,15 +187,16 @@ The modal primitive display content that is not affected by the scroll of lower 
 | `backdrop`            | "none" \| "block" \| "hide"                         | "block"  | false    | background behavior; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#backdrop)                                 |
 | `positionX`           | "before" \| "start" \| "center" \| "end" \| "after" | "center" | false    | align X position                                                                                                                            |
 | `positionY`           | "before" \| "start" \| "center" \| "end" \| "after" | "after"  | false    | align Y position                                                                                                                            |
+| `margin`              | number                                              | 0        | false    | requested gap from anchor                                                                                                                   |
 | `avoidAnchor`         | boolean                                             | false    | false    | attempt to not overlap the anchor that opened it while pushed in by overflow                                                                |
 | `matchWidth`          | boolean                                             | false    | false    | force the popover box to be in the width of the anchor                                                                                      |
 | `matchHeight`         | boolean                                             | false    | false    | force the popover box to be in the height of the anchor                                                                                     |
 | `show`                | boolean                                             | true     | false    | flag if the layer should be displayed                                                                                                       |
 | `onClickOutside`      | ((target: EventTarget) => void                      |          | false    | invoked on click outside; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#click-outside)                       |
-| `ignoreAnchorClick`      | boolean | false | false    | when true click on anchor does not invoke `onClickOutside` handler |
+| `ignoreAnchorClick`   | boolean                                             | false    | false    | when true click on anchor does not invoke `onClickOutside` handler                                                                          |
 | `onMouseIntersection` | (isInside: boolean) => void                         |          | false    | invoked when mouse leaves or enters layer; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#mouse-intersection) |
 | `onFocusChange`       | (isFocused: boolean) => void                        |          | false    | invoked when focus is moved into/out of layer; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#focus-change)   |
-| `onEscape`       | (event: KeyboardEvent) => void  |          | false    | invoked when escape is pressed; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#escape)   |
+| `onEscape`            | (event: KeyboardEvent) => void                      |          | false    | invoked when escape is pressed; [see docs](https://github.com/idoros/zeejs/blob/master/docs/documentation.md#escape)                        |
 | `onDisplayChange`     | (isPositioned: boolean) => void                     |          | false    | invoked when the popover is displayed (after positioning) or removed from DOM                                                               |
 | `className`           | string                                              | ""       | false    | CSS class name to add to the popover box                                                                                                    |
 | `style`               | React.CSSProperties                                 | {}       | false    | CSS inline style to add to the popover box                                                                                                  |
