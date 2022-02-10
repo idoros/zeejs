@@ -7,6 +7,7 @@ import { runTests, RunTestsOptions } from './run-tests';
 export { hookImageSnapshot } from './image-snapshot/node';
 export { hookInteractionApi } from './interaction-api/node';
 export { hookServerFixtures } from './server-fixtures/node';
+export { hookA11yApi } from './accessibility/node';
 export * from './browser';
 
 const availableBrowsers = ['chromium', 'firefox', 'webkit'];

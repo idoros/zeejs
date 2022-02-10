@@ -12,6 +12,7 @@ interface TooltipOptions {
     margin?: number;
 }
 
+let idCounter = 0;
 export const tooltip = ({
     onToggle,
     anchor,
@@ -22,6 +23,7 @@ export const tooltip = ({
     positionY = `before`,
     margin = 0,
 }: TooltipOptions) => {
+    const id = `tooltip-${idCounter++}`;
     let isFocusHold = false;
     let isMouseIn = false;
     let isMouseInOverlay = false;
@@ -30,6 +32,7 @@ export const tooltip = ({
     let buffer = 0;
     let blurBuffer = 0;
     let disableFocus = false;
+    let revertAriaConnect: (() => void) | null = null;
 
     const onFocus = () => {
         if (disableFocus) {
@@ -157,6 +160,7 @@ export const tooltip = ({
         anchor.addEventListener(`blur`, onBlur, { passive: true });
         anchor.addEventListener(`mouseover`, onMouseOver, { capture: true, passive: true });
         anchor.addEventListener(`mouseout`, onMouseOut, { capture: true, passive: true });
+        revertAriaConnect = connectAriaLabel(newAnchor, { id, placeholder: `TOOLTIP` });
     };
     const unsetAnchor = () => {
         if (anchor) {
@@ -164,10 +168,18 @@ export const tooltip = ({
             anchor.removeEventListener(`blur`, onBlur);
             anchor.removeEventListener(`mouseover`, onMouseOver);
             anchor.removeEventListener(`mouseout`, onMouseOut);
+            if (revertAriaConnect) {
+                revertAriaConnect();
+                revertAriaConnect = null;
+            }
         }
     };
     const setOverlay = (newOverlay: HTMLElement | null) => {
         overlay = newOverlay;
+        if (overlay) {
+            overlay.setAttribute(`id`, id);
+            overlay.setAttribute(`role`, `tooltip`);
+        }
         updateOpen();
     };
 
@@ -216,3 +228,31 @@ export const tooltip = ({
         },
     };
 };
+
+function connectAriaLabel(
+    anchor: Element,
+    { id, placeholder }: { id: string; placeholder: string }
+) {
+    const describedby = anchor.getAttribute(`aria-describedby`);
+    const labelledby = anchor.getAttribute(`aria-labelledby`);
+    const label = anchor.getAttribute(`aria-label`);
+    if (describedby) {
+        anchor.setAttribute(`aria-describedby`, describedby.replace(placeholder, id));
+    }
+    if (labelledby) {
+        anchor.setAttribute(`aria-labelledby`, labelledby.replace(placeholder, id));
+    } else if (!describedby && !label) {
+        // default
+        anchor.setAttribute(`aria-labelledby`, id);
+    }
+    return () => {
+        if (describedby) {
+            anchor.setAttribute(`aria-describedby`, describedby);
+        }
+        if (labelledby) {
+            anchor.setAttribute(`aria-labelledby`, labelledby);
+        } else if (!describedby && !label) {
+            anchor.removeAttribute(`aria-labelledby`);
+        }
+    };
+}

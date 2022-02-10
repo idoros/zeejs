@@ -105,7 +105,11 @@ export async function runTests({
                 dialog.dismiss();
             });
             page.on('framenavigated', () => {
-                page.addStyleTag({ content: `x-pw-glass {display: none!important;}` });
+                try {
+                    page.addStyleTag({ content: `x-pw-glass {display: none!important;}` });
+                } catch (_e) {
+                    /**/
+                }
             });
             const failsOnPageError = new Promise((_resolve, reject) => {
                 page.once('pageerror', (e) => {
